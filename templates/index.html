@@ -2545,13 +2545,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   updateStepProgress();
   refreshGalleryCounts();
 
-  // Sync any localStorage keys to server .env on startup
+  // Sync any localStorage keys to server .env on startup (if user has them)
   if(googleKey || apiKey) {
     syncKeysToServer();
-  } else if(!serverHasGoogleKey && !serverHasAnthropicKey) {
-    // Only show settings if BOTH localStorage AND server have no keys
-    setTimeout(()=>{ showSettingsModal(); }, 500);
   }
+  // Keys are configured server-side in config.py — no popup needed
 });
 </script>
 </body>
