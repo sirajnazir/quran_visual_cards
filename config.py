@@ -2,13 +2,13 @@
 import os
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    load_dotenv(override=True)
 except ImportError:
     pass
 
 # Flask
 SECRET_KEY = os.environ.get("SECRET_KEY", "quran-cards-dev-key")
-DEBUG = True
+DEBUG = os.environ.get("FLASK_DEBUG", "false").lower() in ("true", "1", "yes")
 HOST = "0.0.0.0"
 PORT = int(os.environ.get("PORT", 5001))
 

@@ -2548,11 +2548,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Sync any localStorage keys to server .env on startup
   if(googleKey || apiKey) {
     syncKeysToServer();
-  } else {
-    // Show settings modal if no keys at all
-    setTimeout(()=>{
-      if(!googleKey && !apiKey) showSettingsModal();
-    }, 500);
+  } else if(!serverHasGoogleKey && !serverHasAnthropicKey) {
+    // Only show settings if BOTH localStorage AND server have no keys
+    setTimeout(()=>{ showSettingsModal(); }, 500);
   }
 });
 </script>

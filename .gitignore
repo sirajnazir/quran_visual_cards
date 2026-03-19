@@ -27,11 +27,14 @@ server.log
 .idea/
 
 # Generated images and exports (large files)
-static/images/
-static/exports/
-static/covers/
+static/images/*
+!static/images/.gitkeep
+static/exports/*
+!static/exports/.gitkeep
+static/covers/*
+!static/covers/.gitkeep
 static/prompt_logs/
 
-# Cache files
+# Cache files (regenerated at runtime)
 static/tafsir_cache.json
 static/quran_verse_cache.json
