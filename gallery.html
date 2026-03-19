@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quran Visual Cards — AI Gallery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Patrick+Hand&family=Noto+Sans+Arabic:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F5F3EF;
+      --card-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      --warm: #C8902E;
+      --cool: #4A9B7F;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      padding: 40px 20px 80px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .header h1 {
+      font-family: 'Cabin Sketch', cursive;
+      font-size: 36px;
+      color: #2C3E50;
+      margin-bottom: 8px;
+    }
+    .header .subtitle {
+      font-size: 15px;
+      color: #888;
+      font-family: 'Patrick Hand', cursive;
+      letter-spacing: 0.5px;
+    }
+    .header .badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #C8902E, #E8A33E);
+      color: white;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Gallery Grid */
+    .gallery {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    /* Card Entry */
+    .card-entry {
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-entry:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 48px rgba(0,0,0,0.16);
+    }
+
+    .card-entry .card-meta {
+      padding: 28px 32px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .card-meta .card-info h2 {
+      font-family: 'Cabin Sketch', cursive;
+      font-size: 24px;
+      color: #2C3E50;
+      margin-bottom: 6px;
+    }
+    .card-meta .card-info .category {
+      font-size: 13px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 600;
+    }
+    .card-meta .card-number {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cabin Sketch', cursive;
+      font-size: 22px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+    .card-number.warm { background: linear-gradient(135deg, #C8902E, #E8A33E); }
+    .card-number.cool { background: linear-gradient(135deg, #4A9B7F, #6BC4A6); }
+
+    .card-tags {
+      padding: 0 32px 16px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .tag.model-type { background: #E8F5EE; color: #4A9B7F; }
+    .tag.theme-warm { background: #FFF3E0; color: #C8902E; }
+    .tag.theme-cool { background: #E0F2F1; color: #4A9B7F; }
+
+    /* Image Container */
+    .card-image-wrap {
+      position: relative;
+      width: 100%;
+      background: #FAFAF8;
+      border-top: 1px solid #F0EDE8;
+    }
+    .card-image-wrap img {
+      width: 100%;
+      display: block;
+      cursor: zoom-in;
+    }
+    .card-image-wrap .placeholder {
+      padding: 80px 40px;
+      text-align: center;
+      color: #BBB;
+      font-family: 'Patrick Hand', cursive;
+      font-size: 18px;
+    }
+    .card-image-wrap .placeholder .instructions {
+      margin-top: 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      color: #CCC;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    .card-quote {
+      padding: 20px 32px 28px;
+      font-family: 'Crimson Text', serif;
+      font-style: italic;
+      font-size: 16px;
+      color: #666;
+      line-height: 1.6;
+      border-top: 1px solid #F0EDE8;
+    }
+
+    /* Lightbox */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox img {
+      max-width: 95vw;
+      max-height: 95vh;
+      border-radius: 12px;
+      box-shadow: 0 0 80px rgba(0,0,0,0.5);
+    }
+
+    /* Setup Banner */
+    .setup-banner {
+      max-width: 800px;
+      margin: 0 auto 40px;
+      padding: 24px 32px;
+      background: linear-gradient(135deg, #FFF9F0, #FFF3E0);
+      border: 2px dashed #C8902E;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #5C3D1A;
+    }
+    .setup-banner h3 {
+      font-family: 'Cabin Sketch', cursive;
+      font-size: 18px;
+      color: #C8902E;
+      margin-bottom: 8px;
+    }
+    .setup-banner code {
+      background: #FFF;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #C8902E;
+    }
+    .setup-banner .cmd {
+      display: block;
+      background: #2C3E50;
+      color: #E8F5EE;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 13px;
+      margin: 12px 0;
+      overflow-x: auto;
+    }
+
+    /* Drop Zone */
+    .drop-zone {
+      border: 3px dashed #DDD;
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      margin: 20px 32px 28px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: #C8902E;
+      background: #FFF9F0;
+    }
+    .drop-zone p {
+      font-family: 'Patrick Hand', cursive;
+      font-size: 16px;
+      color: #AAA;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 13px;
+      color: #BBB;
+    }
+    .footer a { color: #C8902E; text-decoration: none; }
+
+    @media print {
+      body { padding: 0; background: white; }
+      .setup-banner, .footer { display: none; }
+      .card-entry { break-inside: avoid; box-shadow: none; border: 1px solid #EEE; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Quran Visual Cards</h1>
+  <p class="subtitle">Mental Model Synthesis Engine — Nano Banana 2</p>
+  <span class="badge">AI-Generated Collection</span>
+</div>
+
+<div class="setup-banner" id="setupBanner">
+  <h3>Loading Images</h3>
+  <p>This gallery loads card images from the <code>static/images/</code> folder. To set up:</p>
+  <div class="cmd">cd 02-Quran-Visual-Cards<br>
+cp ~/Documents/nanobanana_generated/generated_1773409704983.png static/images/card1_quranic_mission_synthesis.png<br>
+cp ~/Documents/nanobanana_generated/generated_1773409744510.png static/images/card2_maslows_hammer.png<br>
+cp ~/Documents/nanobanana_generated/generated_1773409778249.png static/images/card3_zero_sum_fallacy.png<br>
+cp ~/Documents/nanobanana_generated/generated_1773409809296.png static/images/card4_tawakkul_paradox.png<br>
+cp ~/Documents/nanobanana_generated/generated_1773409852278.png static/images/card5_dunya_trap.png</div>
+  <p>Or simply drag & drop images onto each card slot below.</p>
+</div>
+
+<div class="gallery" id="gallery"></div>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg" src="" alt="Card Preview">
+</div>
+
+<div class="footer">
+  <p>Quran Visual Cards &mdash; Powered by <a href="#">Nano Banana 2</a> (Gemini Image Gen)</p>
+</div>
+
+<script>
+const CARDS = [
+  {
+    id: 1,
+    title: "Quranic Mission Synthesis",
+    category: "Prophecy & Psychology",
+    modelType: "sequential_chain",
+    theme: "warm",
+    cardNumber: 3,
+    quote: "It is tempting to follow guidance without recognizing servitude. These three steps are an unbreakable chain.",
+    imageFile: "card1_quranic_mission_synthesis.png",
+    nanobananaFile: "generated_1773409704983.png"
+  },
+  {
+    id: 2,
+    title: "Maslow's Hammer",
+    category: "Problem Solving",
+    modelType: "fail_constraint",
+    theme: "cool",
+    cardNumber: 39,
+    quote: "It is tempting, if the only tool you have is a hammer, to treat everything as if it were a nail.",
+    imageFile: "card2_maslows_hammer.png",
+    nanobananaFile: "generated_1773409744510.png"
+  },
+  {
+    id: 3,
+    title: "Zero Sum Fallacy",
+    category: "Strategic Thinking",
+    modelType: "mutual_gain",
+    theme: "cool",
+    cardNumber: 36,
+    quote: "We perceive many situations as having a clear winner and a loser. Most do not.",
+    imageFile: "card3_zero_sum_fallacy.png",
+    nanobananaFile: "generated_1773409778249.png"
+  },
+  {
+    id: 4,
+    title: "The Tawakkul Paradox",
+    category: "Faith & Action",
+    modelType: "tripod",
+    theme: "warm",
+    cardNumber: 2,
+    quote: "Trust without preparation is negligence. Preparation without trust is arrogance.",
+    imageFile: "card4_tawakkul_paradox.png",
+    nanobananaFile: "generated_1773409809296.png"
+  },
+  {
+    id: 5,
+    title: "The Dunya Trap",
+    category: "Worldly Attachment",
+    modelType: "loop_cycle",
+    theme: "warm",
+    cardNumber: 3,
+    quote: "Desire feeds accumulation, accumulation breeds distraction, distraction births forgetfulness.",
+    imageFile: "card5_dunya_trap.png",
+    nanobananaFile: "generated_1773409852278.png"
+  }
+];
+
+const MODEL_LABELS = {
+  sequential_chain: "Sequential Chain",
+  fail_constraint: "Fail / Constraint",
+  mutual_gain: "Mutual Gain",
+  tripod: "Tripod / Three Pillars",
+  loop_cycle: "Loop / Cycle"
+};
+
+const gallery = document.getElementById("gallery");
+
+CARDS.forEach(card => {
+  const entry = document.createElement("div");
+  entry.className = "card-entry";
+  entry.innerHTML = `
+    <div class="card-meta">
+      <div class="card-info">
+        <h2>${card.title}</h2>
+        <span class="category">${card.category}</span>
+      </div>
+      <div class="card-number ${card.theme}">${card.cardNumber}</div>
+    </div>
+    <div class="card-tags">
+      <span class="tag model-type">${MODEL_LABELS[card.modelType] || card.modelType}</span>
+      <span class="tag theme-${card.theme}">${card.theme === 'warm' ? 'Warm Parchment' : 'Cool Mint'}</span>
+    </div>
+    <div class="card-image-wrap" id="imageWrap${card.id}">
+      <img id="cardImg${card.id}" src="static/images/${card.imageFile}"
+           alt="${card.title} — Card Spread"
+           onclick="openLightbox(this.src)"
+           onerror="showDropZone(${card.id})">
+    </div>
+    <div class="card-quote">"${card.quote}"</div>
+  `;
+  gallery.appendChild(entry);
+});
+
+function showDropZone(cardId) {
+  const wrap = document.getElementById(`imageWrap${cardId}`);
+  const card = CARDS.find(c => c.id === cardId);
+  wrap.innerHTML = `
+    <div class="drop-zone" id="dropZone${cardId}"
+         ondragover="handleDragOver(event, ${cardId})"
+         ondragleave="handleDragLeave(event, ${cardId})"
+         ondrop="handleDrop(event, ${cardId})"
+         onclick="triggerFileInput(${cardId})">
+      <p>Drop card image here, or click to browse</p>
+      <p style="font-size:12px; color:#CCC; margin-top:8px; font-family:monospace">
+        Expected: static/images/${card.imageFile}<br>
+        Or: ~/Documents/nanobanana_generated/${card.nanobananaFile}
+      </p>
+      <input type="file" id="fileInput${cardId}" accept="image/*"
+             style="display:none" onchange="handleFileSelect(event, ${cardId})">
+    </div>
+  `;
+}
+
+function handleDragOver(e, cardId) {
+  e.preventDefault();
+  document.getElementById(`dropZone${cardId}`).classList.add('drag-over');
+}
+
+function handleDragLeave(e, cardId) {
+  document.getElementById(`dropZone${cardId}`).classList.remove('drag-over');
+}
+
+function handleDrop(e, cardId) {
+  e.preventDefault();
+  document.getElementById(`dropZone${cardId}`).classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    loadImageFile(file, cardId);
+  }
+}
+
+function triggerFileInput(cardId) {
+  document.getElementById(`fileInput${cardId}`).click();
+}
+
+function handleFileSelect(e, cardId) {
+  const file = e.target.files[0];
+  if (file) loadImageFile(file, cardId);
+}
+
+function loadImageFile(file, cardId) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const wrap = document.getElementById(`imageWrap${cardId}`);
+    wrap.innerHTML = `<img src="${e.target.result}" alt="Card ${cardId}"
+                           onclick="openLightbox(this.src)" style="cursor:zoom-in">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function openLightbox(src) {
+  document.getElementById("lightboxImg").src = src;
+  document.getElementById("lightbox").classList.add("active");
+}
+
+function closeLightbox() {
+  document.getElementById("lightbox").classList.remove("active");
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeLightbox();
+});
+
+// Hide setup banner if all images load
+let loadedCount = 0;
+document.querySelectorAll('.card-image-wrap img').forEach(img => {
+  img.addEventListener('load', () => {
+    loadedCount++;
+    if (loadedCount === CARDS.length) {
+      document.getElementById('setupBanner').style.display = 'none';
+    }
+  });
+});
+</script>
+</body>
+</html>

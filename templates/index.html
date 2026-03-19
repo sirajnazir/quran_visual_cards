@@ -1,0 +1,2560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quran Visual Cards</title>
+  <link rel="stylesheet" href="/static/css/cards.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    /* ═══════════════════════════════════════════════════
+       ISLAMIC DESIGN SYSTEM — Quran Visual Cards
+       Phased workflow: Input → Analyze → Edit → Generate
+       ═══════════════════════════════════════════════════ */
+    :root {
+      --gold: #C8902E;
+      --gold-light: #E8A840;
+      --gold-pale: #FDF3E0;
+      --gold-glow: rgba(200,144,46,0.15);
+      --green-deep: #1B5E20;
+      --green-mid: #2E7D32;
+      --green-soft: #4CAF50;
+      --green-pale: #E8F5E9;
+      --cream: #FBF7F0;
+      --cream-dark: #F5EDE0;
+      --navy: #1A2530;
+      --navy-mid: #2C3E50;
+      --navy-light: #34495E;
+      --text-primary: #2C3E50;
+      --text-secondary: #5D4E37;
+      --text-muted: #8B7355;
+      --border-gold: #E8D5A3;
+      --border-light: #E8E2D6;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter',sans-serif; background:var(--cream); color:var(--text-primary); min-height:100vh; }
+
+    /* ── Header ── */
+    .app-header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--green-deep) 100%);
+      color:white; padding:16px 40px; display:flex; align-items:center; justify-content:space-between;
+      position:relative; overflow:hidden;
+    }
+    .app-header::before {
+      content:''; position:absolute; inset:0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M30 0l30 30-30 30L0 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events:none;
+    }
+    .app-header h1 { font-family:'Amiri',serif; font-size:24px; position:relative; }
+    .app-header .subtitle { font-size:11px; opacity:.5; font-weight:300; position:relative; }
+    .header-actions { display:flex; gap:12px; position:relative; }
+
+    /* ── Tabs ── */
+    .tab-bar { display:flex; background:white; border-bottom:2px solid var(--border-light); padding:0 40px; }
+    .tab { padding:14px 24px; font-size:14px; font-weight:500; cursor:pointer; border-bottom:3px solid transparent; color:var(--text-muted); transition:all .2s; }
+    .tab:hover { color:var(--text-secondary); }
+    .tab.active { color:var(--green-deep); border-bottom-color:var(--gold); }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+
+    /* ── Phase Container (centered, full-width) ── */
+    .phase-container { max-width:820px; margin:0 auto; padding:30px 20px; }
+    .phase-section { display:none; }
+    .phase-section.active { display:block; animation: fadeSlideIn .4s ease; }
+    @keyframes fadeSlideIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── Phase Header ── */
+    .phase-header {
+      text-align:center; margin-bottom:28px; padding-bottom:20px;
+      border-bottom:2px solid var(--border-gold);
+    }
+    .phase-header .bismillah { font-family:'Amiri',serif; font-size:32px; color:var(--gold); display:block; line-height:1.6; }
+    .phase-header h2 { font-family:'Amiri',serif; font-size:22px; color:var(--green-deep); margin-top:4px; }
+    .phase-header .phase-badge {
+      display:inline-block; margin-top:8px; padding:4px 16px; border-radius:20px; font-size:11px; font-weight:600;
+      text-transform:uppercase; letter-spacing:1px;
+      background:linear-gradient(135deg,var(--green-deep),var(--green-mid)); color:white;
+    }
+    .phase-header .phase-instructions {
+      margin-top:12px; font-size:13px; color:var(--text-muted); line-height:1.6; max-width:600px; margin-left:auto; margin-right:auto;
+    }
+
+    /* ── Verse Context Banner (Phase 2/3) ── */
+    .verse-context-banner {
+      background:linear-gradient(135deg, var(--navy), var(--navy-mid));
+      color:white; border-radius:14px; padding:18px 24px; margin-bottom:24px; text-align:center;
+      border:1px solid rgba(200,144,46,.3);
+    }
+    .verse-context-banner .verse-ref { font-family:'Amiri',serif; font-size:18px; color:var(--gold-light); }
+    .verse-context-banner .verse-arabic { font-family:'Amiri',serif; font-size:20px; direction:rtl; margin:8px 0; line-height:1.8; opacity:.9; }
+    .verse-context-banner .verse-english { font-size:13px; opacity:.7; font-style:italic; }
+
+    /* ── Form Card ── */
+    .form-card {
+      background:linear-gradient(180deg, white 0%, var(--gold-pale) 100%);
+      border:1.5px solid var(--border-gold); border-radius:16px; padding:28px; position:relative; overflow:hidden;
+    }
+    .form-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg, var(--green-deep), var(--gold), var(--green-deep)); }
+    .form-group { margin-bottom:18px; }
+    .form-group label { display:block; font-size:13px; font-weight:500; margin-bottom:6px; color:var(--text-secondary); }
+    .form-group input, .form-group textarea, .form-group select {
+      width:100%; padding:11px 14px; border:1.5px solid var(--border-light); border-radius:10px;
+      font-size:14px; font-family:'Inter',sans-serif; transition:all .2s; background:white;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+      outline:none; border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-glow);
+    }
+    .form-group textarea { min-height:120px; resize:vertical; }
+    .form-group input.auto-filled, .form-group textarea.auto-filled { border-color:var(--green-soft); background:var(--green-pale); }
+
+    /* ── Wizard Steps ── */
+    .wizard-step { margin-bottom:20px; padding:16px; border-radius:12px; background:rgba(255,255,255,.7); border:1px solid var(--border-light); transition:all .3s; }
+    .wizard-step.step-complete { border-color:var(--green-soft); background:linear-gradient(135deg,rgba(232,245,233,.5),rgba(255,255,255,.7)); }
+    .step-indicator { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .step-number-badge {
+      display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50%;
+      background:linear-gradient(135deg,var(--gold),var(--gold-light)); color:white; font-weight:700; font-size:13px;
+      flex-shrink:0; box-shadow:0 2px 6px rgba(200,144,46,.3);
+    }
+    .step-complete .step-number-badge { background:linear-gradient(135deg,var(--green-mid),var(--green-soft)); box-shadow:0 2px 6px rgba(46,125,50,.3); }
+    .step-label-text { font-weight:600; font-size:14px; color:var(--text-primary); }
+    .step-auto-badge, .step-required-badge {
+      font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.5px; padding:2px 8px; border-radius:10px;
+    }
+    .step-auto-badge { background:var(--gold-pale); color:var(--gold); border:1px solid var(--border-gold); }
+    .step-required-badge { background:#FFF3E0; color:#E65100; border:1px solid #FFB74D; }
+    .step-fetch-status { font-size:11px; color:var(--text-muted); margin-left:auto; }
+    .step-status-icon::after { content:''; }
+    .step-complete .step-status-icon::after { content:'\2714'; color:var(--green-mid); font-weight:bold; font-size:16px; }
+
+    /* ── Buttons ── */
+    .btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; border:none; border-radius:10px; font-size:14px; font-weight:500; cursor:pointer; transition:all .2s; font-family:'Inter',sans-serif; }
+    .btn-primary { background:linear-gradient(135deg,var(--gold),var(--gold-light)); color:white; box-shadow:0 2px 8px rgba(200,144,46,.3); }
+    .btn-primary:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(200,144,46,.4); }
+    .btn-secondary { background:var(--cream-dark); color:var(--text-secondary); }
+    .btn-secondary:hover { background:#EDE5D8; }
+    .btn-outline { background:transparent; border:1.5px solid var(--border-light); color:var(--text-muted); }
+    .btn-outline:hover { border-color:var(--gold); color:var(--gold); }
+    .btn-sm { padding:7px 14px; font-size:13px; }
+    .btn-group { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+    .btn-islamic-lg {
+      padding:14px 32px !important; font-size:15px !important; font-weight:600 !important;
+      background:linear-gradient(135deg,var(--green-deep),var(--green-mid)) !important;
+      box-shadow:0 4px 12px rgba(27,94,32,.25) !important; letter-spacing:.3px;
+      justify-content:center; text-align:center;
+    }
+    .btn-islamic-lg:hover { box-shadow:0 6px 20px rgba(27,94,32,.35) !important; }
+    .wizard-action { display:flex; gap:10px; margin-top:24px; padding-top:20px; border-top:2px solid var(--border-gold); justify-content:center; }
+
+    /* Analysis source tabs */
+    .analysis-tabs { display:flex; gap:4px; margin-bottom:12px; background:rgba(0,0,0,.04); border-radius:10px; padding:3px; }
+    .analysis-tab {
+      flex:1; padding:8px 16px; border:none; border-radius:8px; cursor:pointer;
+      font-size:13px; font-weight:500; font-family:'Inter',sans-serif; color:var(--text-muted);
+      background:transparent; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:6px;
+    }
+    .analysis-tab:hover { color:var(--text-secondary); }
+    .analysis-tab.active {
+      background:white; color:var(--green-deep); box-shadow:0 1px 4px rgba(0,0,0,.08);
+      font-weight:600;
+    }
+    .analysis-tab-icon { display:flex; align-items:center; }
+    .analysis-panel { display:none; }
+    .analysis-panel.active { display:block; }
+    .tafsir-status { margin-bottom:8px; min-height:20px; }
+    .btn { justify-content:center; text-align:center; }
+    .btn-group { justify-content:center; }
+
+    /* ── Transition / Loading Screens ── */
+    .transition-screen {
+      display:none; text-align:center; padding:80px 20px; min-height:400px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+    }
+    .transition-screen.active { display:flex; animation: fadeSlideIn .4s ease; }
+    .transition-spinner {
+      width:64px; height:64px; border:4px solid var(--border-gold); border-top-color:var(--gold);
+      border-radius:50%; animation:spin 1s linear infinite; margin-bottom:24px;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .transition-screen h3 { font-family:'Amiri',serif; font-size:22px; color:var(--green-deep); margin-bottom:8px; }
+    .transition-screen p { font-size:14px; color:var(--text-muted); max-width:400px; line-height:1.6; }
+    .transition-progress { margin-top:20px; width:300px; }
+    .transition-progress .progress-bar { height:6px; background:var(--border-light); border-radius:3px; overflow:hidden; }
+    .transition-progress .progress-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--gold),var(--green-mid)); border-radius:3px; transition:width .5s ease; }
+    .transition-progress .progress-pct { text-align:center; font-size:11px; color:var(--text-muted); margin-top:4px; font-weight:600; }
+    .transition-steps { margin-top:16px; text-align:left; font-size:13px; color:var(--text-muted); }
+    .transition-steps .t-step { padding:6px 0; display:flex; align-items:center; gap:10px; transition:all .3s; }
+    .transition-steps .t-step::before { content:'\25CB'; font-size:14px; color:var(--border-gold); flex-shrink:0; transition:all .3s; }
+    .transition-steps .t-step.done { color:var(--green-mid); }
+    .transition-steps .t-step.done::before { content:'\2714'; color:var(--green-mid); animation:checkPop .3s ease; }
+    .transition-steps .t-step.active-step { color:var(--gold); font-weight:600; }
+    .transition-steps .t-step.active-step::before { content:''; width:14px; height:14px; border:2px solid var(--gold); border-top-color:transparent; border-radius:50%; animation:spin .6s linear infinite; }
+    @keyframes checkPop { 0%{transform:scale(0)} 60%{transform:scale(1.3)} 100%{transform:scale(1)} }
+
+    /* ── Success Screen ── */
+    .success-screen { display:none; text-align:center; padding:60px 20px; }
+    .success-screen.active { display:block; animation: fadeSlideIn .5s ease; }
+    .success-checkmark {
+      width:100px; height:100px; margin:0 auto 24px; border-radius:50%;
+      background:linear-gradient(135deg,var(--green-mid),var(--green-soft));
+      display:flex; align-items:center; justify-content:center;
+      animation: successPop .6s ease;
+      box-shadow: 0 8px 30px rgba(46,125,50,.3);
+    }
+    .success-checkmark span { font-size:48px; color:white; }
+    @keyframes successPop { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
+    .success-screen h3 { font-family:'Amiri',serif; font-size:24px; color:var(--green-deep); margin-bottom:8px; }
+    .success-screen p { font-size:14px; color:var(--text-muted); margin-bottom:24px; }
+
+    /* ── Steps Editor ── */
+    .steps-editor { margin-top:12px; }
+    .step-row { display:grid; grid-template-columns:30px 1fr 1fr auto; gap:8px; align-items:center; margin-bottom:8px; padding:8px; background:var(--cream); border-radius:8px; border:1px solid var(--border-light); }
+    .step-row .step-num { font-family:'Amiri',serif; font-weight:700; font-size:16px; color:var(--gold); text-align:center; }
+    .step-row input { padding:8px 10px; font-size:13px; }
+    .btn-remove-step { background:none; border:none; color:#ccc; cursor:pointer; font-size:18px; padding:4px 8px; border-radius:6px; }
+    .btn-remove-step:hover { color:#E8623A; background:#FEF0EC; }
+
+    /* ── Theme/Framing cards ── */
+    #theme-approval-section, #framing-approval-section {
+      background:white; border-radius:16px; padding:28px; box-shadow:0 2px 12px rgba(0,0,0,.04); margin-top:20px;
+    }
+    #theme-approval-section h2, #framing-approval-section h2 { font-size:16px; font-weight:600; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid #eee; }
+    .theme-card, .framing-card { border:2px solid var(--border-light); border-radius:12px; padding:16px; margin-bottom:12px; cursor:pointer; transition:all .2s; display:flex; align-items:flex-start; gap:12px; }
+    .theme-card:hover, .framing-card:hover { border-color:var(--gold); }
+    .theme-card.selected, .framing-card.selected { border-color:var(--gold); background:var(--gold-pale); }
+    .theme-card input[type="checkbox"], .framing-card input[type="radio"] { margin-top:3px; width:18px; height:18px; accent-color:var(--gold); }
+    .theme-card-body, .framing-card-body { flex:1; }
+    .theme-card-title, .framing-card-title { font-weight:600; font-size:15px; color:var(--text-primary); margin-bottom:4px; }
+    .theme-card-essence, .framing-card-essence { font-size:13px; color:#666; margin-bottom:6px; }
+    .theme-card-meta, .framing-card-meta { display:flex; gap:8px; align-items:center; margin-top:6px; }
+    .confidence-badge { display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; }
+    .confidence-high { background:#D4EDDA; color:#155724; }
+    .confidence-medium { background:#FFF3CD; color:#856404; }
+    .theme-structure-tag { font-size:11px; color:#888; background:var(--cream-dark); padding:2px 8px; border-radius:12px; }
+    .framing-card-tension { font-size:12px; color:#856404; background:#FFF8E7; padding:6px 10px; border-radius:8px; margin-bottom:6px; line-height:1.4; }
+    .framing-card-visual-dir { font-size:12px; color:#155724; background:#D4EDDA; padding:6px 10px; border-radius:8px; margin-bottom:6px; line-height:1.4; }
+
+    /* ── Refinement Panel ── */
+    .refine-panel {
+      background:linear-gradient(135deg,#FFFDF5,#FFF8E7); border:2px solid var(--border-gold);
+      border-radius:14px; padding:20px; margin-top:20px;
+    }
+    .refine-chip { display:inline-flex; align-items:center; gap:4px; padding:5px 12px; border:1.5px solid var(--border-gold); border-radius:20px; background:var(--gold-pale); color:#6B5518; font-size:11px; font-weight:500; cursor:pointer; transition:all .15s; white-space:nowrap; }
+    .refine-chip:hover { background:#FFF3D0; border-color:var(--gold); transform:translateY(-1px); }
+
+    /* ── Netflix-Style Gallery ── */
+    .gallery-browse { background:var(--navy); min-height:calc(100vh - 120px); }
+    .gallery-hero-banner {
+      position:relative; height:180px; background:linear-gradient(135deg,var(--navy) 0%,var(--green-deep) 50%,var(--navy-mid) 100%);
+      display:flex; align-items:flex-end; padding:0 48px 24px; overflow:hidden;
+    }
+    .gallery-hero-banner::before {
+      content:''; position:absolute; inset:0;
+      background:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M40 0l40 40-40 40L0 40z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events:none;
+    }
+    .gallery-hero-overlay { position:absolute; bottom:0; left:0; right:0; height:80px; background:linear-gradient(transparent,var(--navy)); }
+    .gallery-hero-content { position:relative; z-index:1; }
+    .gallery-hero-content h2 { font-family:'Amiri',serif; font-size:28px; color:white; margin-bottom:4px; }
+    .gallery-hero-content p { font-size:13px; color:rgba(255,255,255,.5); }
+
+    .gallery-rows { padding:16px 0 40px; }
+
+    /* Row container */
+    .gallery-row { margin-bottom:28px; padding:0 48px; }
+    .gallery-row-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .gallery-row-title { font-family:'Amiri',serif; font-size:18px; color:rgba(255,255,255,.9); font-weight:700; }
+    .gallery-row-count { font-size:12px; color:rgba(255,255,255,.3); }
+    .gallery-row-scroll {
+      display:flex; gap:14px; overflow-x:auto; scroll-behavior:smooth; padding-bottom:8px;
+      scrollbar-width:thin; scrollbar-color:rgba(200,144,46,.3) transparent;
+    }
+    .gallery-row-scroll::-webkit-scrollbar { height:6px; }
+    .gallery-row-scroll::-webkit-scrollbar-track { background:transparent; }
+    .gallery-row-scroll::-webkit-scrollbar-thumb { background:rgba(200,144,46,.3); border-radius:3px; }
+
+    /* Gallery Card — unified size for ALL thumbnails */
+    .g-thumb, .g-card-thumb {
+      flex:0 0 220px; height:280px; border-radius:12px; cursor:pointer;
+      position:relative; overflow:hidden; transition:all .25s ease; border:2px solid transparent;
+      background:var(--navy-light);
+    }
+    .g-thumb:hover, .g-card-thumb:hover {
+      transform:scale(1.06); z-index:2; border-color:var(--gold);
+      box-shadow:0 8px 30px rgba(200,144,46,.25), 0 0 0 1px rgba(200,144,46,.15);
+    }
+    .g-thumb-bg {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg,var(--navy-light),var(--navy-mid));
+    }
+    .g-thumb-bg svg { width:72px; height:72px; opacity:.7; }
+    .g-thumb-bg img { width:100%; height:100%; object-fit:cover; }
+    .g-thumb-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to bottom, rgba(0,0,0,.15) 0%, transparent 30%, transparent 50%, rgba(0,0,0,.5) 70%, rgba(0,0,0,.85) 100%);
+      display:flex; flex-direction:column; justify-content:flex-end; padding:14px 16px;
+    }
+    .g-thumb-title {
+      font-family:'Inter',sans-serif; font-weight:700; font-size:15px; color:white;
+      line-height:1.25; text-shadow:0 2px 6px rgba(0,0,0,.8);
+    }
+    .g-thumb-sub {
+      font-family:'Amiri',serif; font-size:14px; color:var(--gold-light);
+      margin-top:2px; text-shadow:0 1px 4px rgba(0,0,0,.7);
+    }
+    .g-thumb-badge {
+      position:absolute; top:10px; right:10px; background:var(--gold); color:white; font-size:10px;
+      font-weight:700; padding:3px 8px; border-radius:8px; min-width:22px; text-align:center;
+      box-shadow:0 2px 8px rgba(0,0,0,.4);
+    }
+    .g-thumb-chapter {
+      position:absolute; top:10px; left:12px; font-size:11px; font-weight:600;
+      color:rgba(255,255,255,.7); text-shadow:0 1px 4px rgba(0,0,0,.6);
+    }
+    .g-card-thumb img { width:100%; height:100%; object-fit:cover; }
+    .g-card-thumb .g-thumb-overlay { background:linear-gradient(transparent 40%,rgba(0,0,0,.8) 100%); }
+    .g-card-thumb .g-card-ver {
+      position:absolute; top:8px; left:8px; font-size:10px; color:var(--green-soft);
+      background:rgba(0,0,0,.6); padding:2px 8px; border-radius:8px;
+    }
+    .g-card-verse-ref {
+      position:absolute; top:10px; left:12px; z-index:2;
+      display:flex; align-items:center; gap:6px;
+      background:rgba(0,0,0,.55); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+      padding:4px 10px; border-radius:8px; border:1px solid rgba(200,144,46,.25);
+    }
+    .g-card-verse-ref .ref-surah {
+      font-size:11px; font-weight:600; color:var(--gold-light);
+      text-shadow:0 1px 2px rgba(0,0,0,.5);
+    }
+    .g-card-verse-ref .ref-verse {
+      font-size:11px; font-weight:700; color:white;
+      text-shadow:0 1px 2px rgba(0,0,0,.5);
+    }
+    /* Generate button on hover for cover-less thumbs */
+    .g-thumb-gen-btn {
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); opacity:0;
+      background:rgba(200,144,46,.9); color:white; border:none; padding:6px 14px;
+      border-radius:8px; font-size:11px; font-weight:600; cursor:pointer; transition:opacity .2s;
+      z-index:3; white-space:nowrap;
+    }
+    .g-thumb:hover .g-thumb-gen-btn { opacity:1; }
+
+    /* Detail view with full-page cover background */
+    .gallery-detail {
+      background:var(--navy); min-height:calc(100vh - 120px); padding:20px 48px 40px;
+      position:relative; overflow:hidden;
+    }
+    .gallery-detail-bg {
+      position:absolute; top:0; left:0; right:0; bottom:0;
+      z-index:0; pointer-events:none; overflow:hidden;
+    }
+    .gallery-detail-bg img {
+      position:absolute; top:0; left:50%; transform:translateX(-50%);
+      height:100%; width:auto; min-width:100%;
+      object-fit:cover; object-position:center center;
+    }
+    .gallery-detail-bg::after {
+      content:''; position:absolute; inset:0; z-index:1;
+      background:linear-gradient(
+        to bottom,
+        rgba(26,37,48,.1) 0%,
+        rgba(26,37,48,.35) 30%,
+        rgba(26,37,48,.65) 55%,
+        rgba(26,37,48,.88) 75%,
+        var(--navy) 100%
+      );
+    }
+    .gallery-detail > *:not(.gallery-detail-bg) { position:relative; z-index:1; }
+    .gallery-detail-header { margin-bottom:24px; }
+    .gallery-detail-banner {
+      display:flex; align-items:stretch; gap:0; overflow:hidden;
+      background:rgba(26,37,48,.55); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      border-radius:16px; border:1px solid rgba(200,144,46,.2); margin-top:8px;
+    }
+    .detail-cover-thumb {
+      flex:0 0 140px; background-size:cover; background-position:center;
+      border-radius:16px 0 0 16px; min-height:160px;
+    }
+    .detail-cover-thumb img { width:100%; height:100%; object-fit:cover; border-radius:16px 0 0 16px; display:block; }
+    .detail-banner-info { flex:1; padding:18px 24px; display:flex; flex-direction:column; justify-content:center; }
+    .detail-banner-top { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+    .detail-chapter-label { font-size:12px; color:rgba(255,255,255,.5); font-weight:600; text-transform:uppercase; letter-spacing:1px; }
+    .detail-rev-badge {
+      font-size:10px; font-weight:700; padding:2px 10px; border-radius:10px; text-transform:uppercase; letter-spacing:.5px;
+    }
+    .detail-rev-badge.meccan { background:rgba(200,144,46,.2); color:var(--gold-light); border:1px solid rgba(200,144,46,.3); }
+    .detail-rev-badge.medinan { background:rgba(46,125,50,.2); color:var(--green-soft); border:1px solid rgba(46,125,50,.3); }
+    .detail-banner-info h3 { font-family:'Inter',sans-serif; font-size:22px; font-weight:700; color:white; text-shadow:0 2px 8px rgba(0,0,0,.4); margin-bottom:2px; }
+    .detail-arabic-name { font-family:'Amiri',serif; font-size:20px; color:var(--gold-light); margin-bottom:6px; }
+    .detail-meaning { font-size:13px; color:rgba(255,255,255,.7); font-style:italic; margin-bottom:8px; }
+    .detail-theme { font-size:12px; color:rgba(255,255,255,.5); line-height:1.5; margin-bottom:10px; }
+    .detail-stats {
+      display:flex; gap:16px; flex-wrap:wrap;
+    }
+    .detail-stat {
+      display:flex; flex-direction:column; align-items:center; padding:6px 14px;
+      background:rgba(255,255,255,.06); border-radius:10px; border:1px solid rgba(255,255,255,.08);
+    }
+    .detail-stat-value { font-size:18px; font-weight:700; color:white; }
+    .detail-stat-label { font-size:10px; color:rgba(255,255,255,.4); text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
+    .gallery-detail-grid {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px;
+    }
+    .gallery-detail-grid .g-thumb,
+    .gallery-detail-grid .g-card-thumb { flex:none; width:100%; height:280px; }
+
+    .empty-state { text-align:center; padding:80px 20px; color:rgba(255,255,255,.4); }
+    .empty-state .icon { font-size:48px; margin-bottom:16px; }
+    .empty-state h3 { font-size:18px; font-weight:500; color:rgba(255,255,255,.5); margin-bottom:8px; }
+    .gallery-detail .nav-back-btn { color:var(--gold-light); position:relative; z-index:2; }
+    .gallery-detail .nav-back-btn:hover { background:rgba(200,144,46,.15); }
+
+    /* Delete mode toolbar */
+    .detail-toolbar { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+    .detail-toolbar .delete-count { font-size:13px; color:rgba(255,255,255,.6); }
+
+    /* Card checkbox overlay */
+    .g-card-check {
+      position:absolute; top:10px; left:10px; z-index:3; width:22px; height:22px;
+      border-radius:6px; border:2px solid rgba(255,255,255,.4); background:rgba(0,0,0,.3);
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      transition:all .2s; backdrop-filter:blur(2px);
+    }
+    .g-card-check:hover { border-color:var(--gold); background:rgba(200,144,46,.2); }
+    .g-card-check.checked { border-color:var(--gold); background:var(--gold); }
+    .g-card-check.checked::after { content:'\2714'; color:white; font-size:13px; font-weight:bold; }
+
+    /* View All link */
+    .gallery-row-viewall {
+      font-size:12px; color:var(--gold-light); cursor:pointer; white-space:nowrap;
+      text-decoration:none; transition:color .2s; font-weight:500;
+    }
+    .gallery-row-viewall:hover { color:white; text-decoration:underline; }
+
+    /* Level 1.5 — View All grid page */
+    .gallery-viewall { background:var(--navy); min-height:calc(100vh - 120px); padding:20px 48px 40px; }
+    .gallery-viewall-header { margin-bottom:20px; }
+    .gallery-viewall-header h3 { font-family:'Amiri',serif; font-size:20px; color:white; margin-top:8px; }
+    .gallery-viewall-grid {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px;
+    }
+    .gallery-viewall-grid .g-thumb,
+    .gallery-viewall-grid .g-card-thumb { flex:none; width:100%; height:280px; }
+
+    /* ── Back text editor ── */
+    .back-text-editor textarea { min-height:200px; font-family:'Crimson Text',serif; font-size:15px; line-height:1.6; }
+
+    /* ── Analysis Insights ── */
+    #analysis-insights { margin-bottom:16px; }
+
+    /* ── Toast ── */
+    .toast { position:fixed; bottom:30px; right:30px; background:linear-gradient(135deg,var(--green-deep),var(--navy)); color:white; padding:14px 24px; border-radius:12px; font-size:14px; transform:translateY(80px); opacity:0; transition:all .3s; z-index:1000; border:1px solid rgba(200,144,46,.3); box-shadow:0 4px 20px rgba(0,0,0,.15); }
+    .toast.show { transform:translateY(0); opacity:1; }
+
+    /* ── Loading Spinner (inline) ── */
+    .loading-spinner { display:inline-block; width:20px; height:20px; border:2px solid rgba(200,144,46,.2); border-top-color:var(--gold); border-radius:50%; animation:spin .6s linear infinite; }
+
+    /* ── Prompt viewer ── */
+    #prompt-viewer { margin-top:16px; background:var(--cream); border-radius:10px; padding:16px; max-height:300px; overflow:auto; border:1px solid var(--border-light); }
+
+    /* ── Multi-card strip ── */
+    .multi-card-strip { display:flex; gap:16px; overflow-x:auto; padding-bottom:12px; }
+    .multi-card-item { min-width:280px; background:var(--cream); border-radius:12px; padding:16px; cursor:pointer; transition:all .2s; border:2px solid transparent; }
+    .multi-card-item:hover { border-color:var(--gold); }
+    .multi-card-item.active { border-color:var(--gold); background:var(--gold-pale); }
+    .multi-card-item-title { font-weight:600; font-size:14px; margin-bottom:4px; }
+    .multi-card-item-model { font-size:12px; color:#888; }
+
+    /* ── Split card preview ── */
+    #split-cards-preview img { max-height:300px; border-radius:8px; box-shadow:0 2px 12px rgba(0,0,0,.15); background:repeating-conic-gradient(#ddd 0% 25%, #fff 0% 50%) 50% / 16px 16px; }
+
+    /* ── Nav button ── */
+    .nav-back-btn { background:none; border:none; color:var(--gold); cursor:pointer; font-size:13px; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:4px; margin-bottom:12px; }
+    .nav-back-btn:hover { background:var(--gold-pale); }
+  </style>
+</head>
+<body>
+
+<header class="app-header">
+  <div style="position:relative">
+    <h1>Quran Visual Cards</h1>
+    <div class="subtitle">Mental Model Synthesis Engine</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,.2);font-size:13px" onclick="showSettingsModal()">Settings</button>
+    <button class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,.2);font-size:13px" onclick="exportAllCards()">Export All</button>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <div class="tab active" data-tab="create" onclick="switchTab('create')">Designing Quran Card</div>
+  <div class="tab" data-tab="quran-gallery" onclick="switchTab('quran-gallery')">Quran Cards <span id="quran-card-count" style="opacity:.5"></span></div>
+  <div class="tab" data-tab="deen-gallery" onclick="switchTab('deen-gallery')">Deen Cards <span id="deen-card-count" style="opacity:.5"></span></div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--           CREATE TAB                   -->
+<!-- ══════════════════════════════════════ -->
+<div class="tab-content active" id="tab-create">
+  <input type="hidden" id="api-key-input" value="">
+  <input type="hidden" id="google-key-input" value="">
+
+  <!-- ──── PHASE 1: Input ──── -->
+  <div class="phase-section active" id="phase-1">
+    <div class="phase-container">
+      <div class="phase-header">
+        <span class="bismillah">&#xFDFD;</span>
+        <h2>Quran Card Designer</h2>
+        <div class="phase-badge">Step 1 — Select Verse &amp; Analyze</div>
+        <p class="phase-instructions">Select a Quran verse, review the auto-filled text, add your analysis, then let the engine identify the best mental model and visual structure for your card.</p>
+      </div>
+
+      <div class="form-card">
+        <!-- Step 1 -->
+        <div class="wizard-step" id="step-1">
+          <div class="step-indicator">
+            <span class="step-number-badge">1</span>
+            <span class="step-label-text">Select Quran Verse</span>
+            <span class="step-status-icon"></span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-end">
+            <div class="form-group" style="flex:1;margin-bottom:0">
+              <label>Surah</label>
+              <select id="inp-surah"><option value="">— Select Surah —</option></select>
+            </div>
+            <div class="form-group" style="flex:0 0 150px;margin-bottom:0">
+              <label>Verse #</label>
+              <select id="inp-verse"><option value="">—</option></select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="wizard-step" id="step-2">
+          <div class="step-indicator">
+            <span class="step-number-badge">2</span>
+            <span class="step-label-text">Verse Text</span>
+            <span class="step-auto-badge">Auto-filled</span>
+            <span id="verse-fetch-status" class="step-fetch-status"></span>
+          </div>
+          <div class="form-group" style="margin-bottom:10px">
+            <label>Arabic</label>
+            <textarea id="inp-verse-arabic" rows="2" placeholder="Auto-filled when verse selected..." style="font-family:'Amiri',serif;font-size:18px;direction:rtl;text-align:right;line-height:1.8"></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>English <span style="color:var(--text-muted);font-weight:400;font-size:11px">(Sahih International)</span></label>
+            <textarea id="inp-verse-english" rows="2" placeholder="Auto-filled when verse selected..."></textarea>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="wizard-step" id="step-3">
+          <div class="step-indicator">
+            <span class="step-number-badge">3</span>
+            <span class="step-label-text">Card Title</span>
+            <span class="step-auto-badge">Auto-filled</span>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <input type="text" id="inp-title" placeholder="Auto-filled: surah:verse + concise title — or type your own">
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="wizard-step" id="step-4">
+          <div class="step-indicator">
+            <span class="step-number-badge">4</span>
+            <span class="step-label-text">Category / Context</span>
+            <span class="step-auto-badge">Auto-derived</span>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <input type="text" id="inp-category" placeholder="Auto-derived from analysis — or type your own">
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="wizard-step" id="step-5">
+          <div class="step-indicator">
+            <span class="step-number-badge">5</span>
+            <span class="step-label-text">Analysis Source</span>
+            <span class="step-required-badge">Required</span>
+          </div>
+
+          <!-- Tab switcher -->
+          <div class="analysis-tabs">
+            <button class="analysis-tab active" id="tab-ibn-kathir" onclick="switchAnalysisTab('ibn-kathir')">
+              <span class="analysis-tab-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg></span>
+              Ibn Kathir Tafsir
+            </button>
+            <button class="analysis-tab" id="tab-custom" onclick="switchAnalysisTab('custom')">
+              <span class="analysis-tab-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
+              Custom Input
+            </button>
+          </div>
+
+          <!-- Ibn Kathir panel -->
+          <div id="panel-ibn-kathir" class="analysis-panel active">
+            <div class="tafsir-status" id="tafsir-status">
+              <span style="color:var(--text-muted);font-size:12px">Select a Surah &amp; verse above to auto-load Ibn Kathir's tafsir</span>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <textarea id="inp-analysis-tafsir" rows="8" readonly placeholder="Ibn Kathir's tafsir will auto-load here when you select a verse above..." style="background:var(--cream);cursor:default"></textarea>
+            </div>
+          </div>
+
+          <!-- Custom input panel -->
+          <div id="panel-custom" class="analysis-panel">
+            <div class="form-group" style="margin-bottom:0">
+              <textarea id="inp-analysis-custom" rows="8" placeholder="Write your detailed analysis of this verse/topic (3-5 paragraphs). The engine will identify mental model patterns, select the best visualization, and generate the card..."></textarea>
+            </div>
+          </div>
+
+          <!-- Hidden actual input that gets submitted -->
+          <textarea id="inp-analysis" style="display:none"></textarea>
+        </div>
+
+        <div class="wizard-action">
+          <button class="btn btn-primary btn-islamic-lg" onclick="analyzeInput()">
+            <span id="analyze-spinner" style="display:none"><span class="loading-spinner"></span></span>
+            Analyze &amp; Build Card
+          </button>
+          <button class="btn btn-secondary" onclick="clearForm()">Clear All</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── ANALYSIS TRANSITION ──── -->
+  <div class="phase-section" id="phase-analysis-loading">
+    <div class="phase-container">
+      <div class="transition-screen active">
+        <div class="transition-spinner"></div>
+        <h3>Analyzing Your Verse</h3>
+        <p id="analysis-loading-verse-ref" style="font-family:'Amiri',serif;font-size:16px;color:var(--gold);margin-bottom:4px"></p>
+        <p>The engine is reading your analysis, identifying cognitive patterns, matching mental models, and structuring the card data...</p>
+        <div class="transition-progress" id="analysis-progress">
+          <div class="progress-bar"><div class="progress-fill" id="analysis-progress-fill"></div></div>
+          <div class="progress-pct" id="analysis-progress-pct">0%</div>
+        </div>
+        <div class="transition-steps" id="analysis-transition-steps">
+          <div class="t-step" data-step="0">Parsing analysis text &amp; extracting structure</div>
+          <div class="t-step" data-step="1">Matching to 103 mental models</div>
+          <div class="t-step" data-step="2">Selecting optimal visual type</div>
+          <div class="t-step" data-step="3">Generating card data &amp; back text</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── PHASE 2: Card Data Editor ──── -->
+  <div class="phase-section" id="phase-2">
+    <div class="phase-container">
+      <button class="nav-back-btn" onclick="goToPhase('phase-1')">&#8592; Back to Input</button>
+
+      <div class="phase-header">
+        <h2>Card Data Editor</h2>
+        <div class="phase-badge">Step 2 — Review &amp; Customize</div>
+        <p class="phase-instructions">The analysis engine matched your content to a mental model. Review the generated card structure, edit steps, adjust the model type, and customize before generating the visual card.</p>
+      </div>
+
+      <!-- Verse context banner -->
+      <div class="verse-context-banner" id="phase2-verse-banner" style="display:none">
+        <div class="verse-ref" id="p2-verse-ref"></div>
+        <div class="verse-arabic" id="p2-verse-arabic"></div>
+        <div class="verse-english" id="p2-verse-english"></div>
+      </div>
+
+      <div class="form-card" id="card-data-section">
+        <!-- Analysis Insights (collapsible) -->
+        <div id="analysis-insights" style="display:none;margin-bottom:16px">
+          <div onclick="toggleInsights()" style="cursor:pointer;display:flex;align-items:center;gap:6px;padding:8px 0">
+            <span id="insights-chevron" style="font-size:11px;transition:transform .2s;transform:rotate(0deg)">&#9654;</span>
+            <span style="font-size:13px;font-weight:600;color:#888">Analysis Insights</span>
+            <span id="insights-conflict-badge" style="display:none;font-size:10px;padding:2px 8px;border-radius:10px;background:#FFEEBA;color:#856404;font-weight:600">INTENT OVERRIDE</span>
+          </div>
+          <div id="insights-body" style="display:none;background:var(--cream);border-radius:10px;padding:16px;font-size:13px;line-height:1.7;border:1px solid var(--border-light)">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 24px">
+              <div><span style="color:#999;font-size:11px;text-transform:uppercase;letter-spacing:.5px">Visual Type</span><br><strong id="ins-visual-type" style="color:var(--text-primary)"></strong> <span id="ins-visual-secondary" style="color:#999;font-size:12px"></span></div>
+              <div><span style="color:#999;font-size:11px;text-transform:uppercase;letter-spacing:.5px">Matched Model</span><br><strong id="ins-model-name" style="color:var(--text-primary)"></strong> <span id="ins-model-confidence" style="color:#999;font-size:12px"></span></div>
+              <div><span style="color:#999;font-size:11px;text-transform:uppercase;letter-spacing:.5px">Cognitive Structure</span><br><span id="ins-structure" style="color:#555"></span></div>
+              <div><span style="color:#999;font-size:11px;text-transform:uppercase;letter-spacing:.5px">Rhetorical Intent</span><br><span id="ins-intent" style="color:#555"></span></div>
+              <div style="grid-column:1/-1"><span style="color:#999;font-size:11px;text-transform:uppercase;letter-spacing:.5px">Key Tension</span><br><span id="ins-tension" style="color:#555;font-style:italic"></span></div>
+              <div style="grid-column:1/-1"><span style="color:#999;font-size:11px;text-transform:uppercase;letter-spacing:.5px">Essence</span><br><span id="ins-essence" style="color:#555"></span></div>
+              <div id="ins-override-row" style="grid-column:1/-1;display:none;background:#FFF8E7;border-radius:8px;padding:10px"><span style="color:#856404;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:600">Intent Override</span><br><span id="ins-override" style="color:#856404"></span></div>
+              <div style="grid-column:1/-1"><span style="color:#999;font-size:11px;text-transform:uppercase;letter-spacing:.5px">Matching Reasoning</span><br><span id="ins-reasoning" style="color:#555"></span></div>
+              <div id="ins-model-visual-container" style="grid-column:1/-1;display:none;text-align:center;padding:12px;background:#fff;border-radius:8px;border:1px solid #eee">
+                <span style="color:#999;font-size:11px;text-transform:uppercase;letter-spacing:.5px">Model Essence Visual</span>
+                <div id="ins-model-visual-desc" style="font-size:12px;color:#666;margin:6px 0;font-style:italic"></div>
+                <div id="ins-model-visual-img" style="margin-top:8px"></div>
+                <button id="btn-gen-model-thumb" onclick="generateModelThumbnail()" style="margin-top:8px;padding:4px 12px;font-size:11px;border:1px solid var(--gold);color:var(--gold);background:white;border-radius:6px;cursor:pointer">Generate Visual</button>
+              </div>
+            </div>
+            <div style="margin-top:10px;text-align:right"><span id="ins-pipeline" style="font-size:10px;color:#aaa;background:#EDEDED;padding:2px 8px;border-radius:8px"></span></div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="form-group">
+            <label>Mental Model Type</label>
+            <select id="sel-model-type">
+              <option value="sequential_chain">Sequential Chain</option>
+              <option value="tripod">Tripod / Balance</option>
+              <option value="loop_cycle">Loop / Cycle</option>
+              <option value="fail_constraint">Fail / Constraint</option>
+              <option value="strategic_interlock">Strategic Interlock</option>
+              <option value="mutual_gain">Mutual Gain / Venn</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Theme</label>
+            <select id="sel-theme">
+              <option value="warm_parchment">Warm Parchment (Quranic)</option>
+              <option value="cool_mint">Cool Mint (General)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Quote (bottom of front card)</label>
+          <input type="text" id="inp-quote" placeholder="A pithy one-liner insight...">
+        </div>
+
+        <div class="form-group">
+          <label>Steps / Key Concepts</label>
+          <div class="steps-editor" id="steps-editor"></div>
+          <button class="btn btn-sm btn-outline" onclick="addStep()" style="margin-top:8px">+ Add Step</button>
+        </div>
+
+        <div class="form-group back-text-editor">
+          <label>Back Card Text (use **bold** for emphasis)</label>
+          <textarea id="inp-back-text" placeholder="Paragraph 1: State the common fallacy...&#10;&#10;Paragraph 2: How the model corrects this...&#10;&#10;Paragraph 3: Core takeaway..."></textarea>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary btn-islamic-lg" onclick="generateCardImage('spread')" id="btn-gen-image">
+            <span id="img-spinner" style="display:none"><span class="loading-spinner"></span></span>
+            Generate Visual Card
+          </button>
+          <button class="btn btn-secondary" onclick="generateCardImage('front')">Front Only</button>
+          <button class="btn btn-secondary" onclick="generateCardImage('back')">Back Only</button>
+          <button class="btn btn-outline" onclick="showPrompt()">View Prompt</button>
+        </div>
+        <div class="btn-group" style="margin-top:8px">
+          <button class="btn btn-primary" style="background:linear-gradient(135deg,var(--navy),var(--navy-light))" onclick="saveCard()">Save Card</button>
+        </div>
+
+        <div id="prompt-viewer" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <label style="font-size:13px;font-weight:600;color:#555">Image Generation Prompt</label>
+            <button class="btn btn-sm btn-outline" onclick="copyPrompt()">Copy</button>
+          </div>
+          <pre id="prompt-text" style="white-space:pre-wrap;font-size:12px;line-height:1.5;color:#666;font-family:'Inter',sans-serif"></pre>
+        </div>
+      </div>
+
+      <!-- Theme/Framing Approval Sections -->
+      <div id="theme-approval-section" style="display:none">
+        <h2>Multiple Themes Detected</h2>
+        <p style="font-size:13px;color:#666;margin-bottom:16px">This content contains multiple distinct themes. Select which ones to generate cards for:</p>
+        <div id="theme-cards-container"></div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="btn-generate-themes" onclick="generateApprovedThemes()"><span id="theme-spinner" style="display:none"><span class="loading-spinner"></span></span>Generate Cards</button>
+          <button class="btn btn-secondary" onclick="dismissThemeApproval()">Cancel</button>
+        </div>
+      </div>
+      <div id="framing-approval-section" style="display:none">
+        <h2>Choose Your Angle</h2>
+        <p style="font-size:13px;color:#666;margin-bottom:16px">This content can be analyzed through different lenses. Pick one:</p>
+        <div id="framing-cards-container"></div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="btn-generate-framing" onclick="generateChosenFraming()"><span id="framing-spinner" style="display:none"><span class="loading-spinner"></span></span>Generate Card</button>
+          <button class="btn btn-secondary" onclick="dismissFramingApproval()">Cancel</button>
+        </div>
+      </div>
+      <div id="multi-card-results" style="display:none;margin-top:20px">
+        <div class="form-card"><h2 style="font-size:16px;font-weight:600;margin-bottom:12px">Generated Cards</h2><div class="multi-card-strip" id="multi-card-strip"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── IMAGE GENERATION TRANSITION ──── -->
+  <div class="phase-section" id="phase-image-loading">
+    <div class="phase-container">
+      <div class="transition-screen active">
+        <div class="transition-spinner"></div>
+        <h3>Creating Your Visual Card</h3>
+        <p id="image-loading-verse-ref" style="font-family:'Amiri',serif;font-size:16px;color:var(--gold);margin-bottom:4px"></p>
+        <p>Generating a hand-drawn sketchnote-style card with your hero character, mental model visualization, and Islamic design elements...</p>
+        <div class="transition-progress" id="image-progress">
+          <div class="progress-bar"><div class="progress-fill" id="image-progress-fill"></div></div>
+          <div class="progress-pct" id="image-progress-pct">0%</div>
+        </div>
+        <div class="transition-steps" id="image-transition-steps">
+          <div class="t-step" data-step="0">Building image prompt with hero &amp; model data</div>
+          <div class="t-step" data-step="1">Sending to AI image generator</div>
+          <div class="t-step" data-step="2">Rendering card spread (front + back)</div>
+          <div class="t-step" data-step="3">Saving to gallery</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── PHASE 3: Generated Card + Refinement ──── -->
+  <div class="phase-section" id="phase-3">
+    <div class="phase-container" style="max-width:900px">
+      <button class="nav-back-btn" onclick="goToPhase('phase-2')">&#8592; Back to Card Data</button>
+
+      <div class="phase-header">
+        <h2>Your Generated Card</h2>
+        <div class="phase-badge">Step 3 — Review &amp; Refine</div>
+        <p class="phase-instructions">Your visual card is ready. Download it, split into front/back, or use the refinement tools below to make targeted adjustments with your feedback.</p>
+      </div>
+
+      <div class="verse-context-banner" id="phase3-verse-banner" style="display:none">
+        <div class="verse-ref" id="p3-verse-ref"></div>
+        <div class="verse-arabic" id="p3-verse-arabic"></div>
+        <div class="verse-english" id="p3-verse-english"></div>
+      </div>
+
+      <!-- AI Image Display -->
+      <div id="ai-image-container" style="text-align:center">
+        <div style="font-size:14px;font-weight:600;color:var(--green-deep);margin-bottom:10px">AI-Generated Visual Card</div>
+        <img id="ai-image" src="" style="max-width:100%;border-radius:14px;box-shadow:0 6px 30px rgba(0,0,0,.12)">
+        <div style="margin-top:8px;font-size:12px;color:var(--text-muted)" id="ai-image-meta"></div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="btn-group" style="justify-content:center;margin-top:16px" id="preview-actions">
+        <button class="btn btn-sm btn-outline" onclick="exportCard('png')">Export PNG</button>
+        <button class="btn btn-sm btn-outline" onclick="downloadAiImage()">Download Spread</button>
+        <button class="btn btn-sm btn-outline" style="background:var(--green-pale);border-color:#81C784" onclick="downloadSingleCard('front')">Front Card</button>
+        <button class="btn btn-sm btn-outline" style="background:#E3F2FD;border-color:#64B5F6" onclick="downloadSingleCard('back')">Back Card</button>
+      </div>
+
+      <!-- Split card preview -->
+      <div id="split-cards-preview" style="display:none;margin-top:12px">
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <div style="text-align:center"><div style="font-size:11px;font-weight:600;color:#2E7D32;margin-bottom:4px">Front Card</div><img id="split-front-img" src=""></div>
+          <div style="text-align:center"><div style="font-size:11px;font-weight:600;color:#1565C0;margin-bottom:4px">Back Card</div><img id="split-back-img" src=""></div>
+        </div>
+        <div style="text-align:center;margin-top:6px;font-size:10px;color:#999">Checkered = transparent</div>
+      </div>
+
+      <!-- Refinement Panel -->
+      <div class="refine-panel" id="refinement-panel">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span style="font-size:20px">&#9997;&#65039;</span>
+          <span style="font-size:14px;font-weight:700;color:#8B6914">Refine This Card</span>
+          <span style="font-size:11px;color:#A08540;margin-left:auto">Human-in-the-loop refinement</span>
+        </div>
+        <p style="font-size:12px;color:#7A6930;margin:0 0 12px;line-height:1.5">Describe what to change — everything else stays the same. Examples: fix a title, change hero emotion in panel 3, adjust an icon, add verse number, tweak text...</p>
+        <div id="refine-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+          <button class="refine-chip" onclick="addRefinementChip('Change the title to: ')">&#128221; Title</button>
+          <button class="refine-chip" onclick="addRefinementChip('Change hero expression in panel X to: ')">&#128522; Hero Emotion</button>
+          <button class="refine-chip" onclick="addRefinementChip('Make the hero skin pure white (manga style), no beige/tan skin coloring')">&#127912; Skin Color Fix</button>
+          <button class="refine-chip" onclick="addRefinementChip('Add verse reference at bottom: ')">&#128214; Add Verse #</button>
+          <button class="refine-chip" onclick="addRefinementChip('Change the icon in panel X to: ')">&#128444;&#65039; Icon</button>
+          <button class="refine-chip" onclick="addRefinementChip('Change the quote to: ')">&#128172; Quote</button>
+          <button class="refine-chip" onclick="addRefinementChip('Adjust the category label to: ')">&#127991;&#65039; Category</button>
+          <button class="refine-chip" onclick="addRefinementChip('Make the drawing more hand-drawn/sketchy with visible pen strokes, less digital/polished')">&#9997;&#65039; More Sketchy</button>
+        </div>
+        <textarea id="refinement-input" placeholder="Describe your refinements here..." style="width:100%;min-height:100px;border:1.5px solid var(--border-gold);border-radius:10px;padding:12px;font-size:13px;font-family:inherit;resize:vertical;background:#FFFEF9;color:#4A3B00;box-sizing:border-box"></textarea>
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+          <button class="btn btn-primary" onclick="refineCardImage()" id="btn-refine" style="background:linear-gradient(135deg,var(--gold),#A67520);font-size:13px;padding:8px 20px">
+            <span id="refine-spinner" style="display:none"><span class="loading-spinner"></span></span>
+            Generate Refined Card
+          </button>
+          <button class="btn btn-sm btn-outline" onclick="clearRefinement()" style="font-size:12px">Clear</button>
+          <span id="refine-version" style="font-size:11px;color:#A08540;margin-left:auto"></span>
+        </div>
+        <div id="refine-history" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-gold)">
+          <div style="font-size:11px;font-weight:600;color:#8B6914;margin-bottom:6px">Refinement History</div>
+          <div id="refine-history-list" style="font-size:11px;color:#7A6930;max-height:100px;overflow:auto"></div>
+        </div>
+      </div>
+
+      <!-- Save & Complete -->
+      <div class="btn-group" style="justify-content:center;margin-top:20px">
+        <button class="btn btn-primary btn-islamic-lg" onclick="saveCardAndComplete()" style="max-width:400px">Save Card &amp; Complete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──── SUCCESS SCREEN ──── -->
+  <div class="phase-section" id="phase-success">
+    <div class="phase-container">
+      <div class="success-screen active">
+        <div class="success-checkmark"><span>&#10003;</span></div>
+        <h3>Card Created Successfully!</h3>
+        <p id="success-message">Your visual card has been generated and saved.</p>
+        <div id="success-card-preview" style="margin:20px auto;max-width:500px"></div>
+        <div class="btn-group" style="justify-content:center">
+          <button class="btn btn-primary btn-islamic-lg" onclick="goToPhase('phase-1');clearForm()" style="max-width:250px">Create Another Card</button>
+          <button class="btn btn-secondary" id="btn-go-gallery" onclick="switchTab('quran-gallery')">View in Gallery</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Disclaimer -->
+  <div style="text-align:center;padding:24px 20px 16px;max-width:600px;margin:0 auto">
+    <p style="font-size:11px;color:#B0A48C;line-height:1.6">
+      Visual cards are generated using AI. AI-generated content may contain inaccuracies.
+      Please review all text, imagery, and Islamic references carefully. Use the refinement tools in Step 3 to make corrections with your input and oversight.
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--         QURAN CARDS GALLERY            -->
+<!-- ══════════════════════════════════════ -->
+<div class="tab-content" id="tab-quran-gallery">
+  <!-- Netflix-style browse view -->
+  <div id="quran-browse-view" class="gallery-browse">
+    <div class="gallery-hero-banner">
+      <div class="gallery-hero-overlay"></div>
+      <div class="gallery-hero-content">
+        <h2>Quran Visual Cards</h2>
+        <p>Explore your collection of mental model cards organized by Surah and category</p>
+      </div>
+    </div>
+    <!-- Cover generation bar -->
+    <div id="quran-cover-gen-bar" style="display:none;padding:8px 48px">
+      <div style="display:flex;align-items:center;gap:12px;background:rgba(200,144,46,.08);border:1px solid rgba(200,144,46,.15);border-radius:10px;padding:10px 18px">
+        <span style="color:var(--gold-light);font-size:12px" id="cover-gen-status"></span>
+        <button class="btn btn-sm btn-primary" id="btn-gen-covers" onclick="generateAllCovers()" style="margin-left:auto;font-size:11px;padding:5px 14px">Generate Surah Covers</button>
+        <div id="cover-gen-progress" style="display:none;width:180px">
+          <div style="height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden"><div id="cover-gen-fill" style="height:100%;width:0%;background:var(--gold);transition:width .3s;border-radius:2px"></div></div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;text-align:center" id="cover-gen-pct"></div>
+        </div>
+      </div>
+    </div>
+    <div id="quran-rows-container" class="gallery-rows"></div>
+    <div class="empty-state" id="quran-gallery-empty" style="display:none"><div class="icon">&#128214;</div><h3>No Quran cards yet</h3><p>Cards with Surah &amp; verse references will appear here organized by Surah</p></div>
+  </div>
+
+  <!-- View All page (level 1.5 — vertical grid of a row's cards) -->
+  <div id="quran-viewall-view" class="gallery-viewall" style="display:none">
+    <div class="gallery-viewall-header">
+      <button class="nav-back-btn" onclick="showQuranBrowse()" style="color:var(--gold-light)">&#8592; Back to Gallery</button>
+      <h3 id="viewall-heading"></h3>
+    </div>
+    <div class="gallery-viewall-grid" id="viewall-grid"></div>
+  </div>
+
+  <!-- Drill-down detail view (level 2 — surah/category detail) -->
+  <div id="quran-detail-view" class="gallery-detail" style="display:none">
+    <div class="gallery-detail-bg" id="detail-bg-image"></div>
+    <div class="gallery-detail-header">
+      <button class="nav-back-btn" onclick="showQuranBrowse()">&#8592; Back to Gallery</button>
+      <div class="gallery-detail-banner" id="quran-detail-banner">
+        <div class="detail-cover-thumb" id="detail-cover-thumb"></div>
+        <div class="detail-banner-info">
+          <div class="detail-banner-top">
+            <span class="detail-chapter-label" id="detail-chapter-label"></span>
+            <span class="detail-rev-badge" id="detail-rev-badge"></span>
+          </div>
+          <h3 id="quran-detail-heading"></h3>
+          <p class="detail-arabic-name" id="detail-arabic-name"></p>
+          <p class="detail-meaning" id="detail-meaning"></p>
+          <p class="detail-theme" id="detail-theme"></p>
+          <div class="detail-stats" id="detail-stats"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Delete toolbar -->
+    <div class="detail-toolbar" id="detail-toolbar">
+      <button class="btn btn-sm btn-outline" style="color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15)" onclick="toggleSelectMode()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <span id="select-mode-label">Select</span>
+      </button>
+      <span class="delete-count" id="delete-count" style="display:none">0 selected</span>
+      <button class="btn btn-sm" id="btn-delete-selected" style="display:none;background:rgba(220,53,69,.8);color:white" onclick="deleteSelectedCards()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+        Delete
+      </button>
+    </div>
+    <div class="gallery-detail-grid" id="quran-detail-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--         DEEN CARDS GALLERY             -->
+<!-- ══════════════════════════════════════ -->
+<div class="tab-content" id="tab-deen-gallery">
+  <div id="deen-browse-view" class="gallery-browse">
+    <div class="gallery-hero-banner" style="background:linear-gradient(135deg,var(--navy-mid),var(--green-deep))">
+      <div class="gallery-hero-overlay"></div>
+      <div class="gallery-hero-content">
+        <h2>Deen Cards</h2>
+        <p>General Islamic wisdom cards without specific verse references</p>
+      </div>
+    </div>
+    <div id="deen-rows-container" class="gallery-rows"></div>
+    <div class="empty-state" id="deen-gallery-empty" style="display:none"><div class="icon">&#128332;</div><h3>No Deen cards yet</h3><p>Cards without specific Surah references will appear here</p></div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settings-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center">
+  <div style="background:var(--cream);border-radius:16px;padding:28px;max-width:480px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.3)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 style="font-family:'Amiri',serif;font-size:20px;color:var(--green-deep)">API Settings</h3>
+      <button onclick="hideSettingsModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted)">&times;</button>
+    </div>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px">API keys are stored locally on your machine and used for AI analysis and image generation.</p>
+    <div class="form-group">
+      <label>Google AI API Key (Image Generation)</label>
+      <input type="password" id="settings-google-key" placeholder="AIzaSy..." style="font-size:13px">
+    </div>
+    <div class="form-group">
+      <label>Anthropic API Key (Text Analysis)</label>
+      <input type="password" id="settings-anthropic-key" placeholder="sk-ant-..." style="font-size:13px">
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-primary" onclick="saveSettingsKeys()" style="flex:1">Save Keys</button>
+      <button class="btn btn-secondary" onclick="hideSettingsModal()">Cancel</button>
+    </div>
+    <div id="settings-status" style="margin-top:10px;font-size:12px;text-align:center"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Hidden preview container for gallery rendering -->
+<div id="preview-container" style="display:none"></div>
+
+<script>
+// ============================================
+// STATE
+// ============================================
+let currentCardData = null;
+let cardDataList = [];
+let pendingPhase1Raw = '';
+let pendingThemes = [];
+let pendingFramings = [];
+let pendingFramingPhase1Raw = '';
+let allCards = {{ cards | tojson }};
+let apiKey = localStorage.getItem('anthropic_key') || '';
+const serverHasGoogleKey = {{ has_google_key | tojson }};
+const serverHasAnthropicKey = {{ has_anthropic_key | tojson }};
+const THEMES = {{ themes | tojson }};
+const MODEL_TYPES = {{ model_types | tojson }};
+let googleKey = localStorage.getItem('google_ai_key') || '';
+
+const STEP_ICONS = {
+  'worship':'🤲','pray':'🤲','servitude':'🤲','taqwa':'💡','consciousness':'💡','aware':'👁',
+  'obey':'📜','guidance':'📜','follow':'➡️','balance':'⚖️','pillar':'🏛','foundation':'🏛',
+  'fail':'🔨','hammer':'🔨','constraint':'🔒','key':'🔑','lock':'🔒','fit':'🧩',
+  'cycle':'🔄','loop':'🔄','repeat':'🔄','win':'🎯','gain':'📈','mutual':'🤝','default':'✦'
+};
+function getStepIcon(label) { const l=label.toLowerCase(); for(const[k,v]of Object.entries(STEP_ICONS)){if(l.includes(k))return v;} return STEP_ICONS.default; }
+
+// ============================================
+// PHASE NAVIGATION
+// ============================================
+function goToPhase(phaseId) {
+  document.querySelectorAll('#tab-create .phase-section').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(phaseId);
+  if (target) { target.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+}
+
+function updateVerseBanners() {
+  const ref = document.getElementById('inp-verse').value || '';
+  const surahName = document.getElementById('inp-surah').value || '';
+  const arabic = document.getElementById('inp-verse-arabic').value || '';
+  const english = document.getElementById('inp-verse-english').value || '';
+  const hasVerse = ref && arabic;
+
+  ['phase2','phase3'].forEach(prefix => {
+    const banner = document.getElementById(prefix + '-verse-banner');
+    if (!banner) return;
+    if (hasVerse) {
+      banner.style.display = 'block';
+      document.getElementById(prefix.replace('phase','p') + '-verse-ref').textContent = (surahName ? surahName + ' ' : '') + ref;
+      document.getElementById(prefix.replace('phase','p') + '-verse-arabic').textContent = arabic;
+      document.getElementById(prefix.replace('phase','p') + '-verse-english').textContent = english;
+    } else { banner.style.display = 'none'; }
+  });
+
+  // Also update transition screens
+  const loadRef = (surahName ? surahName + ' ' : '') + ref;
+  const el1 = document.getElementById('analysis-loading-verse-ref');
+  const el2 = document.getElementById('image-loading-verse-ref');
+  if (el1) el1.textContent = loadRef;
+  if (el2) el2.textContent = loadRef;
+}
+
+// ============================================
+// TAB SWITCHING
+// ============================================
+async function reloadCardsFromServer() {
+  try { const res=await fetch('/api/cards'); allCards=await res.json(); refreshGalleryCounts(); } catch(e){ console.warn('Failed to reload:',e); }
+}
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  if(tab==='quran-gallery'||tab==='deen-gallery'){
+    cachedImages=null; // Refresh image list
+    reloadCardsFromServer().then(()=>{ if(tab==='quran-gallery'){showQuranBrowse();refreshQuranGallery();} if(tab==='deen-gallery')refreshDeenGallery(); });
+  }
+}
+
+// ============================================
+// SURAH MANAGEMENT
+// ============================================
+let quranSurahs = [];
+async function loadQuranSurahs() {
+  try {
+    const res=await fetch('/static/quran_surahs.json'); quranSurahs=await res.json();
+    const sel=document.getElementById('inp-surah');
+    quranSurahs.forEach(s=>{ const o=document.createElement('option'); o.value=s.name_english; o.textContent=`${s.number}. ${s.name_english} (${s.name_arabic}) — ${s.verses} verses`; o.dataset.number=s.number; o.dataset.verses=s.verses; sel.appendChild(o); });
+  } catch(e){ console.error('Failed to load surahs:',e); }
+}
+function onSurahChange() {
+  const sel=document.getElementById('inp-surah'),verseSel=document.getElementById('inp-verse');
+  verseSel.innerHTML='<option value="">—</option>';
+  const opt=sel.options[sel.selectedIndex]; if(!opt||!opt.dataset.verses)return;
+  const max=parseInt(opt.dataset.verses);
+  for(let i=1;i<=max;i++){const v=document.createElement('option');v.value=`${opt.dataset.number}:${i}`;v.textContent=`${opt.dataset.number}:${i}`;verseSel.appendChild(v);}
+}
+document.getElementById('inp-surah').addEventListener('change', onSurahChange);
+
+// ============================================
+// QURAN VERSE AUTO-FETCH
+// ============================================
+const verseMemoryCache = {};
+async function fetchVerseText() {
+  const verseSel=document.getElementById('inp-verse'),arabicEl=document.getElementById('inp-verse-arabic'),englishEl=document.getElementById('inp-verse-english'),statusEl=document.getElementById('verse-fetch-status');
+  const verseVal=verseSel.value.trim();
+  if(!verseVal||!verseVal.includes(':')){statusEl.textContent=''; return;}
+  const[surah,ayah]=verseVal.split(':').map(Number); if(!surah||!ayah)return;
+  const cacheKey=`${surah}:${ayah}`;
+  if(verseMemoryCache[cacheKey]){
+    const c=verseMemoryCache[cacheKey]; arabicEl.value=c.arabic||''; englishEl.value=c.english||'';
+    statusEl.textContent='(loaded from cache)'; statusEl.style.color='var(--green-mid)';
+    autoFillTitle(surah,ayah,c.english||'',c.surah_english||''); fetchTafsir(surah,ayah); updateStepProgress(); return;
+  }
+  statusEl.innerHTML='<span class="loading-spinner" style="display:inline-block;width:12px;height:12px;border-width:2px"></span> Fetching...'; statusEl.style.color='var(--gold)';
+  try {
+    const resp=await fetch(`/api/quran/verse/${surah}/${ayah}`); const data=await resp.json();
+    if(data.error){statusEl.textContent='(fetch failed)';statusEl.style.color='#e74c3c';return;}
+    arabicEl.value=data.arabic||''; englishEl.value=data.english||'';
+    verseMemoryCache[cacheKey]=data;
+    statusEl.textContent=`(${data.surah_english||'Surah '+surah} ${surah}:${ayah})`; statusEl.style.color='var(--green-mid)';
+    autoFillTitle(surah,ayah,data.english||'',data.surah_english||''); fetchTafsir(surah,ayah); updateStepProgress();
+  } catch(e){statusEl.textContent='(network error)';statusEl.style.color='#e74c3c';}
+}
+async function prefetchSurah(surahNum) {
+  try { const r=await fetch(`/api/quran/surah/${surahNum}`); const d=await r.json(); if(d.verses&&Array.isArray(d.verses)){d.verses.forEach(v=>{verseMemoryCache[`${v.surah_number}:${v.ayah_number}`]=v;});} } catch(e){}
+}
+document.getElementById('inp-verse').addEventListener('change', fetchVerseText);
+document.getElementById('inp-surah').addEventListener('change', function(){ const o=this.options[this.selectedIndex]; if(o&&o.dataset.number){prefetchSurah(parseInt(o.dataset.number));prefetchTafsirSurah(parseInt(o.dataset.number));} });
+
+// ============================================
+// AUTO-FILL TITLE
+// ============================================
+function autoFillTitle(surah,ayah,englishText,surahEnglish) {
+  const el=document.getElementById('inp-title'); if(el.dataset.manualEdit==='true')return;
+  const t=deriveConciseTitle(englishText); el.value=t?`${surah}:${ayah} — ${t}`:`${surahEnglish||'Surah'} ${surah}:${ayah}`;
+  el.classList.add('auto-filled'); updateStepProgress();
+}
+function deriveConciseTitle(text) {
+  if(!text||text.length<10)return'';
+  let t=text.replace(/^(And |Then |Say, |Indeed, |O you who |He is |It is |They are |Those who |When |But |So |Verily |Do not )/i,'').trim();
+  const stop=new Set(['the','a','an','of','in','to','and','is','are','was','were','be','been','for','on','with','at','by','from','that','this','it','its','or','as','not','but','who','whom','which','what','have','has','had','do','does','did','will','would','shall','should','can','could','may','might','there','their','them','they','he','she','we','you','his','her','our','your']);
+  const words=t.replace(/[^\w\s]/g,'').split(/\s+/).filter(w=>w.length>2&&!stop.has(w.toLowerCase()));
+  return words.slice(0,5).map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join(' ');
+}
+document.getElementById('inp-title').addEventListener('input',function(){this.dataset.manualEdit='true';});
+
+// ============================================
+// AUTO-DERIVE CATEGORY
+// ============================================
+const CATEGORY_KEYWORDS = {
+  'Tawhid & Worship':['worship','tawhid','ibadah','pray','salah','dua','devotion','servitude','lord','allah','god','divine','rabb'],
+  'Prophecy & Messengers':['prophet','messenger','rasul','nabi','revelation','wahy','sent','preach','mission','dawah'],
+  'Moral & Ethical':['moral','ethics','good','evil','sin','righteous','justice','kindness','honest','virtue','character','akhlaq','ihsan'],
+  'Afterlife & Accountability':['hereafter','akhirah','judgment','day of judgment','hellfire','paradise','jannah','jahannam','resurrection','account','reward','punishment'],
+  'Faith & Belief':['faith','iman','believe','trust','tawakkul','yaqeen','certainty','conviction','heart','soul'],
+  'Guidance & Wisdom':['guidance','wisdom','hikma','knowledge','ilm','light','noor','path','sirat','straight','quran','book','sign','ayah'],
+  'Social & Community':['community','ummah','society','family','marriage','orphan','neighbor','charity','sadaqah','zakat','rights','justice'],
+  'Patience & Perseverance':['patience','sabr','perseverance','endure','trial','test','hardship','struggle','difficulty','steadfast'],
+  'Repentance & Forgiveness':['repent','tawbah','forgive','mercy','rahma','pardon','return','sin','guilt','redemption'],
+  'Creation & Nature':['creation','earth','heaven','sky','water','mountain','animal','plant','sun','moon','star','universe','sign'],
+  'Psychology & Human Nature':['soul','nafs','desire','ego','fitrah','heart','mind','thought','emotion','fear','hope','temptation'],
+};
+function autoDeriveCategory(text) {
+  if(!text||text.length<30)return''; const l=text.toLowerCase(); let best='',bestS=0;
+  for(const[cat,kws]of Object.entries(CATEGORY_KEYWORDS)){let s=0;kws.forEach(k=>{const m=l.match(new RegExp('\\b'+k+'\\b','gi'));if(m)s+=m.length;});if(s>bestS){bestS=s;best=cat;}}
+  return bestS>=2?best:'';
+}
+let categoryDebounceTimer=null;
+// Category auto-derive is handled by syncAnalysisInput() in the tab system
+document.getElementById('inp-category').addEventListener('input',function(){this.dataset.manualEdit='true';});
+
+// ============================================
+// ANALYSIS SOURCE TABS (Ibn Kathir / Custom)
+// ============================================
+let activeAnalysisTab = 'ibn-kathir';
+const tafsirMemoryCache = {};
+
+function switchAnalysisTab(tab) {
+  activeAnalysisTab = tab;
+  document.querySelectorAll('.analysis-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.analysis-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  // Sync hidden input with active tab's content
+  syncAnalysisInput();
+  updateStepProgress();
+}
+
+function syncAnalysisInput() {
+  const hidden = document.getElementById('inp-analysis');
+  if (activeAnalysisTab === 'ibn-kathir') {
+    hidden.value = document.getElementById('inp-analysis-tafsir').value;
+  } else {
+    hidden.value = document.getElementById('inp-analysis-custom').value;
+  }
+  // Trigger category derivation
+  clearTimeout(categoryDebounceTimer);
+  categoryDebounceTimer = setTimeout(() => {
+    const el = document.getElementById('inp-category');
+    if (el.dataset.manualEdit === 'true') return;
+    const d = autoDeriveCategory(hidden.value);
+    if (d) { el.value = d; el.classList.add('auto-filled'); updateStepProgress(); }
+  }, 300);
+}
+
+// Listen for changes on both textareas
+document.getElementById('inp-analysis-custom').addEventListener('input', function() {
+  if (activeAnalysisTab === 'custom') syncAnalysisInput();
+  updateStepProgress();
+});
+
+async function fetchTafsir(surah, ayah) {
+  const cacheKey = `${surah}:${ayah}`;
+  const statusEl = document.getElementById('tafsir-status');
+  const tafsirEl = document.getElementById('inp-analysis-tafsir');
+
+  // Check memory cache
+  if (tafsirMemoryCache[cacheKey]) {
+    tafsirEl.value = tafsirMemoryCache[cacheKey];
+    statusEl.innerHTML = `<span style="color:var(--green-mid);font-size:12px">Ibn Kathir tafsir loaded (${surah}:${ayah}) — from cache</span>`;
+    if (activeAnalysisTab === 'ibn-kathir') syncAnalysisInput();
+    return;
+  }
+
+  statusEl.innerHTML = '<span class="loading-spinner" style="display:inline-block;width:14px;height:14px;border-width:2px;vertical-align:middle"></span> <span style="color:var(--gold);font-size:12px">Loading Ibn Kathir tafsir...</span>';
+
+  try {
+    const resp = await fetch(`/api/tafsir/${surah}/${ayah}`);
+    const data = await resp.json();
+
+    if (data.error || !data.text) {
+      statusEl.innerHTML = '<span style="color:#e74c3c;font-size:12px">Tafsir not available for this verse — switch to Custom Input or try another verse</span>';
+      tafsirEl.value = '';
+    } else {
+      tafsirEl.value = data.text;
+      tafsirMemoryCache[cacheKey] = data.text;
+      const srcLabel = data.cached ? 'cached' : data.source;
+      statusEl.innerHTML = `<span style="color:var(--green-mid);font-size:12px">Ibn Kathir tafsir loaded (${surah}:${ayah}) — ${srcLabel}</span>`;
+    }
+
+    if (activeAnalysisTab === 'ibn-kathir') syncAnalysisInput();
+  } catch (e) {
+    statusEl.innerHTML = '<span style="color:#e74c3c;font-size:12px">Failed to fetch tafsir — check internet connection</span>';
+  }
+}
+
+// Prefetch tafsir for entire surah when surah is selected
+async function prefetchTafsirSurah(surahNum) {
+  try {
+    const resp = await fetch(`/api/tafsir/surah/${surahNum}`);
+    const data = await resp.json();
+    if (data.verses && Array.isArray(data.verses)) {
+      data.verses.forEach(v => {
+        const key = `${v.surah}:${v.ayah}`;
+        if (v.text) tafsirMemoryCache[key] = v.text;
+      });
+      console.log(`[Tafsir Prefetch] Cached ${data.verses.length} tafsirs for Surah ${surahNum}`);
+    }
+  } catch (e) {
+    console.log('[Tafsir Prefetch] Failed for surah', surahNum, e);
+  }
+}
+
+// ============================================
+// STEP PROGRESS
+// ============================================
+function updateStepProgress() {
+  [['inp-surah','step-1'],['inp-verse','step-2'],['inp-title','step-3'],['inp-category','step-4'],['inp-analysis','step-5']].forEach(([id,sid])=>{
+    const el=document.getElementById(id),s=document.getElementById(sid); if(!el||!s)return;
+    s.classList.toggle('step-complete',!!(el.value&&el.value.trim()));
+  });
+}
+
+// ============================================
+// GALLERY
+// ============================================
+function classifyCards(){const q=[],d=[];allCards.forEach(c=>{(c.surah_name&&c.verse_number)?q.push(c):d.push(c);});return{quranCards:q,deenCards:d};}
+function groupBySurah(cards){const g={};cards.forEach(c=>{const s=c.surah_name||'Unknown';if(!g[s])g[s]=[];g[s].push(c);});return g;}
+function groupByCategory(cards){const g={};cards.forEach(c=>{const cat=c.category||'Uncategorized';if(!g[cat])g[cat]=[];g[cat].push(c);});return g;}
+
+// Sort cards by surah:verse ascending (1:1 < 1:2 < 2:1), same verse → newest version first
+function sortByVerse(cards) {
+  return [...cards].sort((a,b) => {
+    const av=a.verse_number||'',bv=b.verse_number||'';
+    const [as,aa]=av.includes(':')?av.split(':').map(Number):[0,0];
+    const [bs,ba]=bv.includes(':')?bv.split(':').map(Number):[0,0];
+    if(as!==bs) return as-bs;
+    if(aa!==ba) return aa-ba;
+    return (b.version||1)-(a.version||1);
+  });
+}
+function refreshGalleryCounts(){const{quranCards,deenCards}=classifyCards();document.getElementById('quran-card-count').textContent=`(${quranCards.length})`;document.getElementById('deen-card-count').textContent=`(${deenCards.length})`;}
+
+// ============================================
+// INK SVG ICON SYSTEM (consistent with card art style)
+// Hand-drawn Micron fineliner look — no emoji
+// ============================================
+function inkSvg(paths, viewBox='0 0 64 64') {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="none" stroke="#C8902E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+}
+const INK = {
+  book:     inkSvg('<rect x="10" y="8" width="44" height="48" rx="3" stroke-width="2.5"/><line x1="32" y1="8" x2="32" y2="56"/><path d="M16 16h10M16 24h10M38 16h10M38 24h10" stroke-width="1.5"/>'),
+  crescent: inkSvg('<path d="M40 10a22 22 0 1 0 0 44 18 18 0 0 1 0-44z" stroke-width="2.5"/><circle cx="22" cy="14" r="2" fill="#C8902E"/>'),
+  star:     inkSvg('<polygon points="32,4 39,24 60,24 43,38 50,58 32,46 14,58 21,38 4,24 25,24" stroke-width="2"/>'),
+  mosque:   inkSvg('<path d="M12 52V32a20 20 0 0 1 40 0v20" stroke-width="2.5"/><line x1="32" y1="12" x2="32" y2="4"/><circle cx="32" cy="4" r="2" fill="#C8902E"/><rect x="8" y="52" width="48" height="4" rx="1"/><rect x="28" y="40" width="8" height="12" rx="1"/>'),
+  lamp:     inkSvg('<ellipse cx="32" cy="36" rx="14" ry="18" stroke-width="2"/><path d="M24 18h16" stroke-width="2.5"/><line x1="32" y1="4" x2="32" y2="18"/><path d="M26 54c2 4 10 4 12 0" stroke-width="1.5"/><line x1="28" y1="28" x2="28" y2="44" stroke-width="1" opacity=".4"/><line x1="36" y1="28" x2="36" y2="44" stroke-width="1" opacity=".4"/>'),
+  heart:    inkSvg('<path d="M32 56S8 38 8 22a12 12 0 0 1 24 0 12 12 0 0 1 24 0C56 38 32 56 32 56z" stroke-width="2.5"/>'),
+  scroll:   inkSvg('<path d="M16 8c-4 0-8 3-8 8v32c0 5 4 8 8 8h24c4 0 8-3 8-8" stroke-width="2.5"/><path d="M48 8c4 0 8 3 8 8" stroke-width="2.5"/><circle cx="52" cy="16" r="4"/><path d="M20 22h20M20 30h16M20 38h20M20 46h12" stroke-width="1.5"/>'),
+  mountain: inkSvg('<path d="M4 56L24 16l12 20 8-12L60 56z" stroke-width="2.5"/><path d="M24 16l-4 8 8-4" stroke-width="1.5" opacity=".5"/>'),
+  sun:      inkSvg('<circle cx="32" cy="32" r="12" stroke-width="2.5"/><line x1="32" y1="4" x2="32" y2="14"/><line x1="32" y1="50" x2="32" y2="60"/><line x1="4" y1="32" x2="14" y2="32"/><line x1="50" y1="32" x2="60" y2="32"/><line x1="12" y1="12" x2="19" y2="19"/><line x1="45" y1="45" x2="52" y2="52"/><line x1="52" y1="12" x2="45" y2="19"/><line x1="19" y1="45" x2="12" y2="52"/>'),
+  tree:     inkSvg('<line x1="32" y1="56" x2="32" y2="28" stroke-width="3"/><circle cx="32" cy="20" r="16" stroke-width="2"/><path d="M20 36c-4 4-6 12-4 16M44 36c4 4 6 12 4 16" stroke-width="1.5"/>'),
+  hands:    inkSvg('<path d="M20 40c0-8 4-14 12-18 8 4 12 10 12 18" stroke-width="2.5"/><path d="M20 40c-2 4-2 10 0 14h24c2-4 2-10 0-14" stroke-width="2"/><line x1="32" y1="22" x2="32" y2="10" stroke-width="1.5"/><path d="M28 12h8" stroke-width="1.5"/>'),
+  scale:    inkSvg('<line x1="32" y1="8" x2="32" y2="52" stroke-width="2.5"/><line x1="12" y1="20" x2="52" y2="20" stroke-width="2.5"/><path d="M12 20l-4 16h16L20 20" stroke-width="2"/><path d="M44 20l-4 16h16L52 20" stroke-width="2"/><rect x="24" y="52" width="16" height="4" rx="1"/>'),
+  quill:    inkSvg('<path d="M44 4C30 12 20 28 16 52l4-2c4-20 12-34 24-42" stroke-width="2.5"/><path d="M16 52l-4 8 8-4" stroke-width="2"/>'),
+  shield:   inkSvg('<path d="M32 4L8 16v16c0 16 12 24 24 28 12-4 24-12 24-28V16z" stroke-width="2.5"/><path d="M32 20v20M24 30h16" stroke-width="2"/>'),
+  people:   inkSvg('<circle cx="22" cy="18" r="8" stroke-width="2"/><circle cx="42" cy="18" r="8" stroke-width="2"/><path d="M8 52c0-10 6-16 14-16s14 6 14 16" stroke-width="2"/><path d="M28 52c0-10 6-16 14-16s14 6 14 16" stroke-width="2"/>'),
+  dove:     inkSvg('<path d="M16 32c4-10 16-16 24-12l8 4-4 8c-2 8-10 14-20 14s-12-6-8-14z" stroke-width="2.5"/><circle cx="40" cy="24" r="2" fill="#C8902E"/><path d="M16 32l-8 6 4-10" stroke-width="2"/>'),
+  coin:     inkSvg('<ellipse cx="32" cy="32" rx="20" ry="22" stroke-width="2.5"/><ellipse cx="32" cy="32" rx="14" ry="16" stroke-width="1.5"/><path d="M28 24h8l-4 8h4l-6 10" stroke-width="2"/>'),
+  eye:      inkSvg('<path d="M4 32s12-18 28-18 28 18 28 18-12 18-28 18S4 32 4 32z" stroke-width="2.5"/><circle cx="32" cy="32" r="8" stroke-width="2"/><circle cx="32" cy="32" r="3" fill="#C8902E"/>'),
+  chain:    inkSvg('<ellipse cx="20" cy="26" rx="10" ry="12" stroke-width="2.5"/><ellipse cx="44" cy="38" rx="10" ry="12" stroke-width="2.5"/><path d="M28 32l8 0" stroke-width="2"/>'),
+  water:    inkSvg('<path d="M8 36c4-4 8 0 12-4s8 0 12-4 8 0 12-4 8 0 12-4" stroke-width="2.5"/><path d="M8 44c4-4 8 0 12-4s8 0 12-4 8 0 12-4 8 0 12-4" stroke-width="2" opacity=".6"/><path d="M8 52c4-4 8 0 12-4s8 0 12-4 8 0 12-4 8 0 12-4" stroke-width="1.5" opacity=".3"/>'),
+};
+
+// Map surahs to icon types (by meaning/theme)
+const SURAH_ICON_MAP = {
+  "Al-Fatihah":"book","Al-Baqarah":"shield","Aal-E-Imran":"people","An-Nisa":"people","Al-Ma'idah":"scroll",
+  "Al-An'am":"mountain","Al-A'raf":"mountain","Al-Anfal":"shield","At-Tawbah":"hands","Yunus":"water",
+  "Hud":"sun","Yusuf":"star","Ar-Ra'd":"sun","Ibrahim":"tree","Al-Hijr":"mountain",
+  "An-Nahl":"tree","Al-Isra":"crescent","Al-Kahf":"mountain","Maryam":"heart","Ta-Ha":"scroll",
+  "Al-Anbiya":"scroll","Al-Hajj":"mosque","Al-Mu'minun":"hands","An-Nur":"lamp","Al-Furqan":"scale",
+  "Ash-Shu'ara":"quill","An-Naml":"tree","Al-Qasas":"scroll","Al-Ankabut":"chain","Ar-Rum":"shield",
+  "Luqman":"eye","As-Sajdah":"hands","Al-Ahzab":"shield","Saba":"mountain","Fatir":"sun",
+  "Ya-Sin":"heart","As-Saffat":"star","Sad":"scroll","Az-Zumar":"people","Ghafir":"hands",
+  "Fussilat":"scroll","Ash-Shura":"scale","Az-Zukhruf":"coin","Ad-Dukhan":"sun","Al-Jathiyah":"hands",
+  "Al-Ahqaf":"mountain","Muhammad":"shield","Al-Fath":"star","Al-Hujurat":"mosque","Qaf":"tree",
+  "Adh-Dhariyat":"water","At-Tur":"mountain","An-Najm":"star","Al-Qamar":"crescent","Ar-Rahman":"heart",
+  "Al-Waqi'ah":"sun","Al-Hadid":"shield","Al-Mujadila":"scale","Al-Hashr":"shield","Al-Mumtahanah":"eye",
+  "As-Saf":"shield","Al-Jumu'ah":"mosque","Al-Munafiqun":"eye","At-Taghabun":"coin","At-Talaq":"scroll",
+  "At-Tahrim":"scroll","Al-Mulk":"star","Al-Qalam":"quill","Al-Haqqah":"sun","Al-Ma'arij":"mountain",
+  "Nuh":"water","Al-Jinn":"crescent","Al-Muzzammil":"crescent","Al-Muddathir":"scroll","Al-Qiyamah":"sun",
+  "Al-Insan":"people","Al-Mursalat":"water","An-Naba":"scroll","An-Nazi'at":"star","Abasa":"eye",
+  "At-Takwir":"sun","Al-Infitar":"star","Al-Mutaffifin":"scale","Al-Inshiqaq":"star","Al-Buruj":"star",
+  "At-Tariq":"star","Al-A'la":"hands","Al-Ghashiyah":"eye","Al-Fajr":"sun","Al-Balad":"mountain",
+  "Ash-Shams":"sun","Al-Layl":"crescent","Ad-Duha":"sun","Ash-Sharh":"heart","At-Tin":"tree",
+  "Al-Alaq":"quill","Al-Qadr":"star","Al-Bayyinah":"scroll","Az-Zalzalah":"mountain","Al-Adiyat":"shield",
+  "Al-Qari'ah":"sun","At-Takathur":"coin","Al-Asr":"sun","Al-Humazah":"eye","Al-Fil":"shield",
+  "Quraysh":"people","Al-Ma'un":"hands","Al-Kawthar":"water","Al-Kafirun":"shield","An-Nasr":"star",
+  "Al-Masad":"sun","Al-Ikhlas":"crescent","Al-Falaq":"sun","An-Nas":"people"
+};
+function getSurahIcon(name) { return INK[SURAH_ICON_MAP[name]] || INK.book; }
+
+// English meanings for surah titles (shown on gallery cards)
+const SURAH_VISUALS_EN = {1:'The Opening',2:'The Cow',3:'Family of Imran',4:'The Women',5:'The Table Spread',6:'The Cattle',7:'The Heights',8:'Spoils of War',9:'The Repentance',10:'Jonah',11:'Hud',12:'Joseph',13:'The Thunder',14:'Abraham',15:'The Rocky Tract',16:'The Bee',17:'The Night Journey',18:'The Cave',19:'Mary',20:'Ta-Ha',21:'The Prophets',22:'The Pilgrimage',23:'The Believers',24:'The Light',25:'The Criterion',26:'The Poets',27:'The Ant',28:'The Stories',29:'The Spider',30:'The Romans',31:'Luqman',32:'The Prostration',33:'The Combined Forces',34:'Sheba',35:'Originator',36:'Ya-Sin',37:'Those Lined Up',38:'Sad',39:'The Groups',40:'The Forgiver',41:'Explained in Detail',42:'The Consultation',43:'Gold Adornments',44:'The Smoke',45:'The Kneeling',46:'The Sand Dunes',47:'Muhammad',48:'The Victory',49:'The Dwellings',50:'Qaf',51:'The Winds',52:'The Mount',53:'The Star',54:'The Moon',55:'The Most Merciful',56:'The Inevitable',57:'The Iron',58:'The Pleading Woman',59:'The Exile',60:'The Examined',61:'The Ranks',62:'Friday',63:'The Hypocrites',64:'Mutual Loss',65:'The Divorce',66:'The Prohibition',67:'The Sovereignty',68:'The Pen',69:'The Inevitable Hour',70:'Ways of Ascent',71:'Noah',72:'The Jinn',73:'The Enshrouded',74:'The Cloaked',75:'Resurrection',76:'The Human',77:'Those Sent Forth',78:'The Great News',79:'Those Who Pull Out',80:'He Frowned',81:'The Folding Up',82:'The Breaking Apart',83:'The Defrauders',84:'The Splitting',85:'The Great Stars',86:'The Night Visitor',87:'The Most High',88:'The Overwhelming',89:'The Dawn',90:'The City',91:'The Sun',92:'The Night',93:'The Morning',94:'The Expansion',95:'The Fig',96:'The Clot',97:'Night of Power',98:'Clear Evidence',99:'The Earthquake',100:'The War Horses',101:'The Striking Hour',102:'Worldly Rivalry',103:'The Time',104:'The Slanderer',105:'The Elephant',106:'Quraysh',107:'Small Kindnesses',108:'The Abundance',109:'The Disbelievers',110:'The Victory',111:'The Palm Fiber',112:'The Sincerity',113:'The Daybreak',114:'Mankind'};
+
+const CATEGORY_ICON_MAP = {
+  'Tawhid & Worship':'mosque','Prophecy & Messengers':'scroll','Moral & Ethical':'scale',
+  'Afterlife & Accountability':'sun','Faith & Belief':'heart','Guidance & Wisdom':'lamp',
+  'Social & Community':'people','Patience & Perseverance':'mountain','Repentance & Forgiveness':'dove',
+  'Creation & Nature':'tree','Psychology & Human Nature':'eye','Economics & Provision':'coin',
+  'Law & Jurisprudence':'scroll','History & Narrative':'quill','Worship & Heart':'hands',
+  'Uncategorized':'book'
+};
+function getCategoryIcon(name) { return INK[CATEGORY_ICON_MAP[name]] || INK.book; }
+const CATEGORY_GRADIENTS = {
+  'Tawhid & Worship':'linear-gradient(135deg,#1B5E20,#2E7D32)','Guidance & Wisdom':'linear-gradient(135deg,#1565C0,#1976D2)',
+  'Moral & Ethical':'linear-gradient(135deg,#4E342E,#6D4C41)','Faith & Belief':'linear-gradient(135deg,#AD1457,#C62828)',
+  'Afterlife & Accountability':'linear-gradient(135deg,#311B92,#4527A0)','Patience & Perseverance':'linear-gradient(135deg,#004D40,#00695C)',
+  'Social & Community':'linear-gradient(135deg,#E65100,#F57C00)','Repentance & Forgiveness':'linear-gradient(135deg,#880E4F,#AD1457)',
+  'Creation & Nature':'linear-gradient(135deg,#33691E,#558B2F)','Psychology & Human Nature':'linear-gradient(135deg,#4A148C,#6A1B9A)',
+};
+function getCategoryGradient(cat){return CATEGORY_GRADIENTS[cat]||'linear-gradient(135deg,var(--navy-light),var(--navy-mid))';}
+
+// Build a row of thumbnails
+function buildGalleryRow(title, count, thumbs, viewAllData) {
+  const row = document.createElement('div');
+  row.className = 'gallery-row';
+  const header = document.createElement('div');
+  header.className = 'gallery-row-header';
+  header.innerHTML = `<span class="gallery-row-title">${title}</span>`;
+  const rightSide = document.createElement('span');
+  rightSide.style.cssText = 'display:flex;align-items:center;gap:12px';
+  rightSide.innerHTML = `<span class="gallery-row-count">${count}</span>`;
+  if (viewAllData && thumbs.length > 3) {
+    const va = document.createElement('span');
+    va.className = 'gallery-row-viewall';
+    va.textContent = 'View All >';
+    va.onclick = (e) => {
+      e.stopPropagation();
+      if (viewAllData.thumbs) {
+        // Pre-built thumbs (surah/category rows) — clone them into the grid
+        showViewAllThumbs(viewAllData.title, viewAllData.thumbs);
+      } else if (viewAllData.cards) {
+        showViewAll(viewAllData.title, viewAllData.cards, viewAllData.images);
+      }
+    };
+    rightSide.appendChild(va);
+  }
+  header.appendChild(rightSide);
+  row.appendChild(header);
+  const scroll = document.createElement('div');
+  scroll.className = 'gallery-row-scroll';
+  thumbs.forEach(t => scroll.appendChild(t));
+  row.appendChild(scroll);
+  return row;
+}
+
+// Gallery cover cache (persisted in localStorage)
+const galleryCoverCache = JSON.parse(localStorage.getItem('gallery_covers')||'{}');
+function saveCoverCache(){ try{localStorage.setItem('gallery_covers',JSON.stringify(galleryCoverCache));}catch(e){} }
+
+function buildSurahThumb(surahName, cardCount, surahInfo, cardImages) {
+  const svgIcon = getSurahIcon(surahName);
+  const num = surahInfo ? surahInfo.number : '';
+  const arabic = surahInfo ? surahInfo.name_arabic : '';
+
+  // Priority: server-generated cover > card image > SVG icon
+  const serverCover = num ? surahCovers[String(num)] : null;
+  let bgContent;
+  if (serverCover) {
+    bgContent = `<div class="g-thumb-bg"><img src="${serverCover}" alt=""></div>`;
+  } else if(cardImages && cardImages.length > 0) {
+    bgContent = `<div class="g-thumb-bg"><img src="${cardImages[0]}" alt="" style="filter:brightness(.65) saturate(1.2)"></div>`;
+  } else {
+    bgContent = `<div class="g-thumb-bg">${svgIcon}</div>`;
+  }
+
+  // Get English meaning for surah
+  const vis = SURAH_VISUALS_EN[num] || '';
+
+  const d = document.createElement('div');
+  d.className = 'g-thumb';
+  d.innerHTML = `${bgContent}<div class="g-thumb-chapter">Chapter ${num}</div><div class="g-thumb-overlay"><div class="g-thumb-title">${num?num+'. ':''}${escHtml(surahName)}</div><div class="g-thumb-sub">${arabic}${vis?' — '+vis:''}</div></div><div class="g-thumb-badge">${cardCount}</div>`;
+  d.onclick = () => showQuranDetail('surah', surahName);
+  return d;
+}
+
+function buildCategoryThumb(catName, cardCount, cardImages) {
+  const svgIcon = getCategoryIcon(catName);
+  const grad = getCategoryGradient(catName);
+  const safeName = 'cat_' + catName.toLowerCase().replace(/ /g,'_').replace(/&/g,'and').substring(0,30);
+
+  // Priority: server cover > card image > gradient + SVG icon
+  const serverCover = surahCovers[safeName] || null;
+  let bgContent;
+  if (serverCover) {
+    bgContent = `<div class="g-thumb-bg"><img src="${serverCover}" alt=""></div>`;
+  } else if(cardImages && cardImages.length > 0) {
+    bgContent = `<div class="g-thumb-bg"><img src="${cardImages[0]}" alt="" style="filter:brightness(.6) saturate(1.3)"></div>`;
+  } else {
+    bgContent = `<div class="g-thumb-bg" style="background:${grad}">${svgIcon}</div>`;
+  }
+
+  const d = document.createElement('div');
+  d.className = 'g-thumb';
+  d.innerHTML = `${bgContent}<div class="g-thumb-overlay"><div class="g-thumb-title">${escHtml(catName)}</div></div><div class="g-thumb-badge">${cardCount}</div>`;
+  d.onclick = () => showQuranDetail('category', catName);
+  return d;
+}
+
+function buildCardThumb(card, images, opts) {
+  opts = opts || {};
+  const d = document.createElement('div');
+  d.className = 'g-card-thumb';
+  d.dataset.cardId = card.id || '';
+
+  // Priority: verse cinematic thumbnail > card spread image > category icon
+  const verseThumbUrl = surahCovers['verse_' + card.id] || null;
+  let img = null;
+  if (!verseThumbUrl) {
+    if(card.image_url) img = images.find(i=>card.image_url.includes(i.filename));
+    if(!img) img = images.find(i=>i.filename.includes(card.id));
+  }
+
+  if (verseThumbUrl) {
+    const e = document.createElement('img');
+    e.src = verseThumbUrl; e.alt = card.title; e.loading = 'lazy';
+    d.appendChild(e);
+  } else if(img) {
+    const e = document.createElement('img');
+    e.src = img.url; e.alt = card.title; e.loading = 'lazy';
+    d.appendChild(e);
+  } else {
+    const catIcon = getCategoryIcon(card.category);
+    d.innerHTML = `<div class="g-thumb-bg" style="background:${getCategoryGradient(card.category)}">${catIcon}</div>`;
+  }
+  // Checkbox for select/delete mode (hidden by default)
+  if (opts.selectable) {
+    const check = document.createElement('div');
+    check.className = 'g-card-check';
+    check.style.display = selectMode ? 'flex' : 'none';
+    check.onclick = (e) => { e.stopPropagation(); toggleCardSelect(card.id, check); };
+    d.appendChild(check);
+  }
+  const ver = card.version || 1;
+  const verBadge = ver > 1 ? `<div class="g-card-ver">v${ver}</div>` : '';
+  // Surah + verse reference label at top
+  let verseRefHtml = '';
+  if (card.verse_number) {
+    const surahShort = card.surah_name || '';
+    verseRefHtml = `<div class="g-card-verse-ref"><span class="ref-surah">${escHtml(surahShort)}</span><span class="ref-verse">${escHtml(card.verse_number)}</span></div>`;
+  }
+  d.innerHTML += `${verseRefHtml}${verBadge}<div class="g-thumb-overlay"><div class="g-thumb-title">${escHtml(card.card_title||card.title)}</div><div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">${escHtml(card.category||'')}</div></div>`;
+  // Always find the spread image for the lightbox, even if thumb is showing the cinematic cover
+  let spreadImg = null;
+  if(card.image_url) spreadImg = images.find(i=>card.image_url.includes(i.filename));
+  if(!spreadImg) spreadImg = images.find(i=>i.filename.includes(card.id));
+  d.onclick = () => { if(selectMode && opts.selectable) { const ch=d.querySelector('.g-card-check'); if(ch) toggleCardSelect(card.id,ch); return; } if(spreadImg) showLightbox(spreadImg.url, card.card_title||card.title, card); else { switchTab('create'); loadCardForEditing(card); } };
+  return d;
+}
+
+let cachedImages = null;
+async function getImages() {
+  if(cachedImages) return cachedImages;
+  try { const r = await fetch('/api/images'); cachedImages = await r.json(); } catch(e) { cachedImages = []; }
+  return cachedImages;
+}
+
+// ============================================
+// SURAH COVER GENERATION
+// ============================================
+let surahCovers = {}; // {surah_number: url}
+let surahMeta = {};  // {surah_number: {meaning, revelation, order, rukus, theme}}
+async function loadCovers() {
+  try { const r = await fetch('/api/covers'); surahCovers = await r.json(); } catch(e) { surahCovers = {}; }
+  return surahCovers;
+}
+async function loadSurahMeta() {
+  try { const r = await fetch('/static/surah_metadata.json'); surahMeta = await r.json(); } catch(e) { surahMeta = {}; }
+}
+
+function getSurahCoverUrl(surahName) {
+  const si = quranSurahs.find(s => s.name_english === surahName);
+  if (!si) return null;
+  return surahCovers[String(si.number)] || null;
+}
+
+async function generateAllCovers() {
+  const btn = document.getElementById('btn-gen-covers');
+  const progressDiv = document.getElementById('cover-gen-progress');
+  const fillEl = document.getElementById('cover-gen-fill');
+  const pctEl = document.getElementById('cover-gen-pct');
+  const statusEl = document.getElementById('cover-gen-status');
+
+  btn.style.display = 'none';
+  progressDiv.style.display = 'block';
+
+  const {quranCards} = classifyCards();
+  const byS = groupBySurah(quranCards);
+  const byC = groupByCategory(quranCards);
+
+  // Collect surahs needing covers
+  const surahsNeeding = [];
+  for (const sn of Object.keys(byS)) {
+    const si = quranSurahs.find(s => s.name_english === sn);
+    if (si && !surahCovers[String(si.number)]) {
+      surahsNeeding.push({ type:'surah', name: sn, number: si.number, arabic: si.name_arabic });
+    }
+  }
+
+  // Collect categories needing covers
+  const catsNeeding = [];
+  for (const cat of Object.keys(byC)) {
+    const safeName = 'cat_' + cat.toLowerCase().replace(/ /g,'_').replace(/&/g,'and').substring(0,30);
+    if (!surahCovers[safeName]) {
+      catsNeeding.push({ type:'category', name: cat, safeName });
+    }
+  }
+
+  // Collect verse cards needing cinematic thumbnails
+  const versesNeeding = [];
+  for (const card of quranCards) {
+    if (card.id && !surahCovers['verse_' + card.id]) {
+      versesNeeding.push({ type:'verse', card: card });
+    }
+  }
+
+  const allNeeding = [...surahsNeeding, ...catsNeeding, ...versesNeeding];
+  if (allNeeding.length === 0) {
+    statusEl.textContent = 'All covers already generated!';
+    progressDiv.style.display = 'none';
+    btn.style.display = 'inline-flex';
+    return;
+  }
+
+  let done = 0;
+  const total = allNeeding.length;
+
+  for (const item of allNeeding) {
+    let label;
+    if (item.type === 'surah') label = `Surah ${item.number}. ${item.name}`;
+    else if (item.type === 'category') label = `Category: ${item.name}`;
+    else label = `Card: ${item.card.card_title || item.card.title || item.card.id}`;
+
+    statusEl.textContent = `Generating: ${label} ...`;
+    fillEl.style.width = Math.round((done / total) * 100) + '%';
+    pctEl.textContent = `${done}/${total}`;
+
+    try {
+      if (item.type === 'verse') {
+        // Generate verse cinematic thumbnail
+        const c = item.card;
+        const r = await fetch('/api/covers/verse-thumb', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({card_id:c.id, title:c.card_title||c.title||'', category:c.category||'', back_text:c.back_text||'', verse_english:c.verse_english||'', verse_ref:c.verse_number||'', google_api_key:googleKey})
+        });
+        const data = await r.json();
+        if (data.url) surahCovers['verse_' + c.id] = data.url;
+      } else {
+        const body = item.type === 'surah'
+          ? { type:'surah', number: item.number, name: item.name, arabic: item.arabic, google_api_key: googleKey }
+          : { type:'category', name: item.name, google_api_key: googleKey };
+        const r = await fetch('/api/covers/generate', {
+          method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+        });
+        const data = await r.json();
+        if (data.url) {
+          if (item.type === 'surah') surahCovers[String(item.number)] = data.url;
+          else surahCovers[item.safeName] = data.url;
+        }
+      }
+    } catch(e) { console.warn('Cover gen failed for', label, e); }
+    done++;
+  }
+
+  fillEl.style.width = '100%';
+  pctEl.textContent = `${done}/${total}`;
+  const parts = [];
+  if (surahsNeeding.length) parts.push(`${surahsNeeding.length} Surahs`);
+  if (catsNeeding.length) parts.push(`${catsNeeding.length} Categories`);
+  if (versesNeeding.length) parts.push(`${versesNeeding.length} Card Thumbnails`);
+  statusEl.textContent = `Generated ${done} covers (${parts.join(' + ')})!`;
+
+  setTimeout(() => {
+    progressDiv.style.display = 'none';
+    btn.textContent = 'Regenerate Covers';
+    btn.style.display = 'inline-flex';
+    refreshQuranGallery();
+  }, 1000);
+}
+
+// Generate a cinematic thumbnail for a single verse card (runs in background)
+async function generateVerseThumb(card) {
+  if (!card || !card.id) return;
+  // Skip if already exists
+  if (surahCovers['verse_' + card.id]) return;
+
+  try {
+    const r = await fetch('/api/covers/verse-thumb', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        card_id: card.id,
+        title: card.card_title || card.title || '',
+        category: card.category || '',
+        back_text: card.back_text || '',
+        verse_english: card.verse_english || '',
+        verse_ref: card.verse_number || '',
+        google_api_key: googleKey
+      })
+    });
+    const data = await r.json();
+    if (data.url) {
+      surahCovers['verse_' + card.id] = data.url;
+      console.log('[VerseThumb] Generated thumbnail for card', card.id);
+    }
+  } catch(e) { console.warn('[VerseThumb] Failed for', card.id, e); }
+}
+
+async function refreshQuranGallery() {
+  const{quranCards}=classifyCards(); refreshGalleryCounts();
+  const container=document.getElementById('quran-rows-container');
+  const empty=document.getElementById('quran-gallery-empty');
+  container.innerHTML='';
+
+  if(quranCards.length===0){empty.style.display='block';document.getElementById('quran-cover-gen-bar').style.display='none';return;}
+  empty.style.display='none';
+
+  const images = await getImages();
+  await loadCovers();
+
+  // Show cover gen bar if any surahs or categories missing covers
+  const byS_check = groupBySurah(quranCards);
+  const byC_check = groupByCategory(quranCards);
+  let missingSurah = 0, missingCat = 0, missingVerse = 0;
+  for (const sn of Object.keys(byS_check)) {
+    const si = quranSurahs.find(s => s.name_english === sn);
+    if (si && !surahCovers[String(si.number)]) missingSurah++;
+  }
+  for (const cat of Object.keys(byC_check)) {
+    const safeName = 'cat_' + cat.toLowerCase().replace(/ /g,'_').replace(/&/g,'and').substring(0,30);
+    if (!surahCovers[safeName]) missingCat++;
+  }
+  for (const c of quranCards) {
+    if (c.id && !surahCovers['verse_' + c.id]) missingVerse++;
+  }
+  const totalMissing = missingSurah + missingCat + missingVerse;
+  const genBar = document.getElementById('quran-cover-gen-bar');
+  if (totalMissing > 0) {
+    genBar.style.display = 'block';
+    const parts = [];
+    if (missingSurah > 0) parts.push(`${missingSurah} Surah`);
+    if (missingCat > 0) parts.push(`${missingCat} Category`);
+    if (missingVerse > 0) parts.push(`${missingVerse} Card`);
+    document.getElementById('cover-gen-status').textContent = `${parts.join(' + ')} cover${totalMissing>1?'s':''} not yet generated`;
+    document.getElementById('btn-gen-covers').textContent = `Generate All Covers (${totalMissing})`;
+  } else {
+    genBar.style.display = 'none';
+  }
+  const byS=groupBySurah(quranCards), byC=groupByCategory(quranCards);
+
+  // Helper: get first card image URL for a group
+  function getGroupImages(cards) {
+    const urls=[];
+    for(const c of cards){
+      let img=null;
+      if(c.image_url) img=images.find(i=>c.image_url.includes(i.filename));
+      if(!img) img=images.find(i=>i.filename.includes(c.id));
+      if(img){urls.push(img.url); if(urls.length>=1) break;}
+    }
+    return urls;
+  }
+
+  // Row 1: Browse by Surah
+  const surahThumbs=[];
+  Object.keys(byS).sort((a,b)=>{const ai=quranSurahs.find(s=>s.name_english===a),bi=quranSurahs.find(s=>s.name_english===b);return(ai?.number||999)-(bi?.number||999);}).forEach(sn=>{
+    surahThumbs.push(buildSurahThumb(sn, byS[sn].length, quranSurahs.find(s=>s.name_english===sn), getGroupImages(byS[sn])));
+  });
+  container.appendChild(buildGalleryRow('Browse by Surah', `${Object.keys(byS).length} Surahs`, surahThumbs, {title:'Browse by Surah', thumbs:surahThumbs}));
+
+  // Row 2: Browse by Category
+  const catThumbs=[];
+  Object.keys(byC).sort((a,b)=>byC[b].length-byC[a].length).forEach(cat=>{
+    catThumbs.push(buildCategoryThumb(cat, byC[cat].length, getGroupImages(byC[cat])));
+  });
+  container.appendChild(buildGalleryRow('Browse by Category', `${Object.keys(byC).length} Categories`, catThumbs, {title:'Browse by Category', thumbs:catThumbs}));
+
+  // Row 3+: Top categories as individual rows
+  const topCats=Object.keys(byC).sort((a,b)=>byC[b].length-byC[a].length).slice(0,5);
+  topCats.forEach(cat=>{
+    const cards=sortByVerse(byC[cat]);
+    const thumbs=cards.map(c=>buildCardThumb(c, images));
+    const icon='';
+    container.appendChild(buildGalleryRow(`${icon} ${cat}`, `${cards.length} cards`, thumbs, {title:cat, cards:cards, images:images}));
+  });
+
+  // Row: Recently Created
+  const recent=sortByVerse(quranCards).slice(0,12);
+  if(recent.length>0){
+    container.appendChild(buildGalleryRow('Recently Created', `${recent.length} cards`, recent.map(c=>buildCardThumb(c,images)), {title:'Recently Created', cards:recent, images:images}));
+  }
+}
+
+function showAllSurahs(){ showQuranBrowse(); }
+
+function showQuranBrowse(){
+  document.getElementById('quran-browse-view').style.display='block';
+  document.getElementById('quran-detail-view').style.display='none';
+  document.getElementById('quran-viewall-view').style.display='none';
+  selectMode = false;
+  selectedCardIds.clear();
+}
+
+// ============================================
+// VIEW ALL (Level 1.5)
+// ============================================
+async function showViewAll(title, cards, images) {
+  if (!images) images = await getImages();
+  document.getElementById('viewall-heading').textContent = title;
+  const grid = document.getElementById('viewall-grid');
+  grid.innerHTML = '';
+  const sorted = sortByVerse(cards);
+  sorted.forEach(c => {
+    const thumb = buildCardThumb(c, images);
+    grid.appendChild(thumb);
+  });
+  document.getElementById('quran-browse-view').style.display = 'none';
+  document.getElementById('quran-detail-view').style.display = 'none';
+  document.getElementById('quran-viewall-view').style.display = 'block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showViewAllThumbs(title, originalThumbs) {
+  // For surah/category thumb rows — rebuild the thumbs since DOM nodes can only exist in one place
+  document.getElementById('viewall-heading').textContent = title;
+  const grid = document.getElementById('viewall-grid');
+  grid.innerHTML = '';
+  // Clone the approach: re-read cards and rebuild thumbs for the grid
+  // We need to regenerate since DOM nodes from the scroll row can't be reused
+  if (title === 'Browse by Surah') {
+    const {quranCards} = classifyCards();
+    const byS = groupBySurah(quranCards);
+    getImages().then(images => {
+      function getGroupImgs(cards) { const u=[]; for(const c of cards){let img=null;if(c.image_url)img=images.find(i=>c.image_url.includes(i.filename));if(!img)img=images.find(i=>i.filename.includes(c.id));if(img){u.push(img.url);break;}} return u; }
+      Object.keys(byS).sort((a,b)=>{const ai=quranSurahs.find(s=>s.name_english===a),bi=quranSurahs.find(s=>s.name_english===b);return(ai?.number||999)-(bi?.number||999);}).forEach(sn=>{
+        grid.appendChild(buildSurahThumb(sn, byS[sn].length, quranSurahs.find(s=>s.name_english===sn), getGroupImgs(byS[sn])));
+      });
+    });
+  } else if (title === 'Browse by Category') {
+    const {quranCards} = classifyCards();
+    const byC = groupByCategory(quranCards);
+    getImages().then(images => {
+      function getGroupImgs(cards) { const u=[]; for(const c of cards){let img=null;if(c.image_url)img=images.find(i=>c.image_url.includes(i.filename));if(!img)img=images.find(i=>i.filename.includes(c.id));if(img){u.push(img.url);break;}} return u; }
+      Object.keys(byC).sort((a,b)=>byC[b].length-byC[a].length).forEach(cat=>{
+        grid.appendChild(buildCategoryThumb(cat, byC[cat].length, getGroupImgs(byC[cat])));
+      });
+    });
+  }
+  document.getElementById('quran-browse-view').style.display = 'none';
+  document.getElementById('quran-detail-view').style.display = 'none';
+  document.getElementById('quran-viewall-view').style.display = 'block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ============================================
+// DELETE FUNCTIONALITY (Level 2)
+// ============================================
+let selectMode = false;
+const selectedCardIds = new Set();
+
+function toggleSelectMode() {
+  selectMode = !selectMode;
+  document.getElementById('select-mode-label').textContent = selectMode ? 'Cancel' : 'Select';
+  document.getElementById('delete-count').style.display = selectMode ? 'inline' : 'none';
+  document.getElementById('btn-delete-selected').style.display = selectMode ? 'inline-flex' : 'none';
+  selectedCardIds.clear();
+  updateDeleteCount();
+  // Toggle checkbox visibility
+  document.querySelectorAll('#quran-detail-grid .g-card-check').forEach(cb => {
+    cb.style.display = selectMode ? 'flex' : 'none';
+    cb.classList.remove('checked');
+  });
+}
+
+function toggleCardSelect(cardId, checkEl) {
+  if (!selectMode) return;
+  if (selectedCardIds.has(cardId)) {
+    selectedCardIds.delete(cardId);
+    checkEl.classList.remove('checked');
+  } else {
+    selectedCardIds.add(cardId);
+    checkEl.classList.add('checked');
+  }
+  updateDeleteCount();
+}
+
+function updateDeleteCount() {
+  const n = selectedCardIds.size;
+  document.getElementById('delete-count').textContent = `${n} selected`;
+  const btn = document.getElementById('btn-delete-selected');
+  btn.style.opacity = n > 0 ? '1' : '.5';
+  btn.disabled = n === 0;
+}
+
+async function deleteSelectedCards() {
+  if (selectedCardIds.size === 0) return;
+  const count = selectedCardIds.size;
+  if (!confirm(`Delete ${count} card${count>1?'s':''}? This cannot be undone.`)) return;
+
+  let deleted = 0;
+  for (const id of selectedCardIds) {
+    try {
+      await fetch(`/api/cards/${id}`, {method:'DELETE'});
+      // Remove from allCards
+      const idx = allCards.findIndex(c => c.id === id);
+      if (idx >= 0) allCards.splice(idx, 1);
+      deleted++;
+    } catch(e) { console.warn('Delete failed for', id, e); }
+  }
+
+  selectedCardIds.clear();
+  selectMode = false;
+  refreshGalleryCounts();
+  showToast(`Deleted ${deleted} card${deleted>1?'s':''}`);
+
+  // Re-render the current detail view
+  const heading = document.getElementById('quran-detail-heading').textContent;
+  // Determine if we're in surah or category view and refresh
+  cachedImages = null;
+  const detailType = document.getElementById('detail-chapter-label').textContent.startsWith('Chapter') ? 'surah' : 'category';
+  if (detailType === 'surah') {
+    // Extract surah name from heading (e.g., "2. Al-Baqarah")
+    const match = heading.match(/\d+\.\s*(.+)/);
+    if (match) showQuranDetail('surah', match[1].trim());
+  } else {
+    showQuranDetail('category', heading);
+  }
+}
+
+async function showQuranDetail(type, key) {
+  const{quranCards}=classifyCards();
+  const images = await getImages();
+  let cards;
+
+  // Get cover URL
+  let coverUrl = null;
+  const bgEl = document.getElementById('detail-bg-image');
+  const coverThumb = document.getElementById('detail-cover-thumb');
+
+  if(type==='surah'){
+    cards=quranCards.filter(c=>c.surah_name===key);
+    const si=quranSurahs.find(s=>s.name_english===key);
+    const num = si ? si.number : 0;
+    const meta = surahMeta[String(num)] || {};
+    coverUrl = surahCovers[String(num)] || null;
+
+    // Chapter label
+    document.getElementById('detail-chapter-label').textContent = `Chapter ${num}`;
+
+    // Revelation badge
+    const revEl = document.getElementById('detail-rev-badge');
+    const rev = meta.revelation || 'Meccan';
+    revEl.textContent = rev;
+    revEl.className = 'detail-rev-badge ' + rev.toLowerCase();
+
+    // Title
+    document.getElementById('quran-detail-heading').textContent = si ? `${si.number}. ${si.name_english}` : key;
+
+    // Arabic name
+    document.getElementById('detail-arabic-name').textContent = si ? si.name_arabic : '';
+
+    // Meaning
+    document.getElementById('detail-meaning').textContent = meta.meaning ? `"${meta.meaning}"` : '';
+
+    // Theme
+    document.getElementById('detail-theme').textContent = meta.theme || '';
+
+    // Stats
+    const statsEl = document.getElementById('detail-stats');
+    statsEl.innerHTML = `
+      <div class="detail-stat"><div class="detail-stat-value">${si ? si.verses : '?'}</div><div class="detail-stat-label">Verses</div></div>
+      <div class="detail-stat"><div class="detail-stat-value">${meta.rukus || '?'}</div><div class="detail-stat-label">Rukus</div></div>
+      <div class="detail-stat"><div class="detail-stat-value">${meta.order || '?'}</div><div class="detail-stat-label">Rev. Order</div></div>
+      <div class="detail-stat"><div class="detail-stat-value">${cards.length}</div><div class="detail-stat-label">Cards</div></div>
+    `;
+
+    // Cover thumbnail
+    if(coverUrl) {
+      coverThumb.innerHTML = `<img src="${coverUrl}" alt="">`;
+      coverThumb.style.display = 'block';
+    } else {
+      coverThumb.innerHTML = '';
+      coverThumb.style.display = 'none';
+    }
+
+  } else {
+    // Category view
+    cards=quranCards.filter(c=>c.category===key);
+    const safeName = 'cat_' + key.toLowerCase().replace(/ /g,'_').replace(/&/g,'and').substring(0,30);
+    coverUrl = surahCovers[safeName] || null;
+
+    document.getElementById('detail-chapter-label').textContent = 'Category';
+    const revEl = document.getElementById('detail-rev-badge');
+    revEl.textContent = `${cards.length} cards`;
+    revEl.className = 'detail-rev-badge meccan';
+    document.getElementById('quran-detail-heading').textContent = key;
+    document.getElementById('detail-arabic-name').textContent = '';
+    document.getElementById('detail-meaning').textContent = '';
+    document.getElementById('detail-theme').textContent = '';
+    document.getElementById('detail-stats').innerHTML = '';
+
+    if(coverUrl) {
+      coverThumb.innerHTML = `<img src="${coverUrl}" alt="">`;
+      coverThumb.style.display = 'block';
+    } else {
+      coverThumb.innerHTML = '';
+      coverThumb.style.display = 'none';
+    }
+  }
+
+  // Set full-page background
+  if(coverUrl) {
+    bgEl.innerHTML = `<img src="${coverUrl}" alt="">`;
+    bgEl.style.display = 'block';
+  } else {
+    bgEl.innerHTML = '';
+    bgEl.style.display = 'none';
+  }
+
+  const grid=document.getElementById('quran-detail-grid');
+  grid.innerHTML='';
+  const sorted=sortByVerse(cards);
+  sorted.forEach(c=>grid.appendChild(buildCardThumb(c, images, {selectable:true})));
+
+  document.getElementById('quran-browse-view').style.display='none';
+  document.getElementById('quran-viewall-view').style.display='none';
+  document.getElementById('quran-detail-view').style.display='block';
+  selectMode = false; selectedCardIds.clear();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function refreshDeenGallery(){
+  const{deenCards}=classifyCards(); refreshGalleryCounts();
+  const container=document.getElementById('deen-rows-container');
+  const empty=document.getElementById('deen-gallery-empty');
+  container.innerHTML='';
+  if(deenCards.length===0){empty.style.display='block';return;}
+  empty.style.display='none';
+  const images=await getImages();
+  const byC=groupByCategory(deenCards);
+
+  // Category row
+  if(Object.keys(byC).length>1){
+    const catThumbs=Object.keys(byC).sort((a,b)=>byC[b].length-byC[a].length).map(cat=>buildCategoryThumb(cat,byC[cat].length));
+    container.appendChild(buildGalleryRow('Browse by Category',`${Object.keys(byC).length} Categories`,catThumbs, {title:'Browse by Category', thumbs:catThumbs}));
+  }
+
+  // All cards
+  const sorted=sortByVerse(deenCards);
+  container.appendChild(buildGalleryRow('All Deen Cards',`${sorted.length} cards`,sorted.map(c=>buildCardThumb(c,images)), {title:'All Deen Cards', cards:deenCards, images:images}));
+}
+
+// ============================================
+// ANIMATED TRANSITION PROGRESS
+// ============================================
+function runTransitionProgress(prefix, stepCount, onComplete) {
+  // Reset all steps
+  const container = document.getElementById(prefix+'-transition-steps');
+  if (container) container.querySelectorAll('.t-step').forEach(s => { s.classList.remove('done','active-step'); });
+  const fill = document.getElementById(prefix+'-progress-fill');
+  const pct = document.getElementById(prefix+'-progress-pct');
+  if (fill) fill.style.width = '0%';
+  if (pct) pct.textContent = '0%';
+
+  let currentStep = 0;
+  const interval = setInterval(() => {
+    if (currentStep < stepCount) {
+      // Mark current step as active
+      const steps = container ? container.querySelectorAll('.t-step') : [];
+      if (currentStep > 0 && steps[currentStep-1]) { steps[currentStep-1].classList.remove('active-step'); steps[currentStep-1].classList.add('done'); }
+      if (steps[currentStep]) steps[currentStep].classList.add('active-step');
+      const pctVal = Math.round(((currentStep + 0.5) / stepCount) * 100);
+      if (fill) fill.style.width = pctVal + '%';
+      if (pct) pct.textContent = pctVal + '%';
+      currentStep++;
+    }
+  }, 800);
+  // Store interval so we can complete it when the real API returns
+  return { interval, complete: function() {
+    clearInterval(interval);
+    const steps = container ? container.querySelectorAll('.t-step') : [];
+    steps.forEach(s => { s.classList.remove('active-step'); s.classList.add('done'); });
+    if (fill) fill.style.width = '100%';
+    if (pct) pct.textContent = '100%';
+  }};
+}
+
+let savedCardId = null; // Track the saved card ID to prevent duplicates
+
+// ============================================
+// ANALYZE INPUT
+// ============================================
+async function analyzeInput() {
+  const title=document.getElementById('inp-title').value.trim(),category=document.getElementById('inp-category').value.trim(),analysis=document.getElementById('inp-analysis').value.trim();
+  if(!title||!analysis){showToast('Please fill in title and analysis text');return;}
+
+  // Show transition screen
+  updateVerseBanners();
+  goToPhase('phase-analysis-loading');
+  const progress = runTransitionProgress('analysis', 4);
+
+  try {
+    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json','X-API-Key':apiKey},body:JSON.stringify({title,category,analysis_text:analysis})});
+    const data=await res.json();
+
+    progress.complete();
+    await new Promise(r=>setTimeout(r,500)); // Brief pause to see 100%
+
+    if(data.multi_theme&&data.themes&&data.themes.length>1){pendingPhase1Raw=data.phase1_raw||'';pendingThemes=data.themes;goToPhase('phase-2');showThemeApprovalModal(data.themes);return;}
+    if(data.competing_framings&&data.framings&&data.framings.length>=2){pendingFramingPhase1Raw=data.phase1_raw||'';pendingFramings=data.framings;goToPhase('phase-2');showFramingApprovalModal(data.framings);return;}
+
+    const surahName=document.getElementById('inp-surah').value.trim(),verseNumber=document.getElementById('inp-verse').value.trim(),verseArabic=document.getElementById('inp-verse-arabic').value.trim(),verseEnglish=document.getElementById('inp-verse-english').value.trim();
+
+    currentCardData={title,category,analysis_text:analysis,model_type:data.model_type||'sequential_chain',visual_type:data.visual_type||'sequential_chain',theme:data.theme||'warm_parchment',is_islamic_content:data.is_islamic_content||false,islamic_elements:data.islamic_elements||[],steps:data.steps||[],quote:data.quote||'',back_text:data.back_text||'',card_title:data.card_title||'',card_category:data.card_category||'',card_number:data.card_number||null,surah_name:surahName,verse_number:verseNumber,verse_arabic:verseArabic,verse_english:verseEnglish,model_id:data.model_id||'',matched_model_name:data.matched_model_name||'',model_confidence:data.model_confidence||0,visual_type_secondary:data.visual_type_secondary||'',matching_reasoning:data.matching_reasoning||'',phase1_essence:data.phase1_essence||'',phase1_structure:data.phase1_structure||'',phase1_intent:data.phase1_intent||'',phase1_intent_override:data.phase1_intent_override||'',phase1_key_tension:data.phase1_key_tension||'',pipeline:data.pipeline||''};
+
+    populateCardEditor(currentCardData);
+    populateInsightsPanel(currentCardData);
+    updateVerseBanners();
+    savedCardId = null; // Reset for new card flow
+    goToPhase('phase-2');
+  } catch(e){progress.complete();showToast('Analysis failed: '+e.message);goToPhase('phase-1');}
+}
+
+// ============================================
+// POPULATE CARD EDITOR
+// ============================================
+function populateCardEditor(data){document.getElementById('sel-model-type').value=data.model_type;document.getElementById('sel-theme').value=data.theme;document.getElementById('inp-quote').value=data.quote;document.getElementById('inp-back-text').value=data.back_text;renderStepsEditor(data.steps);}
+
+function populateInsightsPanel(data) {
+  const panel=document.getElementById('analysis-insights'); if(!data.pipeline){panel.style.display='none';return;} panel.style.display='block';
+  document.getElementById('ins-visual-type').textContent=data.visual_type||'—';
+  document.getElementById('ins-visual-secondary').textContent=data.visual_type_secondary?'(alt: '+data.visual_type_secondary+')':'';
+  document.getElementById('ins-model-name').textContent=data.matched_model_name||'—';
+  document.getElementById('ins-model-confidence').textContent=data.model_confidence?'('+(data.model_confidence*100).toFixed(0)+'%)':'';
+  document.getElementById('ins-structure').textContent=data.phase1_structure||'—';
+  document.getElementById('ins-intent').textContent=data.phase1_intent||'—';
+  document.getElementById('ins-tension').textContent=data.phase1_key_tension||'—';
+  document.getElementById('ins-essence').textContent=data.phase1_essence||'—';
+  document.getElementById('ins-reasoning').textContent=data.matching_reasoning||'—';
+  document.getElementById('ins-pipeline').textContent=data.pipeline;
+  const hasOv=data.phase1_intent_override&&data.phase1_intent_override.trim();
+  document.getElementById('insights-conflict-badge').style.display=hasOv?'inline':'none';
+  document.getElementById('ins-override-row').style.display=hasOv?'block':'none';
+  if(hasOv)document.getElementById('ins-override').textContent='Structure: "'+data.phase1_structure+'" but intent: "'+data.phase1_intent+'" → override to "'+data.phase1_intent_override+'"';
+  if(data.model_id){currentModelId=data.model_id;fetchModelVisualDescription(data.model_id);}
+}
+
+function toggleInsights(){const b=document.getElementById('insights-body'),c=document.getElementById('insights-chevron'),o=b.style.display!=='none';b.style.display=o?'none':'block';c.style.transform=o?'rotate(0deg)':'rotate(90deg)';}
+
+let currentModelId=null,modelThumbnailCache={};
+function fetchModelVisualDescription(modelId){fetch(`/api/model-visual/${modelId}`).then(r=>r.json()).then(d=>{if(d.error)return;document.getElementById('ins-model-visual-container').style.display='block';document.getElementById('ins-model-visual-desc').textContent=d.visual_description||'';document.getElementById('ins-model-visual-img').innerHTML='';if(modelThumbnailCache[modelId])showModelThumbnail(modelThumbnailCache[modelId]);}).catch(e=>console.error('[model-visual]',e));}
+function showModelThumbnail(b64){document.getElementById('ins-model-visual-img').innerHTML=`<img src="${b64}" style="max-width:200px;max-height:200px;border-radius:6px;border:1px solid #ddd">`;}
+function generateModelThumbnail(){
+  if(!currentModelId){alert('No model selected');return;} const btn=document.getElementById('btn-gen-model-thumb'),ot=btn.textContent;btn.textContent='Generating...';btn.disabled=true;
+  if(modelThumbnailCache[currentModelId]){showModelThumbnail(modelThumbnailCache[currentModelId]);btn.textContent=ot;btn.disabled=false;return;}
+  const gk=googleKey||''; if(!gk&&!serverHasGoogleKey){alert('Google AI API key not configured');btn.textContent=ot;btn.disabled=false;return;}
+  fetch('/api/generate-model-thumbnail',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model_id:currentModelId,google_api_key:gk})}).then(r=>r.json()).then(d=>{if(d.error)alert(`Error: ${d.error}`);else if(d.image_base64){modelThumbnailCache[currentModelId]=d.image_base64;showModelThumbnail(d.image_base64);}btn.textContent=ot;btn.disabled=false;}).catch(e=>{alert('Failed');btn.textContent=ot;btn.disabled=false;});
+}
+
+function renderStepsEditor(steps){const c=document.getElementById('steps-editor');c.innerHTML='';steps.forEach((s,i)=>{const r=document.createElement('div');r.className='step-row';r.innerHTML=`<div class="step-num">${i+1}</div><input type="text" class="step-label-input" value="${escHtml(s.label)}" placeholder="Label"><input type="text" class="step-arabic-input" value="${escHtml(s.arabic||'')}" placeholder="Arabic (optional)" dir="rtl" style="font-family:'Noto Sans Arabic',sans-serif"><button class="btn-remove-step" onclick="removeStep(${i})">×</button>`;c.appendChild(r);});}
+function addStep(){const c=document.getElementById('steps-editor'),n=c.children.length+1,r=document.createElement('div');r.className='step-row';r.innerHTML=`<div class="step-num">${n}</div><input type="text" class="step-label-input" value="" placeholder="Label"><input type="text" class="step-arabic-input" value="" placeholder="Arabic (optional)" dir="rtl" style="font-family:'Noto Sans Arabic',sans-serif"><button class="btn-remove-step" onclick="this.parentElement.remove()">×</button>`;c.appendChild(r);}
+function removeStep(i){const rows=document.querySelectorAll('#steps-editor .step-row');if(rows[i])rows[i].remove();document.querySelectorAll('#steps-editor .step-num').forEach((el,idx)=>el.textContent=idx+1);}
+
+function getEditorData(){
+  const steps=[];const as=currentCardData?.steps||[];
+  document.querySelectorAll('#steps-editor .step-row').forEach((row,i)=>{steps.push({label:row.querySelector('.step-label-input').value.trim(),arabic:row.querySelector('.step-arabic-input').value.trim(),description:as[i]?.description||''});});
+  return{surah_name:document.getElementById('inp-surah').value.trim(),verse_number:document.getElementById('inp-verse').value.trim(),verse_arabic:document.getElementById('inp-verse-arabic').value.trim(),verse_english:document.getElementById('inp-verse-english').value.trim(),title:document.getElementById('inp-title').value.trim(),category:document.getElementById('inp-category').value.trim(),card_title:currentCardData?.card_title||'',card_category:currentCardData?.card_category||'',analysis_text:document.getElementById('inp-analysis').value.trim(),model_type:document.getElementById('sel-model-type').value,visual_type:currentCardData?.visual_type||'sequential_chain',theme:document.getElementById('sel-theme').value,is_islamic_content:currentCardData?.is_islamic_content||false,islamic_elements:currentCardData?.islamic_elements||[],quote:document.getElementById('inp-quote').value.trim(),back_text:document.getElementById('inp-back-text').value.trim(),steps,card_number:currentCardData?.card_number||null};
+}
+
+// ============================================
+// IMAGE GENERATION (Phase 2 → Transition → Phase 3)
+// ============================================
+let lastAiImageUrl=null,lastGeneratedPrompt='',refinementVersion=0,refinementHistory=[];
+
+async function generateCardImage(mode='spread'){
+  const data=getEditorData(); data.mode=mode; data.google_api_key=googleKey;
+  if(!googleKey&&!serverHasGoogleKey){showToast('Google AI API key not configured. Set GOOGLE_AI_API_KEY in .env');return;}
+
+  updateVerseBanners();
+  goToPhase('phase-image-loading');
+  const progress = runTransitionProgress('image', 4);
+
+  try {
+    const res=await fetch('/api/generate-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    const result=await res.json();
+    if(result.error){progress.complete();showToast('Error: '+result.error);goToPhase('phase-2');return;}
+    progress.complete();
+    await new Promise(r=>setTimeout(r,500));
+
+    const img=document.getElementById('ai-image'),meta=document.getElementById('ai-image-meta');
+    if(result.base64)img.src=result.base64; else if(result.url)img.src=result.url;
+    lastAiImageUrl=result.url||result.base64;
+    meta.textContent=`${result.width}×${result.height}px • ${mode} • AI Generated`;
+    cachedSplitCards=null;cachedSplitSourceUrl=null;document.getElementById('split-cards-preview').style.display='none';
+
+    try{const pr=await fetch('/api/generate-prompt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,mode})});const pd=await pr.json();lastGeneratedPrompt=pd.prompt||'';}catch(pe){lastGeneratedPrompt='';}
+
+    refinementVersion=0;updateRefineVersionLabel();updateRefineHistory();
+
+    // Auto-save (use PUT if card already saved, POST for new)
+    try {
+      const sd=getEditorData();
+      if(currentCardData){sd.model_id=sd.model_id||currentCardData.model_id||'';sd.matched_model_name=sd.matched_model_name||currentCardData.matched_model_name||'';sd.model_confidence=sd.model_confidence||currentCardData.model_confidence||0;sd.visual_type_secondary=sd.visual_type_secondary||currentCardData.visual_type_secondary||'';sd.is_islamic_content=currentCardData.is_islamic_content||false;sd.islamic_elements=currentCardData.islamic_elements||[];sd.step_emotions=currentCardData.step_emotions||[];}
+      if(result.url)sd.image_url=result.url;
+      let sr;
+      if(savedCardId){
+        sr=await fetch(`/api/cards/${savedCardId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(sd)});
+      } else {
+        sr=await fetch('/api/cards',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(sd)});
+      }
+      const saved=await sr.json();
+      if(saved&&saved.id){
+        savedCardId=saved.id;currentCardData={...currentCardData,...saved};
+        const ei=allCards.findIndex(c=>c.id===saved.id);if(ei>=0)allCards[ei]=saved;else allCards.push(saved);refreshGalleryCounts();
+        // Auto-generate verse cinematic thumbnail in background
+        generateVerseThumb(saved);
+      }
+    }catch(e){console.warn('[AutoSave]',e);}
+
+    goToPhase('phase-3');
+  } catch(e){showToast('Generation failed: '+e.message);goToPhase('phase-2');}
+}
+
+// ============================================
+// REFINEMENT
+// ============================================
+function addRefinementChip(text){const inp=document.getElementById('refinement-input');inp.value=inp.value.trim()?(inp.value.trim()+'\n'+text):text;inp.focus();}
+function clearRefinement(){document.getElementById('refinement-input').value='';}
+function updateRefineVersionLabel(){const l=document.getElementById('refine-version');l.textContent=refinementVersion===0?'Original image':`Refinement v${refinementVersion}`;}
+
+async function refineCardImage(){
+  const instructions=document.getElementById('refinement-input').value.trim();if(!instructions){showToast('Please describe what to refine');return;}
+  if(!googleKey&&!serverHasGoogleKey){showToast('Google AI API key not configured');return;}
+  const spinner=document.getElementById('refine-spinner'),btn=document.getElementById('btn-refine');spinner.style.display='inline-block';btn.disabled=true;showToast('Generating refined card...');
+  try {
+    const data=getEditorData();data.google_api_key=googleKey;data.refinement_instructions=instructions;data.original_prompt=lastGeneratedPrompt;
+    const ci=document.getElementById('ai-image');if(ci&&ci.src)data.original_image_b64=ci.src;
+    const res=await fetch('/api/refine-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const result=await res.json();
+    if(result.error){showToast('Refinement error: '+result.error);return;}
+    const img=document.getElementById('ai-image'),meta=document.getElementById('ai-image-meta');
+    if(result.base64)img.src=result.base64;else if(result.url)img.src=result.url;
+    lastAiImageUrl=result.url||result.base64;cachedSplitCards=null;cachedSplitSourceUrl=null;document.getElementById('split-cards-preview').style.display='none';
+    refinementVersion++;meta.textContent=`${result.width}×${result.height}px • Refinement v${refinementVersion} • AI Generated`;updateRefineVersionLabel();
+    refinementHistory.push({version:refinementVersion,instructions,timestamp:new Date().toLocaleTimeString()});updateRefineHistory();
+    document.getElementById('refinement-input').value='';showToast(`Refined card v${refinementVersion} generated!`);
+
+    // Save refined version as a new card (new version of same verse)
+    try {
+      const sd=getEditorData();
+      if(currentCardData){sd.model_id=currentCardData.model_id||'';sd.matched_model_name=currentCardData.matched_model_name||'';sd.model_confidence=currentCardData.model_confidence||0;sd.is_islamic_content=currentCardData.is_islamic_content||false;sd.islamic_elements=currentCardData.islamic_elements||[];}
+      if(lastAiImageUrl&&!lastAiImageUrl.startsWith('data:'))sd.image_url=lastAiImageUrl;
+      sd.version = refinementVersion + 1;
+      // Save as new card for refined version (separate gallery entry)
+      const sr=await fetch('/api/cards',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(sd)});
+      const saved=await sr.json();
+      if(saved&&saved.id){savedCardId=saved.id;currentCardData={...currentCardData,...saved};allCards.push(saved);refreshGalleryCounts();}
+    }catch(e){console.warn('[RefineAutoSave]',e);}
+  }catch(e){showToast('Refinement failed: '+e.message);}finally{spinner.style.display='none';btn.disabled=false;}
+}
+
+function updateRefineHistory(){const h=document.getElementById('refine-history'),l=document.getElementById('refine-history-list');if(refinementHistory.length===0){h.style.display='none';return;}h.style.display='block';l.innerHTML=refinementHistory.map(h=>`<div style="padding:4px 0;border-bottom:1px solid #F0E4C4"><strong>v${h.version}</strong> (${h.timestamp}): ${h.instructions.substring(0,80)}${h.instructions.length>80?'...':''}</div>`).join('');}
+
+// ============================================
+// SAVE & COMPLETE (Phase 3 → Success)
+// ============================================
+async function saveCardAndComplete(){
+  const data=getEditorData();
+  if(currentCardData){data.model_id=data.model_id||currentCardData.model_id||'';data.matched_model_name=data.matched_model_name||currentCardData.matched_model_name||'';data.model_confidence=data.model_confidence||currentCardData.model_confidence||0;data.visual_type_secondary=data.visual_type_secondary||currentCardData.visual_type_secondary||'';data.is_islamic_content=currentCardData.is_islamic_content||false;data.islamic_elements=currentCardData.islamic_elements||[];if(lastAiImageUrl&&!lastAiImageUrl.startsWith('data:'))data.image_url=lastAiImageUrl;}
+  try {
+    let res;
+    if(savedCardId){
+      res=await fetch(`/api/cards/${savedCardId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    } else {
+      res=await fetch('/api/cards',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    }
+    const saved=await res.json();
+    currentCardData={...currentCardData,...saved};
+    const ei=allCards.findIndex(c=>c.id===saved.id);if(ei>=0)allCards[ei]=saved;else allCards.push(saved);refreshGalleryCounts();
+
+    const isQuran=saved.surah_name&&saved.verse_number;
+    const dest=isQuran?'Quran Cards':'Deen Cards';
+    document.getElementById('success-message').textContent=`Your visual card for ${saved.title||'this verse'} has been saved to ${dest}.`;
+    document.getElementById('btn-go-gallery').onclick=()=>switchTab(isQuran?'quran-gallery':'deen-gallery');
+
+    // Show small preview
+    const prev=document.getElementById('success-card-preview');
+    if(lastAiImageUrl)prev.innerHTML=`<img src="${lastAiImageUrl}" style="max-width:100%;border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,.1)">`;
+    else prev.innerHTML='';
+
+    goToPhase('phase-success');
+    showToast('Card saved!');
+  }catch(e){showToast('Save failed: '+e.message);}
+}
+
+async function saveCard(){
+  const data=getEditorData();
+  if(currentCardData){data.model_id=data.model_id||currentCardData.model_id||'';data.matched_model_name=data.matched_model_name||currentCardData.matched_model_name||'';data.model_confidence=data.model_confidence||currentCardData.model_confidence||0;data.visual_type_secondary=data.visual_type_secondary||currentCardData.visual_type_secondary||'';data.is_islamic_content=currentCardData.is_islamic_content||false;data.islamic_elements=currentCardData.islamic_elements||[];}
+  try{let res;if(savedCardId){res=await fetch(`/api/cards/${savedCardId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}else{res=await fetch('/api/cards',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});}const saved=await res.json();if(saved&&saved.id)savedCardId=saved.id;currentCardData={...currentCardData,...saved};const ei=allCards.findIndex(c=>c.id===saved.id);if(ei>=0)allCards[ei]=saved;else allCards.push(saved);refreshGalleryCounts();showToast('Card saved!');}catch(e){showToast('Save failed: '+e.message);}
+}
+
+// ============================================
+// SPLIT CARDS / DOWNLOAD
+// ============================================
+let cachedSplitCards=null,cachedSplitSourceUrl=null;
+async function splitCurrentImage(){
+  const ci=document.getElementById('ai-image');if(!ci||!ci.src)return null;
+  if(cachedSplitCards&&cachedSplitSourceUrl===ci.src)return cachedSplitCards;
+  showToast('Splitting cards & removing background...');
+  try{const p={};if(ci.src.startsWith('data:'))p.image_b64=ci.src;else try{p.image_path=new URL(ci.src).pathname;}catch(e){p.image_path=ci.src;}
+    const res=await fetch('/api/split-cards',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});const r=await res.json();if(r.error){showToast('Split error: '+r.error);return null;}
+    cachedSplitCards=r;cachedSplitSourceUrl=ci.src;document.getElementById('split-front-img').src=r.front_b64;document.getElementById('split-back-img').src=r.back_b64;document.getElementById('split-cards-preview').style.display='block';return r;
+  }catch(e){showToast('Split failed: '+e.message);return null;}
+}
+async function downloadSingleCard(side){
+  const s=await splitCurrentImage();if(!s)return;
+  const fname = buildCardFilename(currentCardData||{}, side);
+  const link=document.createElement('a');link.download=fname;link.href=side==='front'?s.front_b64:s.back_b64;link.click();showToast(`${side} card downloaded!`);
+}
+function downloadAiImage(){
+  if(!lastAiImageUrl){showToast('No image yet');return;}
+  const fname = buildCardFilename(currentCardData||{}, 'full');
+  const l=document.createElement('a');l.download=fname;l.href=lastAiImageUrl;l.click();
+}
+
+// ============================================
+// PROMPT / EXPORT
+// ============================================
+async function showPrompt(){try{const res=await fetch('/api/generate-prompt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...getEditorData(),mode:'spread'})});const r=await res.json();document.getElementById('prompt-text').textContent=r.prompt;document.getElementById('prompt-viewer').style.display='block';}catch(e){showToast('Could not generate prompt');}}
+function copyPrompt(){navigator.clipboard.writeText(document.getElementById('prompt-text').textContent).then(()=>showToast('Prompt copied!'));}
+async function exportCard(fmt){if(!lastAiImageUrl){showToast('No image to export');return;}const l=document.createElement('a');l.download=`card_${Date.now()}.png`;l.href=lastAiImageUrl;l.click();showToast('PNG downloaded');}
+function exportAllCards(){switchTab('quran-gallery');showToast('Click on a card in the gallery to export it');}
+
+// ============================================
+// LIGHTBOX WITH DOWNLOAD BUTTONS
+// ============================================
+function buildCardFilename(card, type) {
+  // Format: <surah:verse>_<surah_name>_<verse>_<type>.png
+  const sn = card.surah_name || 'deen';
+  const vn = card.verse_number || '';
+  const safe = (s) => (s||'').replace(/[^a-zA-Z0-9_-]/g, '_').replace(/_+/g,'_').substring(0,40);
+  if (vn) {
+    return `${safe(vn)}_${safe(sn)}_${type}.png`;
+  }
+  return `${safe(sn)}_${safe(card.title||'card')}_${type}.png`;
+}
+
+function showLightbox(src, title, card) {
+  const o = document.createElement('div');
+  o.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;flex-direction:column;backdrop-filter:blur(6px)';
+
+  // Close on background click
+  o.addEventListener('click', (e) => { if(e.target === o) o.remove(); });
+
+  // Close button
+  const closeBtn = document.createElement('button');
+  closeBtn.innerHTML = '&times;';
+  closeBtn.style.cssText = 'position:absolute;top:16px;right:20px;background:none;border:none;color:rgba(255,255,255,.6);font-size:32px;cursor:pointer;z-index:2;padding:4px 12px;border-radius:8px;transition:all .2s';
+  closeBtn.onmouseover = () => closeBtn.style.color='white';
+  closeBtn.onmouseout = () => closeBtn.style.color='rgba(255,255,255,.6)';
+  closeBtn.onclick = () => o.remove();
+  o.appendChild(closeBtn);
+
+  // Image
+  const i = document.createElement('img');
+  i.src = src;
+  i.style.cssText = 'max-width:88vw;max-height:72vh;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.5)';
+  o.appendChild(i);
+
+  // Title
+  const lb = document.createElement('div');
+  lb.textContent = title;
+  lb.style.cssText = 'color:white;font-size:15px;font-weight:600;margin-top:14px;font-family:Inter,sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.5)';
+  o.appendChild(lb);
+
+  // Download action bar
+  const bar = document.createElement('div');
+  bar.style.cssText = 'display:flex;gap:12px;margin-top:16px;align-items:center';
+
+  const mkBtn = (label, icon, tooltip, onClick) => {
+    const b = document.createElement('button');
+    b.innerHTML = icon;
+    b.title = tooltip;
+    b.style.cssText = 'background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:white;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-family:Inter,sans-serif;transition:all .2s;display:flex;align-items:center;gap:6px;backdrop-filter:blur(4px)';
+    b.onmouseover = () => { b.style.background='rgba(200,144,46,.3)'; b.style.borderColor='rgba(200,144,46,.5)'; };
+    b.onmouseout = () => { b.style.background='rgba(255,255,255,.1)'; b.style.borderColor='rgba(255,255,255,.15)'; };
+    b.onclick = (e) => { e.stopPropagation(); onClick(); };
+    // Add text label below on larger screens
+    const span = document.createElement('span');
+    span.textContent = label;
+    span.style.cssText = 'font-size:12px;font-weight:500';
+    b.appendChild(span);
+    return b;
+  };
+
+  // Full card download
+  bar.appendChild(mkBtn('Full Spread', '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18"/></svg>', 'Download full card spread', () => {
+    const link = document.createElement('a');
+    link.download = buildCardFilename(card||{title}, 'full');
+    link.href = src;
+    link.click();
+    showToast('Full spread downloaded');
+  }));
+
+  // Front card download (split)
+  bar.appendChild(mkBtn('Front', '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="18" rx="2"/><path d="M7 15l-2 2 2 2" opacity=".4"/></svg>', 'Download front card only', async () => {
+    showToast('Splitting front card...');
+    try {
+      const res = await fetch('/api/split-cards', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image_path:getPathFromUrl(src)})});
+      const r = await res.json();
+      if(r.error){showToast('Split failed: '+r.error);return;}
+      const link = document.createElement('a');
+      link.download = buildCardFilename(card||{title}, 'front');
+      link.href = r.front_b64;
+      link.click();
+      showToast('Front card downloaded');
+    } catch(e){showToast('Split failed');}
+  }));
+
+  // Back card download (split)
+  bar.appendChild(mkBtn('Back', '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="13" y="3" width="8" height="18" rx="2"/><path d="M17 15l2 2-2 2" opacity=".4"/></svg>', 'Download back card only', async () => {
+    showToast('Splitting back card...');
+    try {
+      const res = await fetch('/api/split-cards', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image_path:getPathFromUrl(src)})});
+      const r = await res.json();
+      if(r.error){showToast('Split failed: '+r.error);return;}
+      const link = document.createElement('a');
+      link.download = buildCardFilename(card||{title}, 'back');
+      link.href = r.back_b64;
+      link.click();
+      showToast('Back card downloaded');
+    } catch(e){showToast('Split failed');}
+  }));
+
+  o.appendChild(bar);
+
+  // Hint
+  const hint = document.createElement('div');
+  hint.textContent = 'Click outside image to close';
+  hint.style.cssText = 'color:rgba(255,255,255,.25);font-size:11px;margin-top:10px;font-family:Inter,sans-serif';
+  o.appendChild(hint);
+
+  document.body.appendChild(o);
+}
+
+function getPathFromUrl(url) {
+  // Extract /static/... path from full URL or relative URL
+  if(url.startsWith('data:')) return '';
+  try { return new URL(url, window.location.origin).pathname; } catch(e) { return url; }
+}
+
+function loadCardForEditing(card){switchTab('create');document.getElementById('inp-surah').value=card.surah_name||'';onSurahChange();document.getElementById('inp-verse').value=card.verse_number||'';document.getElementById('inp-verse-arabic').value=card.verse_arabic||'';document.getElementById('inp-verse-english').value=card.verse_english||'';document.getElementById('inp-title').value=card.title;document.getElementById('inp-category').value=card.category;document.getElementById('inp-analysis').value=card.analysis_text||'';currentCardData=card;populateCardEditor(card);goToPhase('phase-2');updateVerseBanners();}
+
+// ============================================
+// MULTI-THEME / FRAMING SUPPORT
+// ============================================
+function showThemeApprovalModal(themes){const s=document.getElementById('theme-approval-section'),c=document.getElementById('theme-cards-container');c.innerHTML='';themes.forEach((t,i)=>{const cc=t.confidence>=.85?'confidence-high':'confidence-medium',cl=Math.round(t.confidence*100)+'%',d=document.createElement('div');d.className='theme-card selected';d.innerHTML=`<input type="checkbox" checked data-theme-index="${i}" onchange="toggleThemeCard(this)"><div class="theme-card-body"><div class="theme-card-title">${escHtml(t.title||'Theme '+(i+1))}</div><div class="theme-card-essence">${escHtml(t.essence||t.focus||'')}</div><div class="theme-card-meta"><span class="confidence-badge ${cc}">${cl}</span><span class="theme-structure-tag">${escHtml(t.cognitive_structure||'')}</span></div></div>`;d.onclick=e=>{if(e.target.type!=='checkbox'){const cb=d.querySelector('input');cb.checked=!cb.checked;toggleThemeCard(cb);}};c.appendChild(d);});updateThemeButtonLabel();s.style.display='block';}
+function toggleThemeCard(cb){cb.closest('.theme-card').classList.toggle('selected',cb.checked);updateThemeButtonLabel();}
+function updateThemeButtonLabel(){const n=document.querySelectorAll('#theme-cards-container input:checked').length;document.getElementById('btn-generate-themes').textContent=`Generate ${n} Card${n!==1?'s':''}`;}
+function dismissThemeApproval(){document.getElementById('theme-approval-section').style.display='none';pendingThemes=[];pendingPhase1Raw='';}
+
+async function generateApprovedThemes(){
+  const cbs=document.querySelectorAll('#theme-cards-container input:checked'),idxs=Array.from(cbs).map(cb=>parseInt(cb.dataset.themeIndex));
+  if(idxs.length===0){showToast('Select at least one theme');return;}
+  const title=document.getElementById('inp-title').value.trim(),category=document.getElementById('inp-category').value.trim(),analysis=document.getElementById('inp-analysis').value.trim();
+  const spinner=document.getElementById('theme-spinner'),btn=document.getElementById('btn-generate-themes');spinner.style.display='inline-block';btn.disabled=true;cardDataList=[];
+  for(const idx of idxs){const t=pendingThemes[idx];showToast(`Analyzing theme ${cardDataList.length+1}/${idxs.length}: ${t.title}...`);try{const r=await fetch('/api/analyze-theme',{method:'POST',headers:{'Content-Type':'application/json','X-API-Key':apiKey},body:JSON.stringify({title,category,analysis_text:analysis,theme_data:t,phase1_raw:pendingPhase1Raw})});const d=await r.json();if(!d.error)cardDataList.push({title,category,analysis_text:analysis,model_type:d.model_type||'sequential_chain',visual_type:d.visual_type||'sequential_chain',theme:d.theme||'warm_parchment',is_islamic_content:d.is_islamic_content||false,islamic_elements:d.islamic_elements||[],steps:d.steps||[],quote:d.quote||'',back_text:d.back_text||'',card_title:d.card_title||t.title||'',card_category:d.card_category||'',card_number:d.card_number||null,theme_title:d.theme_title||t.title||''});}catch(e){showToast(`Error: ${e.message}`);}}
+  spinner.style.display='none';btn.disabled=false;document.getElementById('theme-approval-section').style.display='none';
+  if(cardDataList.length>0){currentCardData=cardDataList[0];populateCardEditor(currentCardData);if(cardDataList.length>1)showMultiCardStrip();showToast(`Generated ${cardDataList.length} card(s)`);}
+  pendingThemes=[];pendingPhase1Raw='';
+}
+
+function showMultiCardStrip(){const s=document.getElementById('multi-card-results'),st=document.getElementById('multi-card-strip');st.innerHTML='';cardDataList.forEach((c,i)=>{const d=document.createElement('div');d.className='multi-card-item'+(i===0?' active':'');d.innerHTML=`<div class="multi-card-item-title">${escHtml(c.theme_title||c.card_title||'Card '+(i+1))}</div><div class="multi-card-item-model">${escHtml(c.visual_type||'')} • ${escHtml(c.card_category||c.category)}</div>`;d.onclick=()=>{st.querySelectorAll('.multi-card-item').forEach(el=>el.classList.remove('active'));d.classList.add('active');currentCardData=cardDataList[i];populateCardEditor(currentCardData);};st.appendChild(d);});s.style.display='block';}
+
+function showFramingApprovalModal(framings){const s=document.getElementById('framing-approval-section'),c=document.getElementById('framing-cards-container');c.innerHTML='';framings.forEach((f,i)=>{const cc=f.confidence>=.85?'confidence-high':'confidence-medium',cl=Math.round(f.confidence*100)+'%',d=document.createElement('div');d.className='framing-card'+(i===0?' selected':'');d.innerHTML=`<input type="radio" name="framing-choice" ${i===0?'checked':''} data-framing-index="${i}" onchange="selectFramingCard(this)"><div class="framing-card-body"><div class="framing-card-title">${escHtml(f.title||'Framing '+(i+1))}</div><div class="framing-card-essence">${escHtml(f.essence||'')}</div><div class="framing-card-tension"><strong>Key tension:</strong> ${escHtml(f.key_tension||'')}</div><div class="framing-card-visual-dir"><strong>Visual direction:</strong> ${escHtml(f.visual_direction||'')}</div><div class="framing-card-meta"><span class="confidence-badge ${cc}">${cl}</span><span class="theme-structure-tag">${escHtml(f.rhetorical_intent||'')}</span></div></div>`;d.onclick=e=>{if(e.target.type!=='radio'){const r=d.querySelector('input');r.checked=true;selectFramingCard(r);}};c.appendChild(d);});s.style.display='block';}
+function selectFramingCard(r){document.querySelectorAll('#framing-cards-container .framing-card').forEach(c=>c.classList.remove('selected'));r.closest('.framing-card').classList.add('selected');}
+function dismissFramingApproval(){document.getElementById('framing-approval-section').style.display='none';pendingFramings=[];pendingFramingPhase1Raw='';}
+
+async function generateChosenFraming(){
+  const sel=document.querySelector('#framing-cards-container input:checked');if(!sel){showToast('Select a framing');return;}
+  const idx=parseInt(sel.dataset.framingIndex),f=pendingFramings[idx];
+  const title=document.getElementById('inp-title').value.trim(),category=document.getElementById('inp-category').value.trim(),analysis=document.getElementById('inp-analysis').value.trim();
+  const spinner=document.getElementById('framing-spinner'),btn=document.getElementById('btn-generate-framing');spinner.style.display='inline-block';btn.disabled=true;
+  try{const r=await fetch('/api/analyze-framing',{method:'POST',headers:{'Content-Type':'application/json','X-API-Key':apiKey},body:JSON.stringify({title,category,analysis_text:analysis,framing_data:f,phase1_raw:pendingFramingPhase1Raw})});const d=await r.json();if(d.error){showToast('Failed: '+d.error);return;}
+    document.getElementById('framing-approval-section').style.display='none';
+    const sn=document.getElementById('inp-surah').value.trim(),vn=document.getElementById('inp-verse').value.trim(),va=document.getElementById('inp-verse-arabic').value.trim(),ve=document.getElementById('inp-verse-english').value.trim();
+    currentCardData={title,category,analysis_text:analysis,model_type:d.model_type||'sequential_chain',visual_type:d.visual_type||'sequential_chain',theme:d.theme||'warm_parchment',is_islamic_content:d.is_islamic_content||false,islamic_elements:d.islamic_elements||[],steps:d.steps||[],quote:d.quote||'',back_text:d.back_text||'',card_title:d.card_title||'',card_category:d.card_category||'',card_number:d.card_number||null,surah_name:sn,verse_number:vn,verse_arabic:va,verse_english:ve,matched_model_name:d.matched_model_name||'',model_confidence:d.model_confidence||0,visual_type_secondary:d.visual_type_secondary||'',matching_reasoning:d.matching_reasoning||'',phase1_essence:d.phase1_essence||'',phase1_structure:d.phase1_structure||'',phase1_intent:d.phase1_intent||'',phase1_intent_override:d.phase1_intent_override||'',phase1_key_tension:d.framing_key_tension||d.phase1_key_tension||'',pipeline:d.pipeline||''};
+    populateCardEditor(currentCardData);populateInsightsPanel(currentCardData);showToast(`Card generated with framing: "${f.title}"`);
+  }catch(e){showToast('Failed: '+e.message);}finally{spinner.style.display='none';btn.disabled=false;pendingFramings=[];pendingFramingPhase1Raw='';}
+}
+
+// ============================================
+// UTILITIES
+// ============================================
+function escHtml(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+function clearForm(){
+  ['inp-surah','inp-verse','inp-verse-arabic','inp-verse-english','inp-title','inp-category','inp-analysis','inp-analysis-tafsir','inp-analysis-custom','inp-quote','inp-back-text'].forEach(id=>{const e=document.getElementById(id);if(e){e.value='';e.classList.remove('auto-filled');delete e.dataset.manualEdit;}});
+  // Reset tafsir tab
+  switchAnalysisTab('ibn-kathir');
+  document.getElementById('tafsir-status').innerHTML='<span style="color:var(--text-muted);font-size:12px">Select a Surah &amp; verse above to auto-load Ibn Kathir\'s tafsir</span>';
+  document.getElementById('steps-editor').innerHTML='';
+  document.getElementById('verse-fetch-status').textContent='';
+  document.getElementById('theme-approval-section').style.display='none';
+  document.getElementById('framing-approval-section').style.display='none';
+  document.getElementById('multi-card-results').style.display='none';
+  document.getElementById('prompt-viewer').style.display='none';
+  currentCardData=null;cardDataList=[];pendingThemes=[];pendingPhase1Raw='';pendingFramings=[];pendingFramingPhase1Raw='';savedCardId=null;
+  updateStepProgress();
+}
+function saveApiKey(){apiKey=document.getElementById('api-key-input').value.trim();localStorage.setItem('anthropic_key',apiKey);}
+function saveGoogleKey(){googleKey=document.getElementById('google-key-input').value.trim();localStorage.setItem('google_ai_key',googleKey);}
+
+// Settings modal
+function showSettingsModal(){
+  const modal=document.getElementById('settings-modal');
+  modal.style.display='flex';
+  document.getElementById('settings-google-key').value=googleKey||'';
+  document.getElementById('settings-anthropic-key').value=apiKey||'';
+  document.getElementById('settings-status').textContent='';
+}
+function hideSettingsModal(){document.getElementById('settings-modal').style.display='none';}
+async function saveSettingsKeys(){
+  const gk=document.getElementById('settings-google-key').value.trim();
+  const ak=document.getElementById('settings-anthropic-key').value.trim();
+  const statusEl=document.getElementById('settings-status');
+  statusEl.textContent='Saving...';statusEl.style.color='var(--gold)';
+  // Save to localStorage
+  if(gk){googleKey=gk;localStorage.setItem('google_ai_key',gk);}
+  if(ak){apiKey=ak;localStorage.setItem('anthropic_key',ak);}
+  // Also save to server .env for persistence
+  try{
+    const r=await fetch('/api/save-keys',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({google_api_key:gk,anthropic_api_key:ak})});
+    const d=await r.json();
+    statusEl.textContent='Keys saved successfully!';statusEl.style.color='var(--green-mid)';
+    setTimeout(()=>hideSettingsModal(),1000);
+    showToast('API keys saved');
+  }catch(e){statusEl.textContent='Saved to browser (server save failed)';statusEl.style.color='var(--gold)';}
+}
+
+// Auto-sync localStorage keys to server on startup
+async function syncKeysToServer(){
+  if(!googleKey&&!apiKey)return;
+  try{
+    await fetch('/api/save-keys',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({google_api_key:googleKey||'',anthropic_api_key:apiKey||''})});
+  }catch(e){}
+}
+
+// ============================================
+// INIT
+// ============================================
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('api-key-input').value=apiKey;
+  document.getElementById('google-key-input').value=googleKey;
+  loadQuranSurahs();
+  loadSurahMeta();
+  ['inp-surah','inp-verse','inp-title','inp-category','inp-analysis'].forEach(id=>{const el=document.getElementById(id);if(el){el.addEventListener('change',updateStepProgress);el.addEventListener('input',updateStepProgress);}});
+  updateStepProgress();
+  refreshGalleryCounts();
+
+  // Sync any localStorage keys to server .env on startup
+  if(googleKey || apiKey) {
+    syncKeysToServer();
+  } else {
+    // Show settings modal if no keys at all
+    setTimeout(()=>{
+      if(!googleKey && !apiKey) showSettingsModal();
+    }, 500);
+  }
+});
+</script>
+</body>
+</html>

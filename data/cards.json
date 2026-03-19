@@ -1,0 +1,396 @@
+[
+  {
+    "id": "card001",
+    "title": "Quranic Mission Synthesis",
+    "category": "Prophecy & Psychology",
+    "analysis_text": "The prophetic mission in Surah Nuh 71:3 establishes three imperatives in an unbreakable sequence: worship (servitude), taqwa (consciousness), and obedience (guidance). Each step depends on the previous one. Without recognizing servitude, consciousness cannot emerge. Without consciousness, following guidance becomes hollow imitation.",
+    "model_type": "sequential_chain",
+    "theme": "warm_parchment",
+    "front_data": {},
+    "back_text": "It is tempting to follow guidance without first recognizing our fundamental position as servants. Many approach religion as a set of rules to follow, skipping the **servitude** that gives those rules meaning.\n\nOnce we recognize our fundamental reality as servants to Allah, a natural sense of caution and **consciousness** (Taqwa) flows. This Taqwa leads us to seek His commands. The only way to know them is to follow the guidance delivered through His messenger.\n\nThese three imperatives form a complete chain: recognize **servitude**, maintain **consciousness**, follow **guidance**. Breaking any link collapses the entire structure.",
+    "card_number": 1,
+    "arabic_terms": [
+      "اعْبُدُوا اللَّهَ",
+      "وَاتَّقُوهُ",
+      "وَأَطِيعُونِ"
+    ],
+    "steps": [
+      {
+        "label": "Worship",
+        "arabic": "اعْبُدُوا اللَّهَ",
+        "description": "Recognize servitude to Allah"
+      },
+      {
+        "label": "Taqwa",
+        "arabic": "وَاتَّقُوهُ",
+        "description": "Develop consciousness and caution"
+      },
+      {
+        "label": "Obey",
+        "arabic": "وَأَطِيعُونِ",
+        "description": "Follow the delivered guidance"
+      }
+    ],
+    "quote": "It is tempting to follow guidance without recognizing servitude. These three steps are an unbreakable chain.",
+    "created_at": "2026-03-13T10:00:00"
+  },
+  {
+    "id": "card002",
+    "title": "The Tawakkul Paradox",
+    "category": "Faith & Action",
+    "analysis_text": "Trust in Allah (Tawakkul) is often misunderstood as passive resignation. The Quranic model presents it as a tripod: preparation (taking means), delegation (entrusting outcomes to Allah), and acceptance (contentment with the result). Removing any leg collapses the structure. Preparation without delegation is arrogance. Delegation without preparation is negligence. Acceptance without either is fatalism.",
+    "model_type": "tripod",
+    "theme": "warm_parchment",
+    "front_data": {},
+    "back_text": "We often reduce **Tawakkul** (trust in Allah) to a passive attitude: do nothing and wait for divine intervention. This misunderstanding strips the concept of its dynamic, three-dimensional nature.\n\nThe Quranic model reveals Tawakkul as a **tripod** requiring three co-equal legs: active **preparation** (taking all available means), sincere **delegation** (entrusting the outcome entirely to Allah), and graceful **acceptance** (contentment with whatever result emerges). Each leg is non-negotiable.\n\nRemove preparation, and you have negligence masked as faith. Remove delegation, and you have arrogance masked as effort. Remove acceptance, and you have anxiety masked as devotion. True Tawakkul stands only when all three legs bear equal weight.",
+    "card_number": 2,
+    "arabic_terms": [
+      "الأخذ بالأسباب",
+      "التوكل",
+      "الرضا"
+    ],
+    "steps": [
+      {
+        "label": "Prepare",
+        "arabic": "الأخذ بالأسباب",
+        "description": "Take all available means"
+      },
+      {
+        "label": "Delegate",
+        "arabic": "التوكل",
+        "description": "Entrust outcomes to Allah"
+      },
+      {
+        "label": "Accept",
+        "arabic": "الرضا",
+        "description": "Be content with the result"
+      }
+    ],
+    "quote": "Trust without preparation is negligence. Preparation without trust is arrogance. Both without acceptance is anxiety.",
+    "created_at": "2026-03-13T10:30:00"
+  },
+  {
+    "id": "card003",
+    "title": "The Dunya Trap",
+    "category": "Worldly Attachment",
+    "analysis_text": "The Quran describes attachment to worldly life (dunya) as a cycle that feeds itself: desire leads to accumulation, accumulation leads to distraction, distraction leads to forgetfulness of purpose, forgetfulness generates more desire. This loop is described in Surah At-Takathur. Breaking the cycle requires conscious interruption at any point.",
+    "model_type": "loop_cycle",
+    "theme": "warm_parchment",
+    "front_data": {},
+    "back_text": "We assume worldly **desire** is a linear path: want something, get it, feel satisfied. But the Quran reveals a more insidious pattern — a self-reinforcing **loop** that traps us.\n\n**Desire** drives **accumulation**. Accumulation creates **distraction** from our deeper purpose. This distraction breeds **forgetfulness**, which paradoxically generates more desire. Each revolution of the cycle strengthens the next, making escape progressively harder.\n\nThe wisdom of Surah At-Takathur is that the cycle can be broken at any point through conscious awareness. Recognizing the loop is itself the first crack in its structure. The question is not whether you will desire, but whether you will let desire complete its circuit.",
+    "card_number": 3,
+    "arabic_terms": [
+      "الرغبة",
+      "التكاثر",
+      "الغفلة"
+    ],
+    "steps": [
+      {
+        "label": "Desire",
+        "arabic": "الرغبة",
+        "description": "Wanting more of the world"
+      },
+      {
+        "label": "Accumulate",
+        "arabic": "التكاثر",
+        "description": "Gathering and hoarding"
+      },
+      {
+        "label": "Distraction",
+        "arabic": "اللهو",
+        "description": "Losing focus on purpose"
+      },
+      {
+        "label": "Forgetfulness",
+        "arabic": "الغفلة",
+        "description": "Forgetting the Hereafter"
+      }
+    ],
+    "quote": "Desire feeds accumulation, accumulation breeds distraction, distraction births forgetfulness, and forgetfulness craves more desire.",
+    "created_at": "2026-03-13T11:00:00"
+  },
+  {
+    "id": "card004",
+    "title": "Maslow's Hammer",
+    "category": "Problem Solving",
+    "analysis_text": "When we find a tool that works, we tend to use it for everything. Abraham Maslow coined this as the Law of the Instrument. Over-reliance on a single approach leads to misapplication. Like using a hammer on a screw — the tool is wrong for the task, but familiarity makes us persist. The cure is expanding our toolkit before facing problems.",
+    "model_type": "fail_constraint",
+    "theme": "cool_mint",
+    "front_data": {},
+    "back_text": "Once we have found a tool that works, we tend to stick with it. This cognitive bias, coined by **Abraham Maslow**, is also known as the Law of the Instrument.\n\nOver-reliance on a single tool can lead to its inappropriate use or overuse. It often leads us to fall back to tried and tested methods, at the expense of trying a more efficient **strategy**.\n\nWhen you're trying to get something done, try to find new tools, tactics or strategies instead of relying on what you know. The **constraint** is not the problem — it's the mismatch between tool and task.",
+    "card_number": 4,
+    "arabic_terms": [],
+    "steps": [],
+    "quote": "It is tempting, if the only tool you have is a hammer, to treat everything as if it were a nail.",
+    "created_at": "2026-03-13T11:30:00"
+  },
+  {
+    "id": "card005",
+    "title": "Zero Sum Fallacy",
+    "category": "Strategic Thinking",
+    "analysis_text": "In game theory, a zero sum game is one where the winner gains at the expense of the loser. While these exist in competitive games, most real-world situations allow for mutual gain. The zero sum fallacy makes us see all interactions as competitions when cooperation would yield better outcomes for everyone.",
+    "model_type": "mutual_gain",
+    "theme": "cool_mint",
+    "front_data": {},
+    "back_text": "In game theory, a **zero sum** game is one in which the winner wins at the expense of the loser. There is a net-zero gain for all players.\n\nAlthough zero sum games such as poker, chess and blackjack do exist, true zero sum games are rarer than we think. The **zero sum fallacy** is believed to be an evolutionary quirk from when food and mates were scarce. In the modern world, it may lead us to misunderstand or to make poor decisions.\n\nTry to consider whether there is a possibility of **mutual gain** when making decisions, even if they appear to be zero sum.",
+    "card_number": 5,
+    "arabic_terms": [],
+    "steps": [],
+    "quote": "We perceive many situations as having a clear winner and a loser. Most do not.",
+    "created_at": "2026-03-13T12:00:00"
+  },
+  {
+    "id": "bbd9dd0b",
+    "title": "2:6 — Those Disbelieve All Same Whether You Warn Them Or Not",
+    "category": "Guidance & Wisdom",
+    "analysis_text": "This ayah stands in stark contrast to those who believe, but before we explore that contrast, notice the connection to what came before. The Book was introduced as having laa rayba feehi - no doubt whatsoever in it. Now, when Allah ﷻ mentions alladheena kafaroo - those who have disbelieved - He is referring to those who harbor even a shred of doubt in this Book. Either you believe in this Book entirely without any doubt, or if you maintain even a little skepticism, you fall into disbelief. The contrast between these two states is absolute.\n\nWe often think of inna alladheena kafaroo as referring exclusively to non-Muslims. However, this is an incomplete understanding. Remember that the earlier phrase alladheena yu'minoona implied both those who currently believe and those who have the potential to come to faith. Similarly, it's not fair to label every non-Muslim as a kaafir in the Quranic sense.\n\nHowever, the Quran does make a clear assessment of a particular type of person: those who were given abundant opportunity to examine this Book, to experience the character of the Messenger ﷺ, who had a full decade to observe and question, who received answers to their inquiries in the most eloquent and powerful way—and still chose not to believe in this message. You couldn't ask for a better educational opportunity. You couldn't find more convincing responses to your questions. Yet they still turned away. For such people, it becomes evident that their window of opportunity has closed. The door that Allah ﷻ Himself has shut for them indicates they've reached a point of no return.\n\nSawaa'un 'alayhim - their outcome will be the same. The word sawaa' comes from the root meaning to bury a seed in the ground. These individuals have buried the seed of truth deep within themselves. That small light (fitrah) that Allah ﷻ gave them has been choked to death, suffocated under layers of rejection. At this point, they've become terminal cases—patients beyond treatment.\n\nA-andhartahum am lam tundhirhum - \"Whether you warn them or you don't warn them.\" Both present and past tenses are captured here: laa yu'minoona (they don't believe) and they won't believe in the future either. The message is clear: for such people, whether the Prophet ﷺ continues to warn them or not makes no difference.\n\nConsider the weight of this statement. All of us have encountered effective speakers, powerful orators, convincing arguers. But you will not find a more persuasive speaker than the Messenger ﷺ himself. You will not find more credible speech than the Quran itself. For us, we experience it through translation, with all the limitations that entails. But for those people, it was in their own eloquent Arabic, without any filter, without needing to look up meanings. The entire dictionary was already in their hearts, the full context was there before them. The best of all speakers delivered the best of all messages in the best of all ways—using the most effective means of communication possible. And yet it didn't work. Why? Because they had turned their inner conscience away. They shunned it. They choked it to death.\n\nOnce a person reaches that point, even the finest message won't make any difference. There's no need to waste your breath on them anymore. This is a profound and heavy statement, because if we mistakenly think it's talking about all non-Muslims, we create a serious problem—it would suggest there's no point in calling people to Islam, no point in sharing the message. But that's not what this ayah means. It's not referring to all non-believers universally.\n\nThis ayah was revealed in Medina about a specific group from within the Quraysh who had actively committed themselves to disbelief. It's not even about all of the Quraysh. There were people among the Quraysh who never really took the message seriously, who didn't give it a fair examination and therefore didn't believe—not because they consciously rejected it, but because they hadn't truly considered it. Such people might still come to faith later. This ayah describes a particular category: those bent upon disbelief, determined in their rejection. Only Allah ﷻ knows the hearts.",
+    "model_type": "",
+    "theme": "warm_parchment",
+    "front_data": {},
+    "back_text": "We often assume that better presentation or more convincing arguments will eventually reach every person. The default thinking is that rejection of guidance stems from insufficient explanation or poor delivery.\n\n**The Sealed Heart** model reveals a sobering reality: some individuals cross an irreversible threshold where their capacity for guidance becomes permanently closed. After receiving full opportunity to examine divine truth through the most eloquent presentation possible, they make a conscious choice to reject it. At this point, their hearts become **sealed** (مطبوع) and further warnings become futile. The Arabic term **sawaa'un** indicates complete equivalence - whether you warn them or not makes no difference.\n\nThis is not about all non-believers, but specifically about those who had abundant opportunity, perfect presentation, and clear evidence yet deliberately chose rejection. Once the **window of guidance** closes through their own choice, even divine messaging cannot penetrate hearts that have been sealed against truth. The model warns us that guidance has limits when free will chooses permanent resistance.",
+    "card_number": 11,
+    "arabic_terms": [],
+    "steps": [
+      {
+        "label": "Opportunity",
+        "arabic": "فُرْصَة",
+        "description": "Full access to divine guidance with perfect delivery and ample time for examination"
+      },
+      {
+        "label": "Rejection",
+        "arabic": "كَفَرُوا",
+        "description": "Conscious choice to turn away from truth despite clear evidence and persuasive presentation"
+      },
+      {
+        "label": "Sealed",
+        "arabic": "سَوَاءٌ عَلَيْهِمْ",
+        "description": "Hearts become permanently closed where further warnings make no difference"
+      },
+      {
+        "label": "Terminal",
+        "arabic": "لَا يُؤْمِنُونَ",
+        "description": "Point of no return reached where the window of guidance has permanently closed"
+      }
+    ],
+    "quote": "Even the most perfect message delivered perfectly can fail when hearts are hardened against truth.",
+    "created_at": "2026-03-19T03:23:02.558592",
+    "model_id": "custom",
+    "visual_type": "comparison",
+    "visual_type_secondary": "decision_tree",
+    "is_islamic_content": true,
+    "islamic_elements": [
+      "geometric star patterns",
+      "calligraphic borders",
+      "arabesque patterns",
+      "mosque silhouette"
+    ],
+    "model_confidence": 0.95,
+    "matched_model_name": "The Point of No Return",
+    "surah_name": "Al-Baqarah",
+    "verse_number": "2:6",
+    "verse_arabic": "إِنَّ ٱلَّذِينَ كَفَرُوا۟ سَوَآءٌ عَلَيْهِمْ ءَأَنذَرْتَهُمْ أَمْ لَمْ تُنذِرْهُمْ لَا يُؤْمِنُونَ",
+    "verse_english": "Indeed, those who disbelieve - it is all the same for them whether you warn them or do not warn them - they will not believe.",
+    "image_url": "/static/images/refine_new_20260319_032302.jpg",
+    "version": 1
+  },
+  {
+    "id": "d3d1c6a4",
+    "title": "3:104 — Let Arising Nation Inviting All",
+    "category": "Guidance & Wisdom",
+    "analysis_text": "The wisdom of this ayah lies in its recognition that presenting Islam requires wisdom, not just knowledge. The sequence matters: first show people what's beautiful (الْخَيْر), then encourage what's recognizably good (الْمَعْرُوف), then stand against what's recognizably wrong (الْمُنكَر). Reversing this order—starting by forbidding people or telling them about hellfire—drives people away.\n\nThe emphasis on الْخَيْر (the very best) as the starting point is profound. People need to be enticed. They need to taste something and think \"this is the best thing I've ever experienced.\" Like a free sample at a grocery store—if you like it, you'll come back for more. The religion must be presented as the best way to live, the best advice for problems, the best counsel anyone could receive. This requires Muslims to deeply understand and appreciate what makes Islam beautiful, not just know the rules.\n\nThe concept of invitation (دَعْوَة) versus debate is crucial wisdom. You cannot invite someone while arguing with them. Invitation implies friendship, courtesy, gentleness. When you invite someone to your house, it's an act of friendship that says \"I have nothing against you.\" Similarly, inviting to Islam must be done with genuine care for the other person's benefit, not with hostility or superiority.\n\nThere's wisdom in making المَعْرُوف the standard rather than abstract religious concepts. Everyone—Muslim and non-Muslim—recognizes certain basic goods: honesty, caring for orphans, fair business dealings, protecting the vulnerable. Starting from this common ground builds bridges. The Muslims aren't presenting themselves as having alien values, but as champions of the values everyone already recognizes as good, while also inviting to something even better.\n\nThe ayah teaches that standing for truth comes with a cost. Both أَمْر بِالْمَعْرُوف and نَهْي عَنِ الْمُنكَر will lead to loss—you'll make enemies, face backlash, suffer consequences. But Allah reframes this: that apparent loss is actually gain. Those who leave your life because you stood for truth were toxic relationships. The temporary difficulty of standing up to a group of teenagers playing baseball dangerously, or confronting wrong in your family or community—that fear you overcome is growth. True success (فَلَاح) is hard-earned through sacrifice.\n\nThe connection to Surah Al-Asr is illuminating: humanity is in loss except those who believe, do righteous deeds, and counsel each other to truth and patience. Standing for المَعْرُوف and against المُنكَر is counseling to truth. When you face consequences for doing so, you need patience (صَبْر). The ayah reverses conventional thinking about loss—don't worry about what you'll lose by standing for truth; you're already in loss if you don't stand for truth.\n\nThere's also deep wisdom in recognizing not everyone is qualified for this role at the same level, yet everyone should do what they can. Classical scholars debated whether this is فَرْض كِفَايَة (sufficient if some do it) or فَرْض عَيْن (obligatory on everyone). The reality is nuanced: everyone should call to the good at their level, with their family, in their sphere. But there should also be dedicated, knowledgeable people in every community who can handle more complex situations and questions.\n\nThe ayah reminds us that this ummah's purpose is not self-serving. We don't exist as a lobby for Muslim interests. We exist for humanity's benefit (لِلنَّاسِ). When Muslims were being persecuted in Makkah, the Quran wasn't demanding their rights—it was addressing injustices against all vulnerable people. This selfless orientation is what makes the ummah truly exceptional.\n\nFinally, the wisdom of using agricultural metaphors for success teaches patience. A farmer works all year with no return, protecting delicate crops, unsure if there will be harvest. Only at the end does success come. Similarly, doing المَعْرُوف and preventing المُنكَر often feels unrewarding, uncertain, even frightening. But the harvest will come—الْمُفْلِحُونَ will reap what they sowed, even if not in this life.",
+    "model_type": "sequential_chain",
+    "theme": "warm_parchment",
+    "front_data": {},
+    "back_text": "Most people think Islamic dawah means immediately correcting others or warning about consequences. This approach often drives people away and creates defensiveness rather than genuine interest.\n\nThe **Strategic Dawah Sequence** reveals that effective invitation follows a deliberate progression: first show what's beautiful (**الْخَيْر**), then build on recognized good (**الْمَعْرُوف**), finally stand against wrong (**الْمُنكَر**). This mirrors how Allah presents Islam—through beauty that attracts, common values that connect, then principles worth defending.\n\nTrue **dawah** is invitation, not argument. Like offering a free sample, you let people taste something beautiful first. Only after they're drawn to the good do you address what needs correction, accepting that standing for truth will cost relationships but lead to real success (**الْمُفْلِحُونَ**).",
+    "card_number": 13,
+    "arabic_terms": [],
+    "steps": [
+      {
+        "label": "Beauty",
+        "arabic": "الْخَيْر",
+        "description": "Present Islam's most attractive and beautiful aspects first"
+      },
+      {
+        "label": "Good",
+        "arabic": "الْمَعْرُوف",
+        "description": "Build on commonly recognized moral goods and values"
+      },
+      {
+        "label": "Stand",
+        "arabic": "الْمُنكَر",
+        "description": "Finally oppose what is clearly wrong, accepting the cost"
+      }
+    ],
+    "quote": "You cannot invite someone while arguing with them—attraction opens hearts where debate closes them.",
+    "created_at": "2026-03-19T05:42:40.427419",
+    "model_id": "taqwa_chain",
+    "visual_type": "sequential_chain",
+    "visual_type_secondary": "progressive_path",
+    "is_islamic_content": true,
+    "islamic_elements": [
+      "geometric star patterns",
+      "arabesque border",
+      "calligraphy flourishes"
+    ],
+    "model_confidence": 0.95,
+    "matched_model_name": "Taqwa Chain (God-Consciousness)",
+    "surah_name": "Aal-E-Imran",
+    "verse_number": "3:104",
+    "verse_arabic": "وَلْتَكُن مِّنكُمْ أُمَّةٌۭ يَدْعُونَ إِلَى ٱلْخَيْرِ وَيَأْمُرُونَ بِٱلْمَعْرُوفِ وَيَنْهَوْنَ عَنِ ٱلْمُنكَرِ ۚ وَأُو۟لَٰٓئِكَ هُمُ ٱلْمُفْلِحُونَ",
+    "verse_english": "And let there be [arising] from you a nation inviting to [all that is] good, enjoining what is right and forbidding what is wrong, and those will be the successful.",
+    "image_url": "/static/images/spread_new_20260319_054239.jpg",
+    "version": 1
+  },
+  {
+    "id": "53cb437d",
+    "title": "1:3 — Entirely Merciful Especially Merciful",
+    "category": "Tawhid & Worship",
+    "analysis_text": "The Function of الرَّحْمَٰنِ الرَّحِيمِ as Attributes\n\nThese are attributes (صفات - sifat) of Allah, continuing to describe who He is after His name was mentioned.\n\nGrammatically, they are in the genitive case (مجرور) because they follow a noun in a possessive construction (رب العالمين). They're attached to Allah's description.\n\nThe dual pairing is rhetorically significant: why TWO words for mercy instead of one?\n\nBecause they address two different dimensions of human need:\n\n•  الرَّحْمَٰنِ addresses IMMEDIATE needs (right now)\n•  الرَّحِيمِ addresses FUTURE/ONGOING needs (always)\n\nHuman beings are impatient. We need immediate relief before we can even think about the future. Imagine you're starving. Someone says, \"Don't worry, I'll feed you eventually.\" That doesn't help! You need food NOW.\n\nSo Allah says الرَّحْمَٰنِ first (I'm taking care of you RIGHT NOW), and THEN He says الرَّحِيمِ (and I'll always take care of you).\n\nIf He reversed it (الرَّحِيمِ الرَّحْمَٰنِ), He'd be addressing the future before the present, which goes against human psychology",
+    "model_type": "",
+    "theme": "warm_parchment",
+    "front_data": {},
+    "back_text": "Most people assume that **الرَّحْمَٰنِ الرَّحِيمِ** are simply two synonyms for mercy, redundantly emphasizing Allah's compassion. This misses the profound psychological wisdom in their specific ordering.\n\nThe **Mercy Sequence** reveals that Allah structures His attributes to match human psychological needs. **الرَّحْمَٰنِ** (immediate, encompassing mercy) comes first because humans in distress cannot process promises about the future until their present crisis is addressed. Only after receiving assurance of immediate relief can we mentally accept **الرَّحِيمِ** (ongoing, relational mercy) that extends into the future.\n\nThis sequence demonstrates divine understanding of human psychology — **Allah orders His own attributes to accommodate our emotional limitations**. Like emergency medical care that stabilizes the patient before beginning long-term treatment, divine mercy first addresses our urgent need for present reassurance, then builds our capacity to trust in ongoing care.",
+    "card_number": 14,
+    "arabic_terms": [],
+    "steps": [
+      {
+        "label": "Immediate Relief",
+        "arabic": "الرَّحْمَٰنِ",
+        "description": "Allah addresses urgent present needs first to give immediate reassurance"
+      },
+      {
+        "label": "Ongoing Care",
+        "arabic": "الرَّحِيمِ",
+        "description": "Allah then promises continuous mercy for all future needs"
+      },
+      {
+        "label": "Psychological Wisdom",
+        "arabic": "",
+        "description": "The sequence matches human psychology's need for present comfort before future promises"
+      }
+    ],
+    "quote": "Human impatience for immediate relief requires divine mercy to address the present before promising the eternal.",
+    "created_at": "2026-03-19T05:47:21.581969",
+    "model_id": "adl_wal_ihsan",
+    "visual_type": "sequential_flow",
+    "visual_type_secondary": "comparison",
+    "is_islamic_content": true,
+    "islamic_elements": [
+      "arabesque flowing patterns",
+      "calligraphic elements",
+      "geometric star patterns",
+      "flowing script borders"
+    ],
+    "model_confidence": 0.88,
+    "matched_model_name": "Divine Mercy Sequence",
+    "surah_name": "Al-Fatihah",
+    "verse_number": "1:3",
+    "verse_arabic": "ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
+    "verse_english": "The Entirely Merciful, the Especially Merciful,",
+    "image_url": "/static/images/spread_new_20260319_054720.jpg",
+    "version": 1
+  },
+  {
+    "id": "a718de1d",
+    "title": "93:1 — Morning Brightness",
+    "category": "Tawhid & Worship",
+    "analysis_text": "Which was revealed in Makkah بِسْمِ اللَّهِ الرَّحْمَـنِ الرَّحِيمِ (In the Name of Allah, the Most Gracious, the Most Merciful. The Reason for the Revelation of Surat Ad-Duha Imam Ahmad recorded from Jundub that he said, \"The Prophet became ill, so he did not stand for prayer for a night or two. Then a woman came and said, `O Muhammad! I think that your devil has finally left you.' So Allah revealed, وَالضُّحَى - وَالَّيْلِ إِذَا سَجَى - مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَى (By the forenoon. By the night when it darkens. Your Lord has neither forsaken you nor hates you.)\" Al-Bukhari, Muslim, At-Tirmidhi, An-Nasa'i, Ibn Abi Hatim and Ibn Jarir, all recorded this Hadith. This Jundub (who narrated it) is Ibn `Abdullah Al-Bajali Al-`Alaqi. In a narration from Al-Aswad bin Qays, he said that he heard Jundub say that Jibril was slow in coming to the Messenger of Allah . So the idolators said, \"Muhammad's Lord has abandoned him.\" So Allah revealed, وَالضُّحَى - وَالَّيْلِ إِذَا سَجَى - مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَى (By the forenoon. By the night when it darkens. Your Lord has neither forsaken you nor hates you.) وَالضُّحَى - وَالَّيْلِ إِذَا سَجَى (By the forenoon. By the night when it darkens.) Al-`Awfi reported from Ibn `Abbas, \"When the Qur'an was revealed to the Messenger of Allah , Jibril was delayed from coming to him for a number of days (on one occasion). Therefore, the Messenger of Allah was affected by this. Then the idolators began to say, `His Lord has abandoned him and hates him.' So Allah revealed, مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَى (Your Lord has neither forsaken you nor hates you.)\" In this, Allah is swearing by the forenoon and the light that He has placed in it. وَالَّيْلِ إِذَا سَجَى (By the night when it darkens (Saja).) meaning, it settles, darkens meaning, it settles, darkens and overcomes them. This was said by Mujahid, Qatadah, Ad-Dahhak, Ibn Zayd and others. This is a clear proof of the power of the Creator of this (light) and that (darkness). This is as Allah says, وَالَّيْلِ إِذَا يَغْشَى - وَالنَّهَارِ إِذَا تَجَلَّى (By the night as it envelops. By the Day as it appears.) (92:1-2) Allah also says, فَالِقُ الإِصْبَاحِ وَجَعَلَ الَّيْلَ سَكَناً وَالشَّمْسَ وَالْقَمَرَ حُسْبَاناً ذَلِكَ تَقْدِيرُ الْعَزِيزِ الْعَلِيمِ ((He is the) Cleaver of the daybreak. He has appointed the night for resting, and the sun and the moon for reckoning. Such is the measuring of the Almighty, the All-Knowing.) (6:96) Allah then says, مَا وَدَّعَكَ رَبُّكَ (Your Lord has neither forsaken you) meaning, `He has not abandoned you.' وَمَا قَلَى (nor hates (Qala) you.) meaning, `He does not hate you.' The Hereafter is Better Than This First Life وَلَلاٌّخِرَةُ خَيْرٌ لَّكَ مِنَ الاٍّولَى (And indeed the Hereafter is better for you than the present.) meaning, the abode of the Hereafter is better for you than this current abode. For this reason the Messenger of Allah used to be the most abstinent of the people concerning the worldly things, and he was the greatest of them in his disregard for worldly matters. This is well known by necessity from his biography. When the Prophet was given the choice at the end of his life between remaining in this life forever and then going to Paradise, or moving on to the company of Allah, he chose that which is with Allah over this lowly world. Imam Ahmad recorded that `Abdullah bin Mas`ud said, \"The Messenger of Allah was lying down on a straw mat and it left marks on his side. Then when he woke up he began to rub his side. So I said, `O Messenger of Allah! Will you allow us to spread something soft over this straw mat' He replied, «مَالِي وَلِلدُّنْيَا، إِنَّمَا مَثَلِي وَمَثَلُ الدُّنْيَا كَرَاكِبٍ ظَلَّ تَحْتَ شَجَرَةٍ ثُمَّ رَاحَ وَتَرَكَهَا» (I have nothing to do with this world. The parable of me and this world is like a rider who rests in the shade of a tree, then he passes on and leaves it.)\" At-Tirmidhi and Ibn Majah both recorded this Hadith by way of Al-Mas`udi. At-Tirmidhi said, \"Hasan Sahih.\" The Numerous Bounties of the Hereafter are waiting for the Messenger of Allah Then Allah says, وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَى (And verily, your Lord will give you so that you shall be well-pleased.) meaning, in the final abode Allah will give him until He pleases him concerning his followers, and in that which He has prepared for him from His generosity. From this will be the River of Al-Kawthar, which will have domes of hollowed pearls on its banks, and the mud on its banks will be the strongest frangrance of musk, as will be mentioned. Imam Abu `Amr Al-Awza`i recorded that Ibn `Abbas said, \"The Messenger of Allah was shown that which his Ummah would be blessed with after him, treasure upon treasure. So he was pleased with that. Then Allah revealed, وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَى (And verily, your Lord will give you so that you shall be well-pleased.) So, Allah will give him in Paradise one million palaces, and each palace will contain whatever he wishes of wives and servants.\" This was recorded by Ibn Jarir and Ibn Abi Hatim from his route of transmission. This chain of narration is authentic to Ibn `Abbas, and statements like this can only be said from that which is Tawqif. The Numerous Bounties of the Hereafter are waiting for the Messenger of Allah Then Allah says, وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَى (And verily, your Lord will give you so that you shall be well-pleased.) meaning, in the final abode Allah will give him until He pleases him concerning his followers, and in that which He has prepared for him from His generosity. From this will be the River of Al-Kawthar, which will have domes of hollowed pearls on its banks, and the mud on its banks will be the strongest frangrance of musk, as will be mentioned. Imam Abu `Amr Al-Awza`i recorded that Ibn `Abbas said, \"The Messenger of Allah was shown that which his Ummah would be blessed with after him, treasure upon treasure. So he was pleased with that. Then Allah revealed, وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَى (And verily, your Lord will give you so that you shall be well-pleased.) So, Allah will give him in Paradise one million palaces, and each palace will contain whatever he wishes of wives and servants.\" This was recorded by Ibn Jarir and Ibn Abi Hatim from his route of transmission. This chain of narration is authentic to Ibn `Abbas, and statements like this can only be said from that which is Tawqif. A Mention of some of Allah's Favors upon the Messenger Enumerating His favors upon His Messenger Allah says; أَلَمْ يَجِدْكَ يَتِيماً فَآوَى (Did He not find you an orphan and gave you a refuge) This refers to the fact that his father died while his mother was still pregnant with him, and his mother, Aminah bint Wahb died when he was only six years old. After this he was under the guardianship of his grandfather, `Abdul-Muttalib, until he died when Muhammad was eight years old. Then his uncle, Abu Talib took responsibility for him and continued to protect him, assist him, elavate his status, honor him, and even restrain his people from harming him when he was forty years of age and Allah commissioned him with the prophethood. Even with this, Abu Talib continued to follow the religion of his people, worshipping idols. All of this took place by the divine decree of Allah and His decree is most excellent. Until Abu Talib died a short time before the Hijrah. After this (Abu Talib's death) the foolish and ignorant people of the Quraysh began to attack him, so Allah chose for him to migrate away from them to the city of Al-Aws and Al-Khazraj among those who helped him (in Al-Madinah). Allah caused his Sunnah to be spread in the most perfect and complete manner. Then, when he arrived at their city, they gave him shelter, supported him, defended him and fought before him (against the enemies of Islam) -- may Allah be pleased with all of them. All of this was from Allah's protection for him, guarding over him and caring for him. Then Allah says, وَوَجَدَكَ ضَآلاًّ فَهَدَى (He found you unaware and guided you) This is similar to Allah's saying, وَكَذَلِكَ أَوْحَيْنَآ إِلَيْكَ رُوحاً مِّنْ أَمْرِنَا مَا كُنتَ تَدْرِى مَا الْكِتَـبُ وَلاَ الإِيمَـنُ وَلَـكِن جَعَلْنَـهُ نُوراً نَّهْدِى بِهِ مَن نَّشَآءُ مِنْ عِبَادِنَا (And thus We have sent to you a Ruh from Our command. you knew not what is the Book, nor what is Faith. But We have made it a light wherewith We guide whosoever of our servants We will...) (42:52) Allah says, وَوَجَدَكَ عَآئِلاً فَأَغْنَى (And He found you poor and made you rich) meaning, `you were poor having dependents, so Allah made you wealthy and independent of all others besides Him.' Thus, Allah combined for him the two positions: the one who is poor and patient, and the one who is wealthy and thankful. In the Two Sahihs it has been recorded from Abu Hurayrah that the Messenger of Allah said, «لَيْسَ الْغِنَى عَنْ كَثْرَةِ الْعَرَضِ، وَلَكِنَّ الْغِنَى غِنَى النَّفْس» (Wealth is not determined by abundance of possessions, but wealth is the richness of the soul.) In Sahih Muslim, it is recorded from `Abdullah bin `Amr that the Messenger of Allah said, «قَدْ أَفْلَحَ مَنْ أَسْلَمَ وَرُزِقَ كَفَافًا وَقَنَّعَهُ اللهُ بِمَا آتَاه» (Whoever accepts Islam, is provided with his basic needs, and Allah makes him content with what He has given him, then he will be successful.) How should this Bounty be responded to Then Allah says, فَأَمَّا الْيَتِيمَ فَلاَ تَقْهَرْ (Therefore, treat not the orphan with oppression.) meaning, `just as you were an orphan and Allah sheltered you, then do not oppress the orphan.' In other words, `do not humiliate him, scorn him or despise him. Rather, you should be kind and gentle to him.' Qatadah said, \"Be like a merciful father to the orphan.\" وَأَمَّا السَّآئِلَ فَلاَ تَنْهَرْ (And repulse not the one who asks.) meaning, `just as you were astray and Allah guided you, then do not scorn the one who asks for knowledge seeking to be guided.' Ibn Ishaq said, وَأَمَّا السَّآئِلَ فَلاَ تَنْهَرْ (And repulse not the one who asks.) \"This means do not be oppressive, arrogant, wicked, or mean to the weak among Allah's servants.\" Qatadah said, \"This means respond to the poor with mercy and gentleness.\" وَأَمَّا بِنِعْمَةِ رَبِّكَ فَحَدِّثْ (And procalim the grace of your Lord.) meaning, `just as you were poor and needy, and Allah made you wealthy, then tell about Allah's favor upon you.' Abu Dawud recorded from Abu Hurayrah that the Prophet said, «لَا يَشْكُرُ اللهَ مَنْ لَا يَشْكُرُ النَّاس» (Whoever is not thankful to the people, then he is not thankful to Allah.) At-Tirmidhi also recorded this Hadith and he said, \"Sahih\". Abu Dawud recorded from Jabir that the Prophet said, «مَنْ أُبْلِيَ بَلَاءً فَذَكَرَهُ فَقَدْ شَكَرَهُ، وَمَنْ كَتَمَهُ فَقَدْ كَفَرَه» (Whoever overcomes some test (i.e., calamity) and mentions it (to others), then he is indeed thankful. And whoever conceals it, then indeed he was ungrateful.) Abu Dawud was alone in recording this Hadith. This is the end of the Tafsir of Surat Ad-Duha, and unto Allah is due all praise and thanks.",
+    "model_type": "",
+    "theme": "warm_parchment",
+    "front_data": {},
+    "back_text": "We often mistake divine silence for divine abandonment. When prayers seem unanswered or guidance feels delayed, we assume we've been forsaken or that our efforts are rejected. This creates anxiety about our spiritual standing.\n\n**The Reassurance Cycle** reveals that Allah's care operates through a sacred balance of past evidence and future promises. Divine reassurance comes not through constant signs, but through **remembering past blessings** (orphan given shelter, lost one guided, poor one enriched) and **trusting future rewards** (the Hereafter is better, your Lord will give until you are pleased). This creates a **cycle of recognition** that demands grateful response.\n\nTrue spiritual maturity means recognizing that apparent divine silence is not abandonment but an invitation to remember, trust, and respond with **righteous gratitude**. The cycle completes when we translate divine care into compassionate action toward others—protecting orphans, welcoming seekers, proclaiming blessings.",
+    "card_number": 15,
+    "arabic_terms": [],
+    "steps": [
+      {
+        "label": "Divine Care",
+        "arabic": "مَا وَدَّعَكَ رَبُّكَ",
+        "description": "Allah neither forsakes nor hates His servant"
+      },
+      {
+        "label": "Past Blessings",
+        "arabic": "أَلَمْ يَجِدْكَ",
+        "description": "Remember how Allah guided and provided before"
+      },
+      {
+        "label": "Future Promise",
+        "arabic": "وَلَسَوْفَ يُعْطِيكَ",
+        "description": "Trust in the promised rewards to come"
+      },
+      {
+        "label": "Grateful Response",
+        "arabic": "فَحَدِّثْ",
+        "description": "Respond with righteous gratitude and service"
+      }
+    ],
+    "quote": "When divine silence feels like abandonment, it is actually the prelude to greater blessing and deeper recognition of continuous care.",
+    "created_at": "2026-03-19T08:54:40.553907",
+    "model_id": "wasatiyyah_moderation",
+    "visual_type": "scale_balance",
+    "visual_type_secondary": "comparison",
+    "is_islamic_content": true,
+    "islamic_elements": [
+      "geometric star patterns",
+      "arabesque border",
+      "calligraphy accents",
+      "dawn motifs"
+    ],
+    "model_confidence": 0.89,
+    "matched_model_name": "Wasatiyyah (Islamic Moderation)",
+    "surah_name": "Ad-Duhaa",
+    "verse_number": "93:1",
+    "verse_arabic": "وَٱلضُّحَىٰ",
+    "verse_english": "By the morning brightness",
+    "image_url": "/static/images/refine_new_20260319_085440.jpg",
+    "version": 1
+  },
+  {
+    "id": "28ef2a77",
+    "title": "1:6 — Guide Straight Path",
+    "category": "Guidance & Wisdom",
+    "analysis_text": "The Meaning of Guidance mentioned in the Surah The guidance mentioned in the Surah implies being directed and guided to success. Allah said, اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ (Guide us to the straight path) meaning guide, direct, lead and grant us the correct guidance. Also, وَهَدَيْنَـهُ النَّجْدَينِ (And shown him the two ways (good and evil)) (90:10), means, `We explained to him the paths of good and evil.' Also, Allah said, اجْتَبَـهُ وَهَدَاهُ إِلَى صِرَطٍ مُّسْتَقِيمٍ (He (Allah) chose him (as an intimate friend) and guided him to a straight path) (16:121), and, فَاهْدُوهُمْ إِلَى صِرَطِ الْجَحِيمِ (And lead them on to the way of flaming Fire (Hell)) (37:23). Similarly, Allah said, وَإِنَّكَ لَتَهْدِى إِلَى صِرَطٍ مُّسْتَقِيمٍ (And verily, you (O Muhammad ) are indeed guiding (mankind) to the straight path) (42:52), and, الْحَمْدُ لِلَّهِ الَّذِى هَدَانَا لِهَـذَا (All praise and thanks be to Allah, Who has guided us to this) (7:43), meaning, guided us and directed us and qualified us for this end - Paradise. The Meaning of As-Sirat Al-Mustaqim, the Straight Path. As for the meaning of As-Sirat Al-Mustaqim, Imam Abu Ja`far At-Tabari said, \"The Ummah agreed that Sirat Al-Mustaqim, is the clear path without branches, according to the language of the Arabs. For instance, Jarir bin `Atiyah Al-Khatafi said in a poem, `The Leader of the faithful is on a path that will remain straight even though the other paths are crooked.\" At-Tabari also stated that, \"There are many evidences to this fact.\" At-Tabari then proceeded, \"The Arabs use the term, Sirat in reference to every deed and statement whether righteous or wicked. Hence the Arabs would describe the honest person as being straight and the wicked person as being crooked. The straight path mentioned in the Qur'an refers to Islam. Imam Ahmad recorded in his Musnad that An-Nawwas bin Sam`an said that the Prophet ﷺ said, «ضَرَبَ اللهُ مَثَلًا صِرَاطًا مُسْتَقِيمًا، وَعَلَى جَنْبَتَيِ الصِّرَاطِ سُورَانِ فِيهِمَا أَبْوَابٌ مُفَتَّحَةٌ، وَعَلَى الْأَبْوَابِ سُتُورٌ مُرْخَاةٌ، وَعَلَى بَابِ الصِّرَاطِ دَاعٍ يَقُولُ: يَاأَيُّهَا النَّاسُ ادْخُلُوا الصِّرَاطَ جَمِيعًا وَلَا تَعْوَجُّوا، وَدَاعٍ يَدْعُو مِنْ فَوْقِ الصِّرَاطِ، فَإِذَا أَرَادَ الْإِنْسَانُ أَنْ يَفْتَحَ شَيْئًا مِنْ تِلْكَ الْأَبْوَابِ قَالَ:وَيْحَكَ لَا تَفْتَحْهُ فَإِنَّكَ إِنْ فَتَحْتَهُ تَلِجْهُ فَالصِّرَاطُ: الْإِسْلَامُ وَالسُّورَانِ: حُدُودُ اللهِ وَالْأَبْوَابُ الْمُفَتَّحَةُ مَحَارِمُ اللهِ وَذَلِكَ الدَّاعِي عَلَى رَأْسِ الصِّرَاطِ كِتَابُ اللهِ، وَالدَّاعِي مِنْ فَوْقِ الصِّرَاطِ وَاعِظُ اللهِ فِي قَلْبِ كُلِّ مُسْلِمٍ» (Allah has set an example: a Sirat (straight path) that is surrounded by two walls on both sides, with several open doors within the walls covered with curtains. There is a caller on the gate of the Sirat who heralds, 'O people! Stay on the path and do not deviate from it.' Meanwhile, a caller from above the path is also warning any person who wants to open any of these doors, 'Woe unto you! Do not open it, for if you open it you will pass through.' The straight path is Islam, the two walls are Allah's set limits, while the doors resemble what Allah has prohibited. The caller on the gate of the Sirat is the Book of Allah, while the caller above the Sirat is Allah's admonishment in the heart of every Muslim.) The Faithful ask for and abide by Guidance If someone asks, \"Why does the believer ask Allah for guidance during every prayer and at other times, while he is already properly guided Has he not already acquired guidance\" The answer to these questions is that if it were not a fact that the believer needs to keep asking for guidance day and night, Allah would not have directed him to invoke Him to acquire the guidance. The servant needs Allah the Exalted every hour of his life to help him remain firm on the path of guidance and to make him even more firm and persistent on it. The servant does not have the power to benefit or harm himself, except by Allah's permission. Therefore, Allah directed the servant to invoke Him constantly, so that He provides him with His aid and with firmness and success. Indeed, the happy person is he whom Allah guides to ask of Him. This is especially the case if a person urgently needs Allah's help day or night. Allah said, يَـأَيُّهَا الَّذِينَ ءَامَنُواْ ءَامِنُواْ بِاللَّهِ وَرَسُولِهِ وَالْكِتَـبِ الَّذِى نَزَّلَ عَلَى رَسُولِهِ وَالْكِتَـبِ الَّذِى أَنَزلَ مِن قَبْلُ (O you who believe! Believe in Allah, and His Messenger (Muhammad ﷺ ), and the Book (the Qur'an) which He has sent down to His Messenger, and the Scripture which He sent down to those before (him)) (4:16). Therefore, in this Ayah Allah commanded the believers to believe, and this command is not redundant since what is sought here is firmness and continuity of performing the deeds that help one remain on the path of faith. Also, Allah commanded His believing servants to proclaim, رَبَّنَا لاَ تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً إِنَّكَ أَنتَ الْوَهَّابُ (Our Lord! Let not our hearts deviate (from the truth) after You have guided us, and grant us mercy from You. Truly, You are the Bestower.) (3:8). Hence, اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ (Guide us to the straight way) means, \"Make us firm on the path of guidance and do not allow us to deviate from it.\"",
+    "model_type": "sequential_chain",
+    "theme": "warm_parchment",
+    "front_data": {},
+    "back_text": "Most people assume that once you receive guidance, you no longer need to ask for it. This leads to **spiritual complacency** and the false belief that guidance is a one-time achievement rather than an ongoing state.\n\nThe Guidance Paradox reveals that true guidance is like walking a **straight path between walls with tempting doorways** - it requires constant divine assistance to maintain. Even believers must continuously invoke Allah for guidance because they lack the power to keep themselves firm on the path. The **servant needs Allah every hour** to remain steadfast and grow more persistent in righteousness.\n\nGuidance is not a destination but a **dynamic relationship** with the Divine. The prayer 'Guide us to the straight path' means 'Make us firm on the path of guidance and do not allow us to deviate.' This recognition of constant dependence is itself a form of wisdom and humility.",
+    "card_number": 10,
+    "arabic_terms": [],
+    "steps": [
+      {
+        "label": "Ask",
+        "arabic": "اهْدِنَا",
+        "description": "Continuously request divine guidance despite already being guided"
+      },
+      {
+        "label": "Stay Firm",
+        "arabic": "الصِّرَاطَ",
+        "description": "Maintain position on the straight path against constant temptations"
+      },
+      {
+        "label": "Avoid Deviation",
+        "arabic": "الْمُسْتَقِيمَ",
+        "description": "Resist the open doors of prohibited things along the path"
+      }
+    ],
+    "quote": "The guided must keep asking for guidance because the straight path requires constant divine assistance to maintain.",
+    "created_at": "2026-03-19T10:44:02.147889",
+    "model_id": "taqwa_chain",
+    "visual_type": "sequential_chain",
+    "visual_type_secondary": "cycle_loop",
+    "is_islamic_content": true,
+    "islamic_elements": [
+      "geometric star patterns",
+      "arabesque border",
+      "calligraphic elements",
+      "mosque silhouette"
+    ],
+    "model_confidence": 0.88,
+    "matched_model_name": "Taqwa Chain (God-Consciousness)",
+    "surah_name": "Al-Fatihah",
+    "verse_number": "1:6",
+    "verse_arabic": "ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ",
+    "verse_english": "Guide us to the straight path -",
+    "image_url": "/static/images/spread_new_20260319_104401.jpg",
+    "version": 1
+  }
+]

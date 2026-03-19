@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quran Visual Cards — Complete Commands & Test Guide</title>
+<style>
+  :root {
+    --bg: #FDFAF5;
+    --card: #FFFFFF;
+    --accent: #C8902E;
+    --accent2: #2D8A6E;
+    --text: #2C2C2C;
+    --muted: #6B6B6B;
+    --code-bg: #1E1E2E;
+    --code-fg: #CDD6F4;
+    --border: #E8E0D4;
+    --success: #2D8A6E;
+    --warn: #D4A017;
+    --danger: #C0392B;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    padding: 0;
+  }
+  .hero {
+    background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
+    color: #F5E6C8;
+    padding: 60px 40px;
+    text-align: center;
+    border-bottom: 4px solid var(--accent);
+  }
+  .hero h1 {
+    font-size: 2.4em;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  .hero .subtitle {
+    font-size: 1.1em;
+    opacity: 0.8;
+    font-style: italic;
+  }
+  .hero .version {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    margin-top: 14px;
+    font-family: monospace;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 30px;
+  }
+  .toc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 30px 35px;
+    margin-bottom: 40px;
+  }
+  .toc h2 {
+    font-size: 1.3em;
+    color: var(--accent);
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 8px;
+  }
+  .toc ol {
+    padding-left: 20px;
+  }
+  .toc li {
+    margin: 8px 0;
+  }
+  .toc a {
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--accent);
+  }
+  .toc a:hover { color: var(--accent); }
+
+  section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 35px;
+    margin-bottom: 30px;
+  }
+  section h2 {
+    font-size: 1.5em;
+    color: var(--accent);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+  }
+  section h3 {
+    font-size: 1.15em;
+    color: var(--accent2);
+    margin: 25px 0 12px 0;
+  }
+  section h4 {
+    font-size: 1em;
+    color: var(--muted);
+    margin: 18px 0 8px 0;
+    font-style: italic;
+  }
+  p { margin-bottom: 12px; }
+  ul, ol { margin: 10px 0 15px 24px; }
+  li { margin: 5px 0; }
+
+  pre {
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 18px 22px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.88em;
+    line-height: 1.6;
+    margin: 12px 0 18px 0;
+    position: relative;
+  }
+  pre .comment { color: #6C7086; }
+  pre .string { color: #A6E3A1; }
+  pre .key { color: #89B4FA; }
+  pre .url { color: #F9E2AF; }
+
+  code {
+    background: #F0EBE3;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.9em;
+    color: #8B5E3C;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: sans-serif;
+  }
+  .badge-get { background: #D5F5E3; color: #1E8449; }
+  .badge-post { background: #FCF3CF; color: #B7950B; }
+  .badge-put { background: #D6EAF8; color: #2471A3; }
+  .badge-del { background: #FADBD8; color: #C0392B; }
+  .badge-required { background: #FADBD8; color: #C0392B; }
+  .badge-optional { background: #E8E0D4; color: #6B6B6B; }
+
+  .endpoint {
+    background: #F9F6F0;
+    border-left: 4px solid var(--accent);
+    padding: 15px 20px;
+    margin: 15px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .endpoint .path {
+    font-family: monospace;
+    font-size: 1.05em;
+    font-weight: bold;
+    color: var(--text);
+  }
+  .endpoint .desc {
+    color: var(--muted);
+    font-size: 0.92em;
+    margin-top: 4px;
+  }
+
+  .note {
+    background: #FEF9E7;
+    border-left: 4px solid var(--warn);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 15px 0;
+    font-size: 0.95em;
+  }
+  .note strong { color: var(--warn); }
+
+  .success-note {
+    background: #E8F8F0;
+    border-left: 4px solid var(--success);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 15px 0;
+    font-size: 0.95em;
+  }
+
+  .danger-note {
+    background: #FDEDEC;
+    border-left: 4px solid var(--danger);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 15px 0;
+    font-size: 0.95em;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 0.92em;
+  }
+  th {
+    background: #F5F0E8;
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: bold;
+    color: var(--accent);
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  tr:hover td { background: #FDFAF5; }
+
+  .step-num {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 28px;
+    font-size: 0.85em;
+    font-weight: bold;
+    margin-right: 8px;
+    font-family: sans-serif;
+  }
+
+  .file-tree {
+    font-family: monospace;
+    font-size: 0.88em;
+    background: #F9F6F0;
+    padding: 18px 22px;
+    border-radius: 8px;
+    line-height: 1.8;
+  }
+  .file-tree .dir { color: var(--accent); font-weight: bold; }
+  .file-tree .file { color: var(--text); }
+  .file-tree .new { color: var(--success); font-weight: bold; }
+  .file-tree .desc { color: var(--muted); font-style: italic; }
+
+  footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--muted);
+    font-size: 0.9em;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Quran Visual Cards</h1>
+  <div class="subtitle">Mental Model Synthesis Engine &mdash; Complete Commands &amp; Test User Guide</div>
+  <div class="version">v2.0 &mdash; Enhanced with 103 Mental Models + Islamic Guardrails</div>
+</div>
+
+<div class="container">
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><a href="#overview">Project Overview &amp; Architecture</a></li>
+    <li><a href="#setup">Setup &amp; Installation</a></li>
+    <li><a href="#start">Starting the Server</a></li>
+    <li><a href="#api-analyze">API: Analyze Verse (Core Intelligence)</a></li>
+    <li><a href="#api-cards">API: Cards CRUD</a></li>
+    <li><a href="#api-image">API: Image Generation (Gemini)</a></li>
+    <li><a href="#api-models">API: Mental Models Repository</a></li>
+    <li><a href="#api-config">API: Themes &amp; Visual Types</a></li>
+    <li><a href="#nanobanana">NanoBanana MCP Image Generation</a></li>
+    <li><a href="#workflow">Full Workflow: End-to-End Test</a></li>
+    <li><a href="#gallery">Gallery &amp; Preview Pages</a></li>
+    <li><a href="#files">File Reference</a></li>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+  </ol>
+</div>
+
+<!-- 1. OVERVIEW -->
+<section id="overview">
+  <h2>1. Project Overview &amp; Architecture</h2>
+
+  <p>The Quran Visual Cards Pipeline is a full-stack application that analyzes Quranic verses through the lens of mental models and generates beautiful hand-drawn sketchnote-style visual cards.</p>
+
+  <h3>System Components</h3>
+  <table>
+    <tr><th>Component</th><th>Technology</th><th>Purpose</th></tr>
+    <tr><td>Backend API</td><td>Flask (Python)</td><td>REST endpoints, orchestration</td></tr>
+    <tr><td>Text Analysis</td><td>Claude Sonnet (Anthropic)</td><td>Verse analysis, model matching, back-card text</td></tr>
+    <tr><td>Image Generation</td><td>Gemini (Google AI)</td><td>Hand-drawn card illustrations</td></tr>
+    <tr><td>Model Repository</td><td>JSON database</td><td>103 mental models, 15 categories, 20 visual types</td></tr>
+    <tr><td>Matching Engine</td><td>Python (weighted scoring)</td><td>Intelligent model-to-verse matching</td></tr>
+    <tr><td>Islamic Guardrails</td><td>Python (prompt injection)</td><td>Ensures Islamic art compliance</td></tr>
+    <tr><td>Frontend</td><td>HTML + Rough.js</td><td>Web UI, preview, gallery</td></tr>
+  </table>
+
+  <h3>Data Flow</h3>
+  <pre>
+Input Verse/Analysis
+    &darr;
+<span class="key">[intelligent_matching.py]</span> &rarr; Pre-score against 103 models
+    &darr;
+<span class="key">[core_intelligence.py]</span>  &rarr; Claude analyzes + selects best model &amp; visual type
+    &darr;
+<span class="key">[islamic_guardrails.py]</span> &rarr; Detect Islamic content, inject guardrails
+    &darr;
+<span class="key">[image_gen.py]</span>          &rarr; Build prompt (20 visual types) + generate via Gemini
+    &darr;
+Output: Card image (PNG) + structured card data (JSON)</pre>
+</section>
+
+<!-- 2. SETUP -->
+<section id="setup">
+  <h2>2. Setup &amp; Installation</h2>
+
+  <h3>Prerequisites</h3>
+  <ul>
+    <li>Python 3.8+</li>
+    <li>pip (Python package manager)</li>
+    <li>Anthropic API key (for text analysis via Claude)</li>
+    <li>Google AI API key (for image generation via Gemini) &mdash; <em>optional, can use NanoBanana MCP instead</em></li>
+  </ul>
+
+  <h3><span class="step-num">1</span> Install Dependencies</h3>
+  <pre>
+<span class="comment"># Standard install</span>
+pip install flask anthropic google-genai Pillow
+
+<span class="comment"># macOS / system Python (if you get permission errors)</span>
+pip install flask anthropic google-genai Pillow --break-system-packages</pre>
+
+  <h3><span class="step-num">2</span> Set API Keys</h3>
+  <pre>
+<span class="comment"># Option A: Environment variables (recommended)</span>
+export ANTHROPIC_API_KEY=<span class="string">"sk-ant-api03-..."</span>
+export GOOGLE_AI_API_KEY=<span class="string">"AIzaSy..."</span>
+
+<span class="comment"># Option B: Add to your shell profile (~/.zshrc or ~/.bash_profile)</span>
+echo 'export ANTHROPIC_API_KEY="sk-ant-api03-..."' >> ~/.zshrc
+echo 'export GOOGLE_AI_API_KEY="AIzaSy..."' >> ~/.zshrc
+source ~/.zshrc</pre>
+
+  <div class="note">
+    <strong>Note:</strong> The Anthropic key is required for verse analysis (Claude). The Google key is needed only for direct Gemini API image generation. If you use NanoBanana MCP for images (see Section 9), you only need the Anthropic key.
+  </div>
+
+  <h3><span class="step-num">3</span> Copy Existing Generated Images (Optional)</h3>
+  <pre>
+<span class="comment"># If you previously generated images via NanoBanana MCP</span>
+sh setup_images.sh</pre>
+
+  <div class="success-note">
+    Expected output: <code>[OK] Copied 5 of 5 images.</code>
+  </div>
+</section>
+
+<!-- 3. START SERVER -->
+<section id="start">
+  <h2>3. Starting the Server</h2>
+
+  <h3>Option A: Quick Start Script</h3>
+  <pre>
+<span class="comment"># From the project directory</span>
+bash run.sh</pre>
+
+  <h3>Option B: Direct Python</h3>
+  <pre>
+<span class="comment"># From the project directory</span>
+python3 app.py</pre>
+
+  <h3>Option C: Static File Preview Only (No Flask)</h3>
+  <pre>
+<span class="comment"># For previewing gallery.html and preview.html without Flask</span>
+python3 -m http.server 8080
+
+<span class="comment"># Then open: http://localhost:8080/preview.html
+# Or:       http://localhost:8080/gallery.html</span></pre>
+
+  <div class="success-note">
+    Server starts at <strong>http://localhost:5000</strong> (Flask) or <strong>http://localhost:8080</strong> (static).
+  </div>
+
+  <h3>Verify Server Is Running</h3>
+  <pre>
+curl <span class="url">http://localhost:5000/api/themes</span></pre>
+  <p>Expected: JSON with <code>cool_mint</code> and <code>warm_parchment</code> theme objects.</p>
+</section>
+
+<!-- 4. ANALYZE API -->
+<section id="api-analyze">
+  <h2>4. API: Analyze Verse (Core Intelligence)</h2>
+
+  <p>The analysis endpoint is the heart of the system. It takes a Quranic verse title, category, and analysis text, then returns a fully structured card with the best-matching mental model, visual type, steps, Islamic content flags, and more.</p>
+
+  <div class="endpoint">
+    <span class="badge badge-post">POST</span>
+    <span class="path">/api/analyze</span>
+    <div class="desc">Analyze input text using Claude + intelligent matching engine</div>
+  </div>
+
+  <h3>Test 1: Islamic Content (Quranic Verse)</h3>
+  <pre>
+curl -X POST <span class="url">http://localhost:5000/api/analyze</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '{
+    "title": "The Tawakkul Chain",
+    "category": "Faith & Action",
+    "analysis_text": "Surah At-Talaq 65:3 teaches that whoever places trust in Allah, He is sufficient for them. Tawakkul is not passive resignation but an active tripod: preparation (taking means), delegation (entrusting outcomes to Allah), and acceptance (contentment with results). Without preparation, trust becomes negligence. Without delegation, effort becomes arrogance. Without acceptance, devotion becomes anxiety."
+  }'</pre>
+
+  <h4>Expected Response Fields</h4>
+  <table>
+    <tr><th>Field</th><th>Type</th><th>Example</th></tr>
+    <tr><td><code>model_type</code></td><td>string</td><td><code>"tripod"</code></td></tr>
+    <tr><td><code>visual_type</code></td><td>string</td><td><code>"tripod"</code></td></tr>
+    <tr><td><code>model_id</code></td><td>string</td><td><code>"tawakkul_trust_in_allah"</code></td></tr>
+    <tr><td><code>matched_model_name</code></td><td>string</td><td><code>"Tawakkul (Trust in Allah)"</code></td></tr>
+    <tr><td><code>model_confidence</code></td><td>float</td><td><code>0.85</code></td></tr>
+    <tr><td><code>theme</code></td><td>string</td><td><code>"warm_parchment"</code></td></tr>
+    <tr><td><code>is_islamic_content</code></td><td>bool</td><td><code>true</code></td></tr>
+    <tr><td><code>islamic_elements</code></td><td>array</td><td><code>["geometric_patterns", "crescent_star"]</code></td></tr>
+    <tr><td><code>steps</code></td><td>array</td><td>3 step objects with label, description, arabic</td></tr>
+    <tr><td><code>quote</code></td><td>string</td><td>Key insight quote</td></tr>
+  </table>
+
+  <h3>Test 2: Non-Islamic Content (General Mental Model)</h3>
+  <pre>
+curl -X POST <span class="url">http://localhost:5000/api/analyze</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '{
+    "title": "The Eisenhower Matrix",
+    "category": "Productivity",
+    "analysis_text": "President Eisenhower organized tasks into four quadrants based on urgency and importance. Urgent-Important tasks are done immediately. Important but Not Urgent tasks are scheduled. Urgent but Not Important tasks are delegated. Neither Urgent nor Important tasks are eliminated. Most people spend too much time in the Urgent quadrants, neglecting the Important-Not-Urgent quadrant where real growth happens."
+  }'</pre>
+  <p>Expected: <code>visual_type</code> = <code>"matrix_2x2"</code>, <code>is_islamic_content</code> = <code>false</code>, <code>theme</code> = <code>"cool_mint"</code></p>
+
+  <h3>Test 3: Fallback Analysis (No Anthropic Key)</h3>
+  <p>If no API key is set, the system uses the intelligent fallback which still matches against the 103-model repository:</p>
+  <pre>
+<span class="comment"># Temporarily unset the key to test fallback</span>
+ANTHROPIC_API_KEY="" python3 -c "
+from core_intelligence import analyze_fallback
+result = analyze_fallback(
+    'Patience in Adversity',
+    'Spiritual Growth',
+    'The Quran teaches sabr (patience) as cycles of trial and growth'
+)
+import json
+print(json.dumps(result, indent=2))
+"</pre>
+</section>
+
+<!-- 5. CARDS CRUD -->
+<section id="api-cards">
+  <h2>5. API: Cards CRUD</h2>
+
+  <h3>List All Cards</h3>
+  <div class="endpoint">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/api/cards</span>
+    <div class="desc">Returns array of all saved cards</div>
+  </div>
+  <pre>
+curl <span class="url">http://localhost:5000/api/cards</span></pre>
+
+  <h3>Get Single Card</h3>
+  <div class="endpoint">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/api/cards/{card_id}</span>
+  </div>
+  <pre>
+curl <span class="url">http://localhost:5000/api/cards/card001</span></pre>
+
+  <h3>Create Card</h3>
+  <div class="endpoint">
+    <span class="badge badge-post">POST</span>
+    <span class="path">/api/cards</span>
+    <div class="desc">Save a new card (typically from analyze output)</div>
+  </div>
+  <pre>
+curl -X POST <span class="url">http://localhost:5000/api/cards</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '{
+    "title": "The Iceberg of Riya",
+    "category": "Spiritual Purification",
+    "analysis_text": "Riya (showing off) is like an iceberg...",
+    "model_type": "sequential_chain",
+    "visual_type": "iceberg",
+    "theme": "warm_parchment",
+    "is_islamic_content": true,
+    "islamic_elements": ["geometric_patterns", "calligraphy"],
+    "model_id": "iceberg_model",
+    "model_confidence": 0.82,
+    "matched_model_name": "Iceberg Model",
+    "steps": [
+      {"label": "Visible Actions", "description": "Public worship seen by others"},
+      {"label": "Hidden Intentions", "description": "Private motivations below surface"},
+      {"label": "Deep Sincerity", "description": "Ikhlas at the core"}
+    ],
+    "quote": "The visible tip of worship hides the vast depths of intention beneath.",
+    "back_text": "Most of our spiritual state lies hidden beneath the surface..."
+  }'</pre>
+
+  <h3>Update Card</h3>
+  <div class="endpoint">
+    <span class="badge badge-put">PUT</span>
+    <span class="path">/api/cards/{card_id}</span>
+    <div class="desc">Update any field(s) on an existing card</div>
+  </div>
+  <pre>
+curl -X PUT <span class="url">http://localhost:5000/api/cards/card001</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '{
+    "visual_type": "sequential_chain",
+    "is_islamic_content": true,
+    "islamic_elements": ["geometric_patterns", "crescent_star", "calligraphy"]
+  }'</pre>
+
+  <h3>Delete Card</h3>
+  <div class="endpoint">
+    <span class="badge badge-del">DELETE</span>
+    <span class="path">/api/cards/{card_id}</span>
+  </div>
+  <pre>
+curl -X DELETE <span class="url">http://localhost:5000/api/cards/card001</span></pre>
+</section>
+
+<!-- 6. IMAGE GENERATION -->
+<section id="api-image">
+  <h2>6. API: Image Generation (Direct Gemini)</h2>
+
+  <p>Generate card images directly via the Google Gemini API. Requires <code>GOOGLE_AI_API_KEY</code>.</p>
+
+  <h3>Generate Full Card Spread (Front + Back)</h3>
+  <div class="endpoint">
+    <span class="badge badge-post">POST</span>
+    <span class="path">/api/generate-image</span>
+    <div class="desc">Generate card images using Gemini image generation</div>
+  </div>
+  <pre>
+curl -X POST <span class="url">http://localhost:5000/api/generate-image</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '{
+    "mode": "spread",
+    "title": "The Tawakkul Paradox",
+    "category": "Faith & Action",
+    "model_type": "tripod",
+    "visual_type": "tripod",
+    "theme": "warm_parchment",
+    "is_islamic_content": true,
+    "islamic_elements": ["geometric_patterns", "mosque_silhouette", "calligraphy"],
+    "steps": [
+      {"label": "Preparation", "arabic": "الاستعداد", "description": "Take all available means"},
+      {"label": "Delegation", "arabic": "التوكل", "description": "Entrust outcomes to Allah"},
+      {"label": "Acceptance", "arabic": "الرضا", "description": "Contentment with results"}
+    ],
+    "quote": "Trust without preparation is negligence. Preparation without trust is arrogance.",
+    "back_text": "True **Tawakkul** requires three co-equal legs: **preparation**, **delegation**, and **acceptance**.",
+    "card_number": 2
+  }'</pre>
+
+  <h4>Mode Options</h4>
+  <table>
+    <tr><th>Mode</th><th>Description</th><th>Orientation</th></tr>
+    <tr><td><code>"spread"</code></td><td>Both front + back cards in one image</td><td>Landscape</td></tr>
+    <tr><td><code>"front"</code></td><td>Front card only</td><td>Portrait (380x540)</td></tr>
+    <tr><td><code>"back"</code></td><td>Back card only</td><td>Portrait (380x540)</td></tr>
+  </table>
+
+  <h4>Response</h4>
+  <pre>
+{
+  "success": true,
+  "filename": "spread_card002_20260313_152000.png",
+  "filepath": "/path/to/static/images/...",
+  "url": "/static/images/spread_card002_20260313_152000.png",
+  "base64": "data:image/png;base64,...",
+  "width": 1024,
+  "height": 768
+}</pre>
+
+  <h3>Preview Prompt Only (No API Call)</h3>
+  <div class="endpoint">
+    <span class="badge badge-post">POST</span>
+    <span class="path">/api/generate-prompt</span>
+    <div class="desc">Returns the image generation prompt without calling Gemini</div>
+  </div>
+  <pre>
+curl -X POST <span class="url">http://localhost:5000/api/generate-prompt</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '{
+    "mode": "front",
+    "title": "Sabr Cycle",
+    "category": "Patience",
+    "visual_type": "cycle_loop",
+    "is_islamic_content": true,
+    "islamic_elements": ["geometric_patterns"],
+    "theme": "warm_parchment",
+    "steps": [
+      {"label": "Trial", "description": "Hardship arrives"},
+      {"label": "Patience", "description": "Steadfast endurance"},
+      {"label": "Growth", "description": "Spiritual elevation"},
+      {"label": "Gratitude", "description": "Recognition of wisdom"}
+    ],
+    "quote": "Verily with hardship comes ease.",
+    "card_number": 6
+  }'</pre>
+
+  <div class="note">
+    <strong>Useful for:</strong> Reviewing the exact prompt before spending API credits. You can copy the prompt and use it manually in Google AI Studio, NanoBanana, or any image generator.
+  </div>
+
+  <h3>Generate Back Text with LLM</h3>
+  <div class="endpoint">
+    <span class="badge badge-post">POST</span>
+    <span class="path">/api/generate-back-text</span>
+    <div class="desc">Generate the back-of-card explanatory text using Claude</div>
+  </div>
+  <pre>
+curl -X POST <span class="url">http://localhost:5000/api/generate-back-text</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '{
+    "title": "The Dunya Trap",
+    "category": "Materialism vs Spirituality",
+    "model_type": "fail_constraint",
+    "steps": [
+      {"label": "Accumulation", "description": "Gathering worldly possessions"},
+      {"label": "Attachment", "description": "Emotional dependence on material"},
+      {"label": "Loss", "description": "Inevitable separation"}
+    ],
+    "analysis_text": "The Quran warns repeatedly about being deceived by the glitter of worldly life..."
+  }'</pre>
+</section>
+
+<!-- 7. MENTAL MODELS API -->
+<section id="api-models">
+  <h2>7. API: Mental Models Repository</h2>
+
+  <p>Browse, search, and explore the 103-model repository with 15 categories and 20 visual types.</p>
+
+  <h3>List All Models</h3>
+  <div class="endpoint">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/api/mental-models</span>
+    <div class="desc">Returns summary of all 103 models with count and categories</div>
+  </div>
+  <pre>
+curl <span class="url">http://localhost:5000/api/mental-models</span></pre>
+
+  <h3>Filter by Category</h3>
+  <pre>
+<span class="comment"># All Islamic/Quranic models</span>
+curl <span class="url">"http://localhost:5000/api/mental-models?category=Islamic%20%26%20Quranic%20Models"</span>
+
+<span class="comment"># All cognitive bias models</span>
+curl <span class="url">"http://localhost:5000/api/mental-models?category=Cognitive%20Biases"</span>
+
+<span class="comment"># All systems thinking models</span>
+curl <span class="url">"http://localhost:5000/api/mental-models?category=Systems%20Thinking"</span></pre>
+
+  <h4>All 15 Categories</h4>
+  <table>
+    <tr><th>#</th><th>Category</th><th>Example Models</th></tr>
+    <tr><td>1</td><td>Cognitive Biases</td><td>Dunning-Kruger, Confirmation Bias, Anchoring</td></tr>
+    <tr><td>2</td><td>Decision Making</td><td>Eisenhower Matrix, OODA Loop, Decision Tree</td></tr>
+    <tr><td>3</td><td>Systems Thinking</td><td>Feedback Loops, Iceberg Model, Butterfly Effect</td></tr>
+    <tr><td>4</td><td>Learning & Knowledge</td><td>Feynman Technique, Bloom's Taxonomy</td></tr>
+    <tr><td>5</td><td>Communication & Influence</td><td>Pyramid Principle, Rhetoric Triangle</td></tr>
+    <tr><td>6</td><td>Strategy & Planning</td><td>SWOT, Porter's Five Forces, Blue Ocean</td></tr>
+    <tr><td>7</td><td>Probability & Statistics</td><td>Bayes' Theorem, Regression to Mean</td></tr>
+    <tr><td>8</td><td>Economics & Markets</td><td>Supply/Demand, Opportunity Cost, Sunk Cost</td></tr>
+    <tr><td>9</td><td>Psychology & Behavior</td><td>Maslow's Hierarchy, Flow State, Habit Loop</td></tr>
+    <tr><td>10</td><td>Creativity & Innovation</td><td>First Principles, SCAMPER, Lateral Thinking</td></tr>
+    <tr><td>11</td><td>Ethics & Philosophy</td><td>Trolley Problem, Veil of Ignorance, Occam's Razor</td></tr>
+    <tr><td>12</td><td>Physics & Engineering Analogies</td><td>Entropy, Leverage, Activation Energy</td></tr>
+    <tr><td>13</td><td>Biological & Evolutionary</td><td>Natural Selection, Red Queen Effect</td></tr>
+    <tr><td>14</td><td>Islamic & Quranic Models</td><td>Tawakkul Chain, Sabr Cycle, Ihsan Pyramid, Taqwa Chain</td></tr>
+    <tr><td>15</td><td>Finance & Investment</td><td>Compound Interest, Margin of Safety, Risk Premium</td></tr>
+  </table>
+
+  <h3>Get Model Details</h3>
+  <div class="endpoint">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/api/mental-models/{model_id}</span>
+    <div class="desc">Full details: description, visual_type, keywords, key_elements, related_models</div>
+  </div>
+  <pre>
+<span class="comment"># Get a specific model</span>
+curl <span class="url">http://localhost:5000/api/mental-models/tawakkul_trust_in_allah</span>
+
+<span class="comment"># Other interesting models to try</span>
+curl <span class="url">http://localhost:5000/api/mental-models/eisenhower_matrix</span>
+curl <span class="url">http://localhost:5000/api/mental-models/iceberg_model</span>
+curl <span class="url">http://localhost:5000/api/mental-models/first_principles_thinking</span>
+curl <span class="url">http://localhost:5000/api/mental-models/sabr_patience_cycle</span></pre>
+
+  <h3>Search Models</h3>
+  <div class="endpoint">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/api/mental-models/search?q={query}</span>
+    <div class="desc">Search by keyword across names, descriptions, and keywords</div>
+  </div>
+  <pre>
+<span class="comment"># Search for cycle-related models</span>
+curl <span class="url">"http://localhost:5000/api/mental-models/search?q=cycle"</span>
+
+<span class="comment"># Search for Islamic models</span>
+curl <span class="url">"http://localhost:5000/api/mental-models/search?q=quran"</span>
+
+<span class="comment"># Search for hierarchy models</span>
+curl <span class="url">"http://localhost:5000/api/mental-models/search?q=hierarchy"</span>
+
+<span class="comment"># Search for bias models</span>
+curl <span class="url">"http://localhost:5000/api/mental-models/search?q=bias"</span></pre>
+</section>
+
+<!-- 8. CONFIG API -->
+<section id="api-config">
+  <h2>8. API: Themes &amp; Visual Types</h2>
+
+  <h3>Get Themes</h3>
+  <div class="endpoint">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/api/themes</span>
+  </div>
+  <pre>
+curl <span class="url">http://localhost:5000/api/themes</span></pre>
+  <table>
+    <tr><th>Theme</th><th>Best For</th><th>Accent Color</th></tr>
+    <tr><td><code>warm_parchment</code></td><td>Islamic / Quranic content</td><td>Golden amber (#C8902E)</td></tr>
+    <tr><td><code>cool_mint</code></td><td>General / secular content</td><td>Mint teal (#4A9B7F)</td></tr>
+  </table>
+
+  <h3>Get All Visual Types (20)</h3>
+  <div class="endpoint">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/api/visual-types</span>
+  </div>
+  <pre>
+curl <span class="url">http://localhost:5000/api/visual-types</span></pre>
+
+  <h4>All 20 Visual Types</h4>
+  <table>
+    <tr><th>ID</th><th>Name</th><th>Best For</th></tr>
+    <tr><td><code>venn_diagram</code></td><td>Venn Diagram</td><td>Overlapping concepts, shared traits</td></tr>
+    <tr><td><code>cycle_loop</code></td><td>Cycle / Loop</td><td>Self-reinforcing patterns, feedback</td></tr>
+    <tr><td><code>sequential_chain</code></td><td>Sequential Chain</td><td>Step-by-step processes, A&rarr;B&rarr;C</td></tr>
+    <tr><td><code>decision_tree</code></td><td>Decision Tree</td><td>Yes/no branching, choices</td></tr>
+    <tr><td><code>matrix_2x2</code></td><td>2&times;2 Matrix</td><td>Four-quadrant analysis</td></tr>
+    <tr><td><code>pyramid_hierarchy</code></td><td>Pyramid</td><td>Hierarchical levels, Maslow-style</td></tr>
+    <tr><td><code>iceberg</code></td><td>Iceberg</td><td>Visible vs hidden, surface vs depth</td></tr>
+    <tr><td><code>fishbone</code></td><td>Fishbone</td><td>Root cause analysis, Ishikawa</td></tr>
+    <tr><td><code>funnel</code></td><td>Funnel</td><td>Progressive filtering, conversion</td></tr>
+    <tr><td><code>scale_balance</code></td><td>Scale / Balance</td><td>Trade-offs, comparisons, equity</td></tr>
+    <tr><td><code>network_graph</code></td><td>Network Graph</td><td>Interconnections, relationships</td></tr>
+    <tr><td><code>timeline</code></td><td>Timeline</td><td>Chronological progression</td></tr>
+    <tr><td><code>s_curve</code></td><td>S-Curve</td><td>Adoption, growth phases</td></tr>
+    <tr><td><code>exponential_curve</code></td><td>Exponential Curve</td><td>Compound growth, hockey stick</td></tr>
+    <tr><td><code>comparison</code></td><td>Comparison</td><td>Right vs wrong, before/after</td></tr>
+    <tr><td><code>tripod</code></td><td>Tripod / 3 Pillars</td><td>Three co-equal supports</td></tr>
+    <tr><td><code>flow_chart</code></td><td>Flow Chart</td><td>Multi-path processes</td></tr>
+    <tr><td><code>force_diagram</code></td><td>Force Diagram</td><td>Opposing forces, tension</td></tr>
+    <tr><td><code>spectrum</code></td><td>Spectrum</td><td>Continuum from one extreme to another</td></tr>
+    <tr><td><code>nested_circles</code></td><td>Nested Circles</td><td>Containment, layers of depth</td></tr>
+  </table>
+
+  <h3>Get Legacy Model Types (Original 6)</h3>
+  <div class="endpoint">
+    <span class="badge badge-get">GET</span>
+    <span class="path">/api/model-types</span>
+  </div>
+  <pre>
+curl <span class="url">http://localhost:5000/api/model-types</span></pre>
+</section>
+
+<!-- 9. NANOBANANA -->
+<section id="nanobanana">
+  <h2>9. NanoBanana MCP Image Generation</h2>
+
+  <p>NanoBanana MCP provides Google Gemini image generation via the MCP protocol, bypassing direct API setup. This is ideal for generating high-quality cards through Claude Desktop or Cowork.</p>
+
+  <h3>Step 1: Get the Prompt</h3>
+  <pre>
+<span class="comment"># Generate the prompt via API</span>
+curl -X POST <span class="url">http://localhost:5000/api/generate-prompt</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '{
+    "mode": "spread",
+    "title": "Quranic Mission Synthesis",
+    "category": "Prophecy & Psychology",
+    "visual_type": "sequential_chain",
+    "is_islamic_content": true,
+    "islamic_elements": ["geometric_patterns", "calligraphy", "crescent_star"],
+    "theme": "warm_parchment",
+    "steps": [
+      {"label": "Worship", "arabic": "اعبدوا الله", "description": "Recognize servitude"},
+      {"label": "Taqwa", "arabic": "واتقوه", "description": "Develop consciousness"},
+      {"label": "Obey", "arabic": "وأطيعون", "description": "Follow guidance"}
+    ],
+    "quote": "These three steps are an unbreakable chain.",
+    "back_text": "True worship begins with recognizing **servitude**, flows into **consciousness**, and completes with **obedience**.",
+    "card_number": 1
+  }'</pre>
+
+  <h3>Step 2: Use with NanoBanana MCP (in Claude/Cowork)</h3>
+  <pre>
+<span class="comment"># In a Claude conversation with NanoBanana MCP enabled:</span>
+<span class="comment"># 1. Paste the prompt from Step 1</span>
+<span class="comment"># 2. Claude will call gemini_generate_image with the prompt</span>
+<span class="comment"># 3. Image saves to ~/Documents/nanobanana_generated/</span>
+<span class="comment"># 4. Run setup_images.sh to copy into project</span></pre>
+
+  <h3>Step 3: Copy Generated Images</h3>
+  <pre>
+sh setup_images.sh</pre>
+
+  <div class="note">
+    <strong>Image Mapping:</strong> The setup script copies from <code>~/Documents/nanobanana_generated/</code> to <code>static/images/</code> with these filenames:
+    <br>card1_quranic_mission_synthesis.png, card2_maslows_hammer.png, card3_zero_sum_fallacy.png, card4_tawakkul_paradox.png, card5_dunya_trap.png
+  </div>
+</section>
+
+<!-- 10. FULL WORKFLOW -->
+<section id="workflow">
+  <h2>10. Full Workflow: End-to-End Test</h2>
+
+  <p>Complete walkthrough: from raw verse analysis to generated visual card.</p>
+
+  <h3><span class="step-num">1</span> Start the Server</h3>
+  <pre>
+export ANTHROPIC_API_KEY=<span class="string">"sk-ant-api03-..."</span>
+export GOOGLE_AI_API_KEY=<span class="string">"AIzaSy..."</span>
+python3 app.py</pre>
+
+  <h3><span class="step-num">2</span> Analyze a Quranic Verse</h3>
+  <pre>
+curl -s -X POST <span class="url">http://localhost:5000/api/analyze</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '{
+    "title": "The Funnel of Guidance",
+    "category": "Divine Guidance",
+    "analysis_text": "In Surah Al-Fatiha, guidance is presented as a progressive funnel: all of humanity receives general guidance (instinct, reason), believers receive specific guidance (revelation, Shariah), and the elite receive special guidance (spiritual illumination, kashf). At each stage, fewer qualify but the guidance becomes more refined. The path narrows but the light intensifies."
+  }' | python3 -m json.tool</pre>
+
+  <div class="success-note">
+    <strong>Check:</strong> Response should include <code>visual_type: "funnel"</code>, <code>is_islamic_content: true</code>, and 3+ steps.
+  </div>
+
+  <h3><span class="step-num">3</span> Save the Card</h3>
+  <pre>
+<span class="comment"># Copy the analysis response and POST it as a new card</span>
+<span class="comment"># (add any missing fields like back_text)</span>
+curl -s -X POST <span class="url">http://localhost:5000/api/cards</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '{
+    "title": "The Funnel of Guidance",
+    "category": "Divine Guidance",
+    "analysis_text": "In Surah Al-Fatiha...",
+    "visual_type": "funnel",
+    "model_type": "sequential_chain",
+    "theme": "warm_parchment",
+    "is_islamic_content": true,
+    "islamic_elements": ["geometric_patterns", "calligraphy", "light_rays"],
+    "model_id": "funnel_of_guidance",
+    "model_confidence": 0.78,
+    "steps": [
+      {"label": "General Guidance", "description": "Instinct and reason for all humanity"},
+      {"label": "Specific Guidance", "description": "Revelation and Shariah for believers"},
+      {"label": "Special Guidance", "description": "Spiritual illumination for the elite"}
+    ],
+    "quote": "The path narrows but the light intensifies.",
+    "back_text": "Guidance is not binary but a **progressive funnel**..."
+  }' | python3 -m json.tool</pre>
+
+  <h3><span class="step-num">4</span> Generate the Image</h3>
+  <pre>
+<span class="comment"># Option A: Direct Gemini API</span>
+curl -s -X POST <span class="url">http://localhost:5000/api/generate-image</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '{
+    "mode": "front",
+    "title": "The Funnel of Guidance",
+    "category": "Divine Guidance",
+    "visual_type": "funnel",
+    "theme": "warm_parchment",
+    "is_islamic_content": true,
+    "islamic_elements": ["geometric_patterns", "calligraphy", "light_rays"],
+    "steps": [
+      {"label": "General Guidance", "description": "Instinct and reason"},
+      {"label": "Specific Guidance", "description": "Revelation and Shariah"},
+      {"label": "Special Guidance", "description": "Spiritual illumination"}
+    ],
+    "quote": "The path narrows but the light intensifies.",
+    "card_number": 6
+  }' | python3 -m json.tool
+
+<span class="comment"># Option B: Get prompt for NanoBanana MCP</span>
+curl -s -X POST <span class="url">http://localhost:5000/api/generate-prompt</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d '{ ... same data ... }' | python3 -m json.tool</pre>
+
+  <h3><span class="step-num">5</span> Verify the Card</h3>
+  <pre>
+<span class="comment"># List all cards to see the new one</span>
+curl -s <span class="url">http://localhost:5000/api/cards</span> | python3 -m json.tool
+
+<span class="comment"># Open the web UI</span>
+open <span class="url">http://localhost:5000</span></pre>
+</section>
+
+<!-- 11. GALLERY & PREVIEW -->
+<section id="gallery">
+  <h2>11. Gallery &amp; Preview Pages</h2>
+
+  <h3>Web UI (Flask)</h3>
+  <pre>
+<span class="comment"># Main card creation interface</span>
+open <span class="url">http://localhost:5000</span></pre>
+
+  <h3>Gallery (Static HTML)</h3>
+  <pre>
+<span class="comment"># Drag-and-drop gallery of AI-generated card images</span>
+<span class="comment"># Requires: python3 -m http.server 8080 (or Flask server)</span>
+open <span class="url">http://localhost:8080/gallery.html</span></pre>
+  <p>Features: lightbox zoom, drag-and-drop upload, setup instructions.</p>
+
+  <h3>Preview (Static HTML)</h3>
+  <pre>
+<span class="comment"># Dual-view: AI-Generated images vs CSS/Rough.js preview</span>
+open <span class="url">http://localhost:8080/preview.html</span></pre>
+  <p>Features: toggle between AI-Generated view and CSS Preview, lightbox zoom, all 5 existing cards.</p>
+
+  <div class="note">
+    <strong>Important:</strong> Gallery and Preview HTML files load images from <code>static/images/</code>. They <strong>won't work</strong> when opened as <code>file://</code> URLs due to browser security. Always serve them via HTTP (<code>python3 -m http.server 8080</code> or Flask).
+  </div>
+</section>
+
+<!-- 12. FILE REFERENCE -->
+<section id="files">
+  <h2>12. File Reference</h2>
+
+  <div class="file-tree">
+    <span class="dir">02-Quran-Visual-Cards/</span><br>
+    &nbsp;&nbsp;<span class="file">app.py</span> <span class="desc">&mdash; Flask API server (15 endpoints)</span><br>
+    &nbsp;&nbsp;<span class="file">config.py</span> <span class="desc">&mdash; All configuration, themes, 20 visual types, legacy mappings</span><br>
+    &nbsp;&nbsp;<span class="file">models.py</span> <span class="desc">&mdash; Card data model with old + new fields</span><br>
+    &nbsp;&nbsp;<span class="file">core_intelligence.py</span> <span class="desc">&mdash; Claude LLM analysis + intelligent matching integration</span><br>
+    &nbsp;&nbsp;<span class="new">intelligent_matching.py</span> <span class="desc">&mdash; NEW: Model repository, scoring engine, 20 visual prompts</span><br>
+    &nbsp;&nbsp;<span class="new">islamic_guardrails.py</span> <span class="desc">&mdash; NEW: Islamic art rules, guardrail prompt injection</span><br>
+    &nbsp;&nbsp;<span class="file">image_gen.py</span> <span class="desc">&mdash; Gemini image generation with guardrails</span><br>
+    &nbsp;&nbsp;<span class="file">run.sh</span> <span class="desc">&mdash; Quick-start server script</span><br>
+    &nbsp;&nbsp;<span class="file">setup_images.sh</span> <span class="desc">&mdash; Copy NanoBanana images into project</span><br>
+    &nbsp;&nbsp;<span class="file">gallery.html</span> <span class="desc">&mdash; AI image gallery with lightbox</span><br>
+    &nbsp;&nbsp;<span class="file">preview.html</span> <span class="desc">&mdash; Dual-view card preview</span><br>
+    &nbsp;&nbsp;<span class="file">PROMPTS.md</span> <span class="desc">&mdash; Prompt engineering documentation</span><br>
+    &nbsp;&nbsp;<br>
+    &nbsp;&nbsp;<span class="dir">data/</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">cards.json</span> <span class="desc">&mdash; Saved cards database (5 existing)</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="new">mental_models.json</span> <span class="desc">&mdash; NEW: 103 models, 15 categories, 20 visual types</span><br>
+    &nbsp;&nbsp;<br>
+    &nbsp;&nbsp;<span class="dir">templates/</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">index.html</span> <span class="desc">&mdash; Main web UI template</span><br>
+    &nbsp;&nbsp;<br>
+    &nbsp;&nbsp;<span class="dir">static/images/</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">card1_quranic_mission_synthesis.png</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">card2_maslows_hammer.png</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">card3_zero_sum_fallacy.png</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">card4_tawakkul_paradox.png</span><br>
+    &nbsp;&nbsp;&nbsp;&nbsp;<span class="file">card5_dunya_trap.png</span><br>
+  </div>
+</section>
+
+<!-- 13. TROUBLESHOOTING -->
+<section id="troubleshooting">
+  <h2>13. Troubleshooting</h2>
+
+  <h3>Common Issues</h3>
+
+  <h4>"No module named 'flask'" (or anthropic, google.genai, PIL)</h4>
+  <pre>
+pip install flask anthropic google-genai Pillow --break-system-packages</pre>
+
+  <h4>"No Google API key configured"</h4>
+  <pre>
+<span class="comment"># Set the environment variable</span>
+export GOOGLE_AI_API_KEY=<span class="string">"AIzaSy..."</span>
+
+<span class="comment"># Or pass it in the request body</span>
+curl -X POST ... -d '{"google_api_key": "AIzaSy...", ...}'</pre>
+
+  <h4>"Analysis failed" / Empty analysis response</h4>
+  <pre>
+<span class="comment"># Check your Anthropic API key</span>
+export ANTHROPIC_API_KEY=<span class="string">"sk-ant-api03-..."</span>
+
+<span class="comment"># Test the key directly</span>
+python3 -c "
+import anthropic
+c = anthropic.Anthropic()
+r = c.messages.create(model='claude-sonnet-4-20250514', max_tokens=100,
+    messages=[{'role':'user','content':'Say hello'}])
+print(r.content[0].text)
+"</pre>
+
+  <h4>Images not showing in gallery.html / preview.html</h4>
+  <pre>
+<span class="comment"># DON'T open as file:// — use HTTP server instead</span>
+python3 -m http.server 8080
+<span class="comment"># Then open http://localhost:8080/gallery.html</span></pre>
+
+  <h4>setup_images.sh "declare -A" error on macOS</h4>
+  <pre>
+<span class="comment"># Use sh instead of bash (the script is POSIX-compatible)</span>
+sh setup_images.sh</pre>
+
+  <h4>Image generation quota exceeded</h4>
+  <p>Google Gemini free tier has rate limits. Options:</p>
+  <ul>
+    <li>Wait and retry (limits reset every minute)</li>
+    <li>Use <code>/api/generate-prompt</code> and paste into NanoBanana MCP</li>
+    <li>Upgrade to a paid Google AI plan</li>
+  </ul>
+
+  <h4>Test all modules without starting server</h4>
+  <pre>
+<span class="comment"># Quick integration test</span>
+python3 -c "
+from intelligent_matching import ModelRepository, get_top_matches
+from islamic_guardrails import detect_islamic_content, apply_guardrails
+from image_gen import build_illustration_description, build_color_instruction
+from config import VISUAL_TYPES, LEGACY_MODEL_TYPES
+
+repo = ModelRepository()
+print(f'Repository: {len(repo.models)} models, {len(repo.categories)} categories')
+
+matches, signals = get_top_matches('Sabr Cycle', 'Patience',
+    'The Quran teaches sabr as a cycle of trial and growth', repo)
+print(f'Top match: {matches[0][\"name\"]} ({matches[0][\"confidence\"]:.0%})')
+
+is_islamic, elements = detect_islamic_content('Sabr', 'Quran', 'patience worship Allah')
+print(f'Islamic: {is_islamic}, Elements: {elements}')
+
+desc = build_illustration_description(visual_type='cycle_loop',
+    steps=[{'label':'Trial'},{'label':'Patience'},{'label':'Growth'}])
+print(f'Illustration prompt: {len(desc)} chars')
+
+print('All modules working!')
+"</pre>
+
+  <h4>Full API health check (all endpoints)</h4>
+  <pre>
+<span class="comment"># Run this after starting the server to verify all endpoints</span>
+echo "=== Themes ===" && curl -s <span class="url">http://localhost:5000/api/themes</span> | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'{len(d)} themes')"
+echo "=== Model Types ===" && curl -s <span class="url">http://localhost:5000/api/model-types</span> | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'{len(d)} types')"
+echo "=== Visual Types ===" && curl -s <span class="url">http://localhost:5000/api/visual-types</span> | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'{len(d)} visual types')"
+echo "=== Mental Models ===" && curl -s <span class="url">http://localhost:5000/api/mental-models</span> | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'{d[\"count\"]} models, {len(d[\"categories\"])} categories')"
+echo "=== Cards ===" && curl -s <span class="url">http://localhost:5000/api/cards</span> | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'{len(d)} cards')"
+echo "=== Search ===" && curl -s <span class="url">"http://localhost:5000/api/mental-models/search?q=quran"</span> | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'{d[\"count\"]} results for quran')"
+echo "=== All endpoints OK ==="</pre>
+</section>
+
+</div>
+
+<footer>
+  Quran Visual Cards Pipeline v2.0 &mdash; Mental Model Synthesis Engine<br>
+  103 Models &bull; 15 Categories &bull; 20 Visual Types &bull; Islamic Guardrails<br>
+  Built with Flask + Claude Sonnet + Google Gemini
+</footer>
+
+</body>
+</html>

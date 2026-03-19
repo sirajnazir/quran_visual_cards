@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quran Visual Cards — Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&family=Patrick+Hand&family=Noto+Sans+Arabic:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js"></script>
+  <style>
+    :root {
+      --mint-bg-start: #C5E8D8; --mint-bg-end: #E8F5EE; --mint-accent: #4A9B7F;
+      --mint-text: #2C3E50; --mint-title: #1A2530; --mint-back-bg: #F0F0F0; --mint-number: #B8DFD0;
+      --parch-bg-start: #F5E6C8; --parch-bg-end: #FDF3E0; --parch-accent: #C8902E;
+      --parch-text: #5C3D1A; --parch-title: #4A2E0A; --parch-back-bg: #FDF3E0; --parch-number: #E8D5B0;
+      --card-width: 380px; --card-height: 540px; --card-radius: 20px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #F5F3EF; padding: 40px; }
+
+    h1 { font-family: 'Cabin Sketch', cursive; font-size: 28px; color: #2C3E50; margin-bottom: 8px; text-align: center; }
+    .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 12px; }
+
+    /* View Toggle */
+    .view-toggle {
+      display: flex; justify-content: center; gap: 8px; margin-bottom: 36px;
+    }
+    .view-btn {
+      padding: 8px 20px; border: 2px solid #DDD; border-radius: 20px;
+      background: white; font-family: 'Patrick Hand', cursive; font-size: 15px;
+      color: #888; cursor: pointer; transition: all 0.2s ease;
+    }
+    .view-btn:hover { border-color: #C8902E; color: #C8902E; }
+    .view-btn.active { background: #C8902E; color: white; border-color: #C8902E; }
+
+    .cards-container { display: flex; flex-direction: column; align-items: center; gap: 50px; }
+
+    /* AI Image Card */
+    .ai-card-entry {
+      max-width: 900px; width: 100%;
+      background: white; border-radius: 20px; overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    .ai-card-entry .card-header {
+      padding: 20px 28px 12px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .ai-card-entry .card-header h2 {
+      font-family: 'Cabin Sketch', cursive; font-size: 22px; color: #2C3E50;
+    }
+    .ai-card-entry .card-header .num {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cabin Sketch', cursive; font-weight: 700; font-size: 18px; color: white;
+    }
+    .num.warm { background: #C8902E; }
+    .num.cool { background: #4A9B7F; }
+    .ai-card-entry .card-img {
+      width: 100%; display: block; border-top: 1px solid #F0EDE8;
+    }
+    .ai-card-entry .card-footer {
+      padding: 16px 28px 20px;
+      font-family: 'Crimson Text', serif; font-style: italic; font-size: 15px;
+      color: #888; line-height: 1.5; border-top: 1px solid #F0EDE8;
+    }
+
+    /* CSS Card Spread */
+    .card-spread {
+      display: flex; align-items: flex-start; gap: 32px; padding: 40px 50px;
+      background: #FAFAFA; border-radius: 20px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+      position: relative;
+    }
+    .card-spread-label {
+      position: absolute; top: 12px; font-family: 'Patrick Hand', cursive;
+      font-size: 15px; color: #E8623A; font-weight: 700;
+    }
+    .label-front { left: 140px; }
+    .label-back { right: 120px; }
+    .card-spread-label svg { width: 36px; height: 24px; vertical-align: middle; }
+
+    .mental-card {
+      width: var(--card-width); height: var(--card-height); border-radius: var(--card-radius);
+      position: relative; overflow: hidden;
+      box-shadow: 4px 6px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    /* FRONT */
+    .card-front { display: flex; flex-direction: column; padding: 32px 28px 28px; height: 100%; }
+    .card-front.theme-cool_mint { background: linear-gradient(160deg, var(--mint-bg-start), var(--mint-bg-end)); }
+    .card-front.theme-warm_parchment { background: linear-gradient(160deg, var(--parch-bg-start), var(--parch-bg-end)); }
+    .card-front.theme-warm_parchment::before {
+      content: ''; position: absolute; inset: 0; border-radius: var(--card-radius);
+      box-shadow: inset 0 0 40px rgba(139, 90, 43, 0.12); pointer-events: none;
+    }
+
+    .card-title {
+      font-family: 'Cabin Sketch', cursive; font-weight: 700; font-size: 26px;
+      line-height: 1.15; letter-spacing: 1px; text-transform: uppercase; max-width: 68%;
+    }
+    .theme-cool_mint .card-title { color: var(--mint-title); }
+    .theme-warm_parchment .card-title { color: var(--parch-title); }
+
+    .card-category {
+      position: absolute; top: 32px; right: 20px;
+      writing-mode: vertical-rl; text-orientation: mixed;
+      font-family: 'Cabin Sketch', cursive; font-weight: 700;
+      font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    }
+    .card-category::before {
+      content: ''; position: absolute; left: -10px; top: 0; bottom: 0;
+      width: 2px; background: currentColor; opacity: 0.3;
+    }
+    .theme-cool_mint .card-category { color: var(--mint-accent); }
+    .theme-warm_parchment .card-category { color: var(--parch-accent); }
+
+    .card-illustration { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 200px; }
+    .card-illustration svg { max-width: 100%; max-height: 280px; }
+
+    .card-steps {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      flex: 1; padding: 16px 0;
+    }
+    .card-step { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 70px; max-width: 100px; }
+    .step-icon {
+      width: 60px; height: 60px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 6px; font-size: 28px;
+    }
+    .theme-warm_parchment .step-icon { background: rgba(200,144,46,0.15); border: 2px solid rgba(200,144,46,0.3); }
+    .theme-cool_mint .step-icon { background: rgba(74,155,127,0.1); border: 2px solid rgba(74,155,127,0.25); }
+    .step-number { font-family: 'Cabin Sketch', cursive; font-weight: 700; font-size: 11px; margin-bottom: 2px; opacity: 0.7; }
+    .step-label { font-family: 'Cabin Sketch', cursive; font-weight: 700; font-size: 12px; text-transform: uppercase; }
+    .step-arabic { font-family: 'Noto Sans Arabic', sans-serif; font-size: 11px; font-weight: 600; direction: rtl; margin-top: 2px; opacity: 0.85; }
+    .step-arrow { font-size: 20px; opacity: 0.5; margin: 0 2px; padding-bottom: 30px; }
+    .theme-warm_parchment .step-label, .theme-warm_parchment .step-number { color: var(--parch-title); }
+    .theme-cool_mint .step-label, .theme-cool_mint .step-number { color: var(--mint-title); }
+
+    .card-quote {
+      font-family: 'Patrick Hand', cursive; font-size: 15px; line-height: 1.4;
+      padding: 12px 0 0; margin-top: auto; transform: rotate(-2deg);
+    }
+    .theme-cool_mint .card-quote { color: var(--mint-text); }
+    .theme-warm_parchment .card-quote { color: var(--parch-text); }
+
+    /* BACK */
+    .card-back { display: flex; flex-direction: column; padding: 36px 30px 28px; justify-content: space-between; height: 100%; }
+    .card-back.theme-cool_mint { background: var(--mint-back-bg); }
+    .card-back.theme-warm_parchment { background: var(--parch-back-bg); }
+
+    .back-text { font-family: 'Crimson Text', serif; font-size: 14.5px; line-height: 1.55; flex: 1; }
+    .theme-cool_mint .back-text { color: var(--mint-text); }
+    .theme-warm_parchment .back-text { color: var(--parch-text); }
+    .back-text p { margin: 0 0 14px; }
+    .back-text strong { font-weight: 700; }
+
+    .card-number {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Crimson Text', serif; font-size: 14px; font-weight: 600;
+      align-self: flex-end; margin-top: 12px;
+    }
+    .theme-cool_mint .card-number { background: var(--mint-number); color: var(--mint-title); }
+    .theme-warm_parchment .card-number { background: var(--parch-number); color: var(--parch-title); }
+
+    /* Lightbox */
+    .lightbox {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.92); z-index: 1000;
+      align-items: center; justify-content: center; cursor: zoom-out;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox img { max-width: 95vw; max-height: 95vh; border-radius: 12px; }
+
+    @keyframes cardIn { from { opacity: 0; transform: translateY(20px) rotate(-2deg); } to { opacity: 1; transform: translateY(0); } }
+    .card-animate { animation: cardIn 0.5s ease-out; }
+
+    @media print {
+      .view-toggle { display: none; }
+      .card-spread, .ai-card-entry { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Quran Visual Cards</h1>
+<p class="subtitle">Mental Model Synthesis Engine — Nano Banana 2</p>
+
+<div class="view-toggle">
+  <button class="view-btn active" onclick="switchView('ai')">AI-Generated</button>
+  <button class="view-btn" onclick="switchView('css')">CSS Preview</button>
+</div>
+
+<div class="cards-container" id="ai-container"></div>
+<div class="cards-container" id="css-container" style="display:none"></div>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+const STEP_ICONS = {
+  'worship': '\u{1F932}', 'pray': '\u{1F932}', 'servitude': '\u{1F932}',
+  'taqwa': '\u{1F4A1}', 'consciousness': '\u{1F4A1}',
+  'obey': '\u{1F4DC}', 'guidance': '\u{1F4DC}',
+  'prepare': '\u{1F6E0}', 'delegate': '\u{1F932}', 'accept': '\u2705',
+  'desire': '\u{1F4B0}', 'accumulate': '\u{1F4E6}', 'distraction': '\u{1F4F1}', 'forget': '\u{1F32B}',
+  'default': '\u2726'
+};
+
+function getStepIcon(label) {
+  const lower = label.toLowerCase();
+  for (const [key, icon] of Object.entries(STEP_ICONS)) {
+    if (lower.includes(key)) return icon;
+  }
+  return STEP_ICONS.default;
+}
+
+const SAMPLE_CARDS = [
+  {
+    id: "card001", title: "Quranic Mission Synthesis", category: "Prophecy & Psychology",
+    model_type: "sequential_chain", theme: "warm_parchment", card_number: 1,
+    imageFile: "card1_quranic_mission_synthesis.png",
+    steps: [
+      {label: "Worship", arabic: "\u0627\u0639\u0652\u0628\u064F\u062F\u064F\u0648\u0627 \u0627\u0644\u0644\u0651\u064E\u0647\u064E", description: "Recognize servitude to Allah"},
+      {label: "Taqwa", arabic: "\u0648\u064E\u0627\u062A\u0651\u064E\u0642\u064F\u0648\u0647\u064F", description: "Develop consciousness and caution"},
+      {label: "Obey", arabic: "\u0648\u064E\u0623\u064E\u0637\u0650\u064A\u0639\u064F\u0648\u0646\u0650", description: "Follow the delivered guidance"}
+    ],
+    quote: "It is tempting to follow guidance without recognizing servitude. These three steps are an unbreakable chain.",
+    back_text: "It is tempting to follow guidance without first recognizing our fundamental position as servants. Many approach religion as a set of rules to follow, skipping the **servitude** that gives those rules meaning.\n\nOnce we recognize our fundamental reality as servants to Allah, a natural sense of caution and **consciousness** (Taqwa) flows. This Taqwa leads us to seek His commands. The only way to know them is to follow the guidance delivered through His messenger.\n\nThese three imperatives form a complete chain: recognize **servitude**, maintain **consciousness**, follow **guidance**. Breaking any link collapses the entire structure."
+  },
+  {
+    id: "card002", title: "The Tawakkul Paradox", category: "Faith & Action",
+    model_type: "tripod", theme: "warm_parchment", card_number: 2,
+    imageFile: "card4_tawakkul_paradox.png",
+    steps: [
+      {label: "Prepare", arabic: "\u0627\u0644\u0623\u062E\u0630 \u0628\u0627\u0644\u0623\u0633\u0628\u0627\u0628", description: "Take all available means"},
+      {label: "Delegate", arabic: "\u0627\u0644\u062A\u0648\u0643\u0644", description: "Entrust outcomes to Allah"},
+      {label: "Accept", arabic: "\u0627\u0644\u0631\u0636\u0627", description: "Be content with the result"}
+    ],
+    quote: "Trust without preparation is negligence. Preparation without trust is arrogance.",
+    back_text: "We often reduce **Tawakkul** (trust in Allah) to a passive attitude: do nothing and wait for divine intervention. This misunderstanding strips the concept of its dynamic nature.\n\nThe Quranic model reveals Tawakkul as a **tripod** requiring three co-equal legs: active **preparation**, sincere **delegation**, and graceful **acceptance**. Each leg is non-negotiable.\n\nRemove preparation, and you have negligence. Remove delegation, and you have arrogance. Remove acceptance, and you have anxiety. True Tawakkul stands only when all three legs bear equal weight."
+  },
+  {
+    id: "card003", title: "The Dunya Trap", category: "Worldly Attachment",
+    model_type: "loop_cycle", theme: "warm_parchment", card_number: 3,
+    imageFile: "card5_dunya_trap.png",
+    steps: [
+      {label: "Desire", arabic: "\u0627\u0644\u0631\u063A\u0628\u0629", description: "Wanting more"},
+      {label: "Accumulate", arabic: "\u0627\u0644\u062A\u0643\u0627\u062B\u0631", description: "Gathering and hoarding"},
+      {label: "Distraction", arabic: "\u0627\u0644\u0644\u0647\u0648", description: "Losing focus"},
+      {label: "Forgetfulness", arabic: "\u0627\u0644\u063A\u0641\u0644\u0629", description: "Forgetting the Hereafter"}
+    ],
+    quote: "Desire feeds accumulation, accumulation breeds distraction, distraction births forgetfulness.",
+    back_text: "We assume worldly **desire** is a linear path: want something, get it, feel satisfied. But the Quran reveals a more insidious pattern \u2014 a self-reinforcing **loop** that traps us.\n\n**Desire** drives **accumulation**. Accumulation creates **distraction** from our deeper purpose. This distraction breeds **forgetfulness**, which generates more desire. Each revolution strengthens the next.\n\nThe wisdom of Surah At-Takathur is that the cycle can be broken at any point through conscious awareness. Recognizing the loop is itself the first crack in its structure."
+  },
+  {
+    id: "card004", title: "Maslow's Hammer", category: "Problem Solving",
+    model_type: "fail_constraint", theme: "cool_mint", card_number: 39,
+    imageFile: "card2_maslows_hammer.png",
+    steps: [],
+    quote: "It is tempting, if the only tool you have is a hammer, to treat everything as if it were a nail.",
+    back_text: "Once we have found a tool that works, we tend to stick with it. This cognitive bias, coined by **Abraham Maslow**, is also known as the Law of the Instrument.\n\nOver-reliance on a single tool can lead to its inappropriate use or overuse. It often leads us to fall back to tried and tested methods, at the expense of trying a more efficient **strategy**.\n\nWhen you're trying to get something done, try to find new tools, tactics or strategies instead of relying on what you know. The **constraint** is not the problem \u2014 it's the mismatch between tool and task."
+  },
+  {
+    id: "card005", title: "Zero Sum Fallacy", category: "Strategic Thinking",
+    model_type: "mutual_gain", theme: "cool_mint", card_number: 36,
+    imageFile: "card3_zero_sum_fallacy.png",
+    steps: [],
+    quote: "We perceive many situations as having a clear winner and a loser. Most do not.",
+    back_text: "In game theory, a **zero sum** game is one in which the winner wins at the expense of the loser. There is a net-zero gain for all players.\n\nAlthough zero sum games such as poker, chess and blackjack do exist, true zero sum games are rarer than we think. The **zero sum fallacy** is believed to be an evolutionary quirk from when food and mates were scarce.\n\nTry to consider whether there is a possibility of **mutual gain** when making decisions, even if they appear to be zero sum."
+  }
+];
+
+// ---------- AI View ----------
+const aiContainer = document.getElementById('ai-container');
+SAMPLE_CARDS.forEach(card => {
+  const themeClass = card.theme === 'warm_parchment' ? 'warm' : 'cool';
+  const entry = document.createElement('div');
+  entry.className = 'ai-card-entry';
+  entry.innerHTML = `
+    <div class="card-header">
+      <h2>${card.title}</h2>
+      <div class="num ${themeClass}">${card.card_number}</div>
+    </div>
+    <img class="card-img" src="static/images/${card.imageFile}"
+         alt="${card.title}"
+         onclick="openLightbox(this.src)"
+         style="cursor:zoom-in"
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+    <div style="display:none; padding:40px; text-align:center; color:#CCC; font-family:'Patrick Hand',cursive; font-size:16px; background:#FAFAF8; border-top:1px solid #F0EDE8;">
+      Image not found. Run <code>bash setup_images.sh</code> to copy images from ~/Documents/nanobanana_generated/
+    </div>
+    <div class="card-footer">"${card.quote}"</div>
+  `;
+  aiContainer.appendChild(entry);
+});
+
+// ---------- CSS View ----------
+const cssContainer = document.getElementById('css-container');
+function renderCSSCard(card) {
+  const container = document.createElement('div');
+  container.className = 'card-spread';
+
+  let illustrationHTML = '';
+  if (card.steps && card.steps.length > 0) {
+    const stepsHTML = card.steps.map((step, i) => {
+      const icon = getStepIcon(step.label);
+      const arrow = i < card.steps.length - 1 ? '<div class="step-arrow">\u279C</div>' : '';
+      return `
+        <div class="card-step">
+          <div class="step-icon">${icon}</div>
+          <div class="step-number">${i + 1}.</div>
+          <div class="step-label">${step.label}</div>
+          ${step.arabic ? `<div class="step-arabic">${step.arabic}</div>` : ''}
+        </div>
+        ${arrow}
+      `;
+    }).join('');
+    illustrationHTML = `<div class="card-steps">${stepsHTML}</div>`;
+  } else {
+    illustrationHTML = `<div class="card-illustration"><svg id="rough-${card.id}" width="280" height="200"></svg></div>`;
+  }
+
+  let backHTML = (card.back_text || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .split(/\n\n+/).map(p => `<p>${p}</p>`).join('');
+
+  container.innerHTML = `
+    <span class="card-spread-label label-front">
+      <svg viewBox="0 0 40 24" fill="none"><path d="M30 2C20 2 14 12 4 12" stroke="#E8623A" stroke-width="2.5" stroke-linecap="round"/><path d="M10 6L3 12L10 18" stroke="#E8623A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Front
+    </span>
+    <div class="mental-card card-animate">
+      <div class="card-front theme-${card.theme}">
+        <div class="card-title">${card.title}</div>
+        <div class="card-category">${card.category}</div>
+        ${illustrationHTML}
+        <div class="card-quote">${card.quote}</div>
+      </div>
+    </div>
+    <div class="mental-card card-animate" style="animation-delay:0.15s">
+      <div class="card-back theme-${card.theme}">
+        <div class="back-text">${backHTML}</div>
+        <div class="card-number">${card.card_number}.</div>
+      </div>
+    </div>
+    <span class="card-spread-label label-back" style="bottom:12px;">
+      Back
+      <svg viewBox="0 0 40 24" fill="none"><path d="M10 2C20 2 26 12 36 12" stroke="#E8623A" stroke-width="2.5" stroke-linecap="round"/><path d="M30 6L37 12L30 18" stroke="#E8623A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+  `;
+  return container;
+}
+
+SAMPLE_CARDS.forEach(card => cssContainer.appendChild(renderCSSCard(card)));
+
+// ---------- Rough.js Illustrations ----------
+const THEMES = {
+  cool_mint: { accent: '#4A9B7F', title: '#1A2530' },
+  warm_parchment: { accent: '#C8902E', title: '#4A2E0A' }
+};
+
+function drawRoughIllustrations() {
+  SAMPLE_CARDS.forEach(card => {
+    if (card.steps && card.steps.length > 0) return;
+    const svg = document.getElementById(`rough-${card.id}`);
+    if (!svg || typeof rough === 'undefined') return;
+    const rc = rough.svg(svg);
+    const t = THEMES[card.theme] || THEMES.cool_mint;
+
+    if (card.model_type === 'fail_constraint') {
+      svg.appendChild(rc.rectangle(110, 40, 16, 90, { stroke: t.accent, strokeWidth: 2, fill: t.accent, fillStyle: 'solid', roughness: 1.5 }));
+      svg.appendChild(rc.rectangle(90, 20, 60, 30, { stroke: t.title, strokeWidth: 2, fill: '#F5C542', fillStyle: 'solid', roughness: 1.5 }));
+      svg.appendChild(rc.line(190, 100, 190, 160, { stroke: t.accent, strokeWidth: 2.5, roughness: 1.5 }));
+      svg.appendChild(rc.circle(190, 95, 14, { stroke: t.accent, strokeWidth: 2, roughness: 1.5 }));
+      for (let y = 115; y < 155; y += 10) {
+        svg.appendChild(rc.line(183, y, 197, y + 5, { stroke: t.accent, strokeWidth: 1.5, roughness: 1 }));
+      }
+      svg.appendChild(rc.line(60, 160, 260, 160, { stroke: t.title, strokeWidth: 2, roughness: 2 }));
+      svg.appendChild(rc.line(150, 130, 170, 150, { stroke: '#E8623A', strokeWidth: 2.5, roughness: 1.5 }));
+      svg.appendChild(rc.line(170, 130, 150, 150, { stroke: '#E8623A', strokeWidth: 2.5, roughness: 1.5 }));
+    }
+    else if (card.model_type === 'mutual_gain') {
+      svg.appendChild(rc.circle(110, 100, 120, { stroke: t.accent, strokeWidth: 2, fill: '#F5C542', fillStyle: 'solid', roughness: 1.5 }));
+      svg.appendChild(rc.circle(180, 100, 120, { stroke: t.accent, strokeWidth: 2, fill: '#F5C542', fillStyle: 'solid', roughness: 1.5 }));
+      svg.appendChild(rc.ellipse(145, 100, 50, 100, { stroke: '#E8623A', strokeWidth: 2, fill: '#E8623A', fillStyle: 'solid', roughness: 1 }));
+      const addText = (text, x, y, sz) => {
+        const el = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        el.setAttribute('x', x); el.setAttribute('y', y);
+        el.setAttribute('text-anchor', 'middle');
+        el.setAttribute('font-family', 'Cabin Sketch, cursive');
+        el.setAttribute('font-size', sz || '11');
+        el.setAttribute('font-weight', '700');
+        el.setAttribute('fill', t.title);
+        el.textContent = text;
+        svg.appendChild(el);
+      };
+      addText('WHAT YOU', 80, 90, '10');
+      addText('WANT', 80, 103, '10');
+      addText('WHAT THEY', 210, 90, '10');
+      addText('WANT', 210, 103, '10');
+      addText('WIN/WIN', 145, 105, '11');
+    }
+  });
+}
+
+// ---------- View Switching ----------
+function switchView(view) {
+  document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+  if (view === 'ai') {
+    event.target.classList.add('active');
+    aiContainer.style.display = 'flex';
+    cssContainer.style.display = 'none';
+  } else {
+    event.target.classList.add('active');
+    aiContainer.style.display = 'none';
+    cssContainer.style.display = 'flex';
+    setTimeout(drawRoughIllustrations, 100);
+  }
+}
+
+// ---------- Lightbox ----------
+function openLightbox(src) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// Init rough drawings for CSS view
+window.addEventListener('load', drawRoughIllustrations);
+setTimeout(drawRoughIllustrations, 500);
+</script>
+</body>
+</html>

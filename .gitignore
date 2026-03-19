@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Environment
+.env
+.env.*
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+server.log
+
+# IDE
+.vscode/
+.idea/
+
+# Generated images and exports (large files)
+static/images/
+static/exports/
+static/covers/
+static/prompt_logs/
+
+# Cache files
+static/tafsir_cache.json
+static/quran_verse_cache.json
