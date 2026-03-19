@@ -253,7 +253,14 @@ EXACT TEXT TO RENDER:
 {back_text}
 
 Key terms to render in BOLD with slight underline: {bold_terms}
-FOOTER: Verse reference "{verse_ref_display}" in small ornate circle with Islamic geometric border and crescent motif, bottom-right — if no verse reference, show card number "{card_number}" inside crescent-decorated circle
+
+FOOTER (CRITICAL — MUST BE PRESENT on back card, matching front card):
+- Bottom-right corner: Draw a small hand-drawn ornate circle (25-30px diameter) with Islamic geometric border pattern
+- INSIDE the circle: Write "{verse_ref_display}" — if empty, write "{card_number}"
+- This verse reference circle MUST appear on the back card in the same position as the front card
+- The circle should have a crescent moon small motif above or beside it
+- This is the SAME footer element as the front card — readers need to match front and back
+
 MARGINS: 8% padding inside the border
 
 OUTPUT: Single card back image, same dimensions as front (380×540 ratio, portrait). TEXT ONLY — no diagrams."""
@@ -309,7 +316,10 @@ BACK CARD (right, perfectly straight — no tilt):
 
   Key terms to render in BOLD with slight underline: {bold_terms}
 
-  FOOTER: Verse reference "{verse_ref_display}" in small {accent_shape} ornate circle with crescent motif bottom-right — if no verse reference, show card number "{card_number}" in crescent-decorated circle
+  FOOTER (CRITICAL — MUST match front card's footer):
+  - Bottom-right corner: ornate circle with "{verse_ref_display}" inside — if empty, show "{card_number}"
+  - This verse reference circle MUST appear on BOTH front and back cards in matching position
+  - Crescent moon motif beside the circle
   MARGINS: 8% padding inside border
 
 SPREAD DETAILS:

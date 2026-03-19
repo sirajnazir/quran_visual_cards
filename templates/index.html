@@ -1222,12 +1222,15 @@ function syncAnalysisInput() {
   } else {
     hidden.value = document.getElementById('inp-analysis-custom').value;
   }
-  // Trigger category derivation
+  updateStepProgress();
+  // Trigger category derivation — combine analysis text with verse English for better matching
   clearTimeout(categoryDebounceTimer);
   categoryDebounceTimer = setTimeout(() => {
     const el = document.getElementById('inp-category');
     if (el.dataset.manualEdit === 'true') return;
-    const d = autoDeriveCategory(hidden.value);
+    const verseEn = document.getElementById('inp-verse-english').value || '';
+    const combinedText = hidden.value + ' ' + verseEn;
+    const d = autoDeriveCategory(combinedText);
     if (d) { el.value = d; el.classList.add('auto-filled'); updateStepProgress(); }
   }, 300);
 }
