@@ -18,7 +18,7 @@ from icon_library import build_icon_enriched_steps, get_structural_guidance, get
 from hero_character import build_hero_injection, suggest_pose_for_visual_type
 
 # ---------- Configuration ----------
-GOOGLE_API_KEY = os.environ.get("GOOGLE_AI_API_KEY", "AIzaSyA7EV3CuWZiLwOUgWwx7l0r2B7rpaqALKA")
+GOOGLE_API_KEY = os.environ.get("GOOGLE_AI_API_KEY", "")
 IMAGE_DIR = os.path.join(os.path.dirname(__file__), "static", "images")
 os.makedirs(IMAGE_DIR, exist_ok=True)
 

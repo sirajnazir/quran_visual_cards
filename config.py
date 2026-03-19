@@ -12,11 +12,11 @@ DEBUG = os.environ.get("FLASK_DEBUG", "false").lower() in ("true", "1", "yes")
 HOST = "0.0.0.0"
 PORT = int(os.environ.get("PORT", 5001))
 
-# Anthropic
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "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")
+# Anthropic — set via environment variable or .env file (NEVER hardcode keys)
+ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 
-# Google AI (Gemini image generation)
-GOOGLE_AI_API_KEY = os.environ.get("GOOGLE_AI_API_KEY", "AIzaSyA7EV3CuWZiLwOUgWwx7l0r2B7rpaqALKA")
+# Google AI (Gemini) — set via environment variable or .env file (NEVER hardcode keys)
+GOOGLE_AI_API_KEY = os.environ.get("GOOGLE_AI_API_KEY", "")
 ANTHROPIC_MODEL = "claude-sonnet-4-20250514"
 
 # Card Defaults
